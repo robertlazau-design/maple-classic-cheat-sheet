@@ -17,7 +17,8 @@ def load(n):
     with open(os.path.join(ROOT, "data", n)) as f:
         return json.load(f)
 
-JOBS = load("jobs.json"); LEV = load("leveling.json"); SEC = load("secrets.json")
+JOBS = load("jobs.json"); LEV = load("leveling.json"); SEC = load("secrets.json"); IMG = load("images.json")
+API = "https://maplestory.io/api/GMS/83"
 
 e = lambda s: html.escape(str(s if s is not None else ""), quote=True)
 
@@ -45,11 +46,43 @@ def srcs(s):
         links.append(f'<a href="{e(u)}" rel="nofollow noopener" target="_blank">{e(host)}</a>')
     return f'<p class="src">Source: {", ".join(links)}</p>' if links else ""
 
+def _img(src, alt, cls):
+    return f'<img class="{cls}" src="{src}" alt="{e(alt)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">'
+def mob_img(name, cls="sprite"):
+    i = IMG["mobs"].get(name)
+    return _img(f"{API}/mob/{i}/render/stand", name, cls) if i else ""
+def npc_img(i, name, cls="sprite"):
+    return _img(f"{API}/npc/{i}/render/stand", name, cls)
+def map_img(i, name):
+    return f'<figure class="mini">{_img(f"{API}/map/{i}/minimap", name + " minimap", "mm")}<figcaption>{e(name)}</figcaption></figure>'
+def mobs_in(text, n=3):
+    found = []
+    for name in sorted(IMG["mobs"], key=len, reverse=True):
+        if re.search(r"(?<![A-Za-z.])" + re.escape(name) + r"(?![a-z])", text) and not any(name in f for f in found):
+            found.append(name)
+    order = sorted(found, key=lambda m: text.find(m))
+    return order[:n]
+def secret_img(name):
+    for k, v in IMG["secrets"].items():
+        if name.startswith(k) or k in name:
+            parts = []
+            if v.get("mob"): parts.append(mob_img(v["mob"]))
+            if v.get("npc"): parts.append(npc_img(v["npc"][0], v["npc"][1]))
+            fig = map_img(v["map"], name.split(" (")[0]) if v.get("map") else ""
+            return f'<div class="pics">{fig}<div class="sprites">{"".join(parts)}</div></div>'
+    return ""
+
 LEAF = '<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="var(--maple)" d="M16 2l2.6 5.4 4.2-2-1 5.6 5.2-1.6-2.6 4.6 4.6 1.6-6 3.6 1.4 3.2-6.2-1.2.4 6.8h-5.2l.4-6.8-6.2 1.2 1.4-3.2-6-3.6 4.6-1.6L5 9.4l5.2 1.6-1-5.6 4.2 2z"/><path stroke="var(--ink)" stroke-width="1.6" d="M16 12v18" fill="none"/></svg>'
+
+LEAVES = '<div class="leaves" aria-hidden="true">' + "".join(
+    f'<i style="right:{r}%;top:{t}px;--s:{sz}px;--rot:{rot}deg"></i>' for r, t, sz, rot in
+    [(4, 70, 54, -20), (14, 150, 40, 25), (25, 60, 34, 10), (9, 290, 62, -35), (22, 250, 44, 40), (33, 360, 36, -10), (3, 470, 48, 15), (18, 520, 38, -25), (30, 180, 30, 55)]) + "</div>"
+HOUSE = '<svg class="house" viewBox="0 0 120 110" aria-hidden="true"><path fill="currentColor" d="M60 4C28 4 6 24 6 46c0 6 4 9 10 9h88c6 0 10-3 10-9C114 24 92 4 60 4z"/><rect x="26" y="55" width="68" height="48" rx="10" fill="currentColor"/><rect x="50" y="70" width="20" height="33" rx="10" fill="#fff" opacity=".5"/></svg>'
+LEAF_SM = '<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 2l2.6 5.4 4.2-2-1 5.6 5.2-1.6-2.6 4.6 4.6 1.6-6 3.6 1.4 3.2-6.2-1.2.4 6.8h-5.2l.4-6.8-6.2 1.2 1.4-3.2-6-3.6 4.6-1.6L5 9.4l5.2 1.6-1-5.6 4.2 2z"/></svg>'
 
 NAV = [("/", "Cheat sheet"), ("/leveling/", "Leveling"), ("/jobs/", "Job builds"), ("/job-advancement/", "Job advancement"), ("/secrets/", "Secrets"), ("/classic-rules/", "Classic rules")]
 
-def page(path, title, desc, body, crumbs=None, schema=None, side_extra=""):
+def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=""):
     canon = SITE + path
     nav = "".join(f'<a href="{h}"{" aria-current=page" if h == path else ""}>{t}</a>' for h, t in NAV)
     bc = ""
@@ -71,29 +104,33 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra=""):
 <meta property="og:type" content="website"><meta property="og:site_name" content="{NAME}">
 <meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{canon}">
 <meta property="og:image" content="{SITE}/og.png"><meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#d9621f">
+<meta name="theme-color" content="#3b2210">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="/style.css">
 {ldtxt}
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
+<div class="frame">{LEAVES}
 <header class="site-h"><div class="wrap">
-<a class="brand" href="/">{LEAF}<span>Maple Classic<small>CHEAT SHEET</small></span></a>
+<a class="brand" href="/">{LEAF}<span>Maple Classic <span>Cheat Sheet</span></span></a>
 <nav class="nav" aria-label="Main">{nav}</nav>
 </div></header>
+{hero}
 <div class="wrap"><div class="ad ad-top" data-slot=""></div>
-<div class="layout">
+<div class="layout{" has-side" if side_extra else ""}">
 <main id="main">{bc}{body}</main>
 <aside class="side" aria-label="Sidebar"><div class="sticky">{side_extra}<div class="ad ad-side" data-slot=""></div></div></aside>
 </div></div>
 <footer class="site-f"><div class="wrap">
+<a class="brand" href="/">{LEAF}<span>Maple Classic <span>Cheat Sheet</span></span></a>
 <nav aria-label="Footer">{"".join(f'<a href="{h}">{t}</a>' for h, t in NAV)}<a href="/about/">About &amp; sources</a><a href="/privacy/">Privacy</a></nav>
 <p>Fan-made guide, not affiliated with or endorsed by Nexon. MapleStory is a trademark of Nexon. Data checked {CHECKED} ({DATA_NOTE}); we re-check after every patch.</p>
-<p>Built by <a href="https://www.robertlazau.com">Golden Boy Productions</a>.</p>
+<p>Game sprites and minimaps © Nexon, loaded from <a href="https://maplestory.io" rel="nofollow noopener">maplestory.io</a>. Built by <a href="https://www.robertlazau.com">Golden Boy Productions</a>.</p>
 </div></footer>
+</div>
 <script src="/site.js" defer></script>
 </body>
 </html>"""
@@ -113,7 +150,10 @@ def route_li(r):
     cls = "future" if "Nov 18" in r["map"] or "from Nov" in r["map"] else ("wall" if r["from"] >= 80 else "")
     lv = f'{r["from"]}–{r["to"]}'
     best = ", ".join(r.get("bestFor") or [])
-    return f'''<li class="{cls}"><span class="lv">Lv {lv}</span>
+    sprites = "".join(mob_img(m) for m in mobs_in(r.get("monsters", "")))
+    mm = next((v for k, v in IMG["routeMaps"].items() if k in r["map"]), None)
+    pics = f'<div class="pics">{map_img(mm, tidy(r["map"]).split(" / ")[0].split(" (")[0]) if mm else ""}<div class="sprites">{sprites}</div></div>' if (sprites or mm) else ""
+    return f'''<li class="{cls}"><span class="lv">Lv {lv}</span>{pics}
 <span class="map">{e(tidy(r["map"]))} {conf(r.get("confidence"))}</span>
 <span class="sub">{e(r.get("region",""))} · {e(r.get("monsters",""))} (lv {e(r.get("monsterLevel",""))}){" · best for " + e(best) if best and best != "all" else ""}</span>
 <span class="tip">{e(tidy(r.get("tip","")))}</span></li>'''
@@ -129,29 +169,39 @@ def build_home():
              ("/job-advancement/", "Job advancement", "Who to talk to at level 10 and 30, and how the Dark Marble test works."),
              ("/secrets/", "Hidden maps & secrets", f'{len(SEC["secrets"])} hidden streets, jump quests, boss rooms and missable rewards.'),
              ("/classic-rules/", "Classic rules", "Scroll odds, the EXP wall at 90+, crafting, Cash Shop buys and ways to make mesos.")]
-    body = f'''<h1>MapleStory Classic Cheat Sheet</h1>
-<p class="lede">Everything you need with the game open: where to train, where your AP and SP go, when to job up and which secrets you'll miss if you rush. Built for your phone.</p>
-{stamp()}
-<div class="facts"><div><b>Lv 100</b><span>Level cap</span></div><div><b>1st + 2nd job</b><span>3rd job planned for 2027</span></div><div><b>Victoria Island</b><span>Plus Maple Island; no Ossyria yet</span></div><div><b>7,000 NX</b><span>Per AP or SP reset</span></div></div>
-<section class="finder" aria-labelledby="fh"><h2 id="fh">What should I do right now?</h2><p>Pick your job and level.</p>
+    cast = [("mob", 210100, "mob", 10, 20, 2.4, .4), ("mob", 1210102, "mob", 38, 10, 2.3, .9), ("mob", 100101, "mob", 70, 24, 2.8, 1.3),
+            ("npc", 1022000, "npc", 2, 58, 1.9, 0), ("npc", 1032001, "npc", 27, 50, 1.6, .6), ("npc", 1012100, "npc", 49, 58, 1.9, 1.1), ("npc", 1052001, "npc", 70, 48, 1.25, 1.6)]
+    castimg = ""
+    for _, i, kind, left, top, k, d in cast:
+        castimg += f'<img src="{API}/{kind}/{i}/render/stand" alt="" loading="eager" referrerpolicy="no-referrer" onerror="this.remove()" style="left:{left}%;top:{top}%;--k:{k};--d:{d}s">'
+    hero = f'''<section class="hero"><div class="wrap">
+<div class="hero-copy">{HOUSE}<h1>MapleStory Classic<br>Cheat Sheet</h1>
+<p class="sub">Every answer you need with the game open, built for your phone.</p>
+<p class="lede">Where to train at your level, where your AP and SP go, when to job up, and the hidden maps and one-time rewards you'll miss if you rush.</p>
+<div class="btns"><a class="btn btn-primary" href="#finder-box">Find my build {LEAF_SM}</a><a class="btn btn-ghost" href="/leveling/">Leveling route</a></div>
+{stamp()}</div>
+<div class="cast" aria-hidden="true">{castimg}</div>
+</div></section>'''
+    body = f'''<div class="facts"><div><b>Lv 100</b><span>Level cap</span></div><div><b>1st + 2nd job</b><span>3rd job planned for 2027</span></div><div><b>Victoria Island</b><span>Plus Maple Island; no Ossyria yet</span></div><div><b>7,000 NX</b><span>Per AP or SP reset</span></div></div>
+<section class="finder" id="finder-box" aria-labelledby="fh"><h2 id="fh">What should I do right now?</h2><p>Pick your job and level.</p>
 <form id="finder"><div><label for="job">Job (or the one you're aiming for)</label><select id="job" name="job">{opts}</select></div>
 <div><label for="lv">Level</label><input id="lv" name="lv" type="number" inputmode="numeric" min="1" max="100" value="1"></div></form>
 <div class="result" id="finder-out" aria-live="polite"></div>
 <script type="application/json" id="finder-data">{json.dumps(fdata).replace("</", "<\\/")}</script></section>
 <div class="ad ad-in" data-slot=""></div>
-<h2>The cheat sheet</h2><div class="grid">{"".join(f'<a class="card" href="{h}"><h3>{t}</h3><p>{d}</p></a>' for h, t, d in cards)}</div>
+<h2>The cheat sheet</h2><div class="grid">{"".join(f'<a class="card" href="{h}"><div class="icon">{_img(f"{API}/{ic}/render/stand", "", "")}</div><h3>{t}</h3><p>{d}</p><span class="go">Open →</span></a>' for (h, t, d), ic in zip(cards, ["mob/1210103", "npc/1012100", "npc/1032001", "mob/6130101", "mob/1110100"]))}</div>
 <h2>Classic in 60 seconds</h2>
 <ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in JOBS["classicChanges"][:8])}</ul>
 <h2>Quick tips</h2><ul>{"".join(f"<li>{e(tidy(t['tip']))}</li>" for t in LEV["tips"][:6])}</ul>'''
     write("/", page("/", "MapleStory Classic Cheat Sheet: Leveling, Builds & Secrets (2026)",
-                    "MapleStory Classic World cheat sheet: where to train at every level, AP/SP builds for all 10 jobs, job advancement, hidden maps and Classic rules. Mobile-friendly.", body))
+                    "MapleStory Classic World cheat sheet: where to train at every level, AP/SP builds for all 10 jobs, job advancement, hidden maps and Classic rules. Mobile-friendly.", body, hero=hero))
 
 def build_leveling():
     route = sorted(LEV["route"], key=lambda r: (r["from"], r["to"]))
     regions = "".join(f'<tr><td data-th="Region"><b>{e(r["region"])}</b></td><td data-th="Status">{e(r["status"])}</td><td data-th="Notes">{e(tidy(r["notes"]))}</td></tr>' for r in LEV["regionsAvailable"])
     pqs = "".join(f'<div class="card"><h3>{e(p["name"])} {conf(p.get("confidence"))}</h3><p class="meta">Level {e(p["levels"])} · {e(p["where"])}</p><p>{e(tidy(p["notes"]))}</p></div>' for p in LEV["partyQuests"])
     quests = "".join(f'<tr><td data-th="Quest"><b>{e(q["name"])}</b></td><td data-th="Level">{e(q["level"])}</td><td data-th="Where">{e(q["where"])}</td><td data-th="Why">{e(tidy(q["why"]))}</td></tr>' for q in LEV["quests"])
-    bosses = "".join(f'<tr><td data-th="Boss"><b>{e(b["name"])}</b> {conf(b.get("confidence"))}</td><td data-th="Level">{e(b["level"])}</td><td data-th="Where">{e(b["where"])}</td><td data-th="Respawn">{e(b["respawn"])}</td><td data-th="Notes">{e(tidy(b.get("notes","")))}</td></tr>' for b in LEV["bosses"])
+    bosses = "".join(f'<tr><td data-th="Boss">{mob_img(b["name"], "sprite sm")}<b>{e(b["name"])}</b> {conf(b.get("confidence"))}</td><td data-th="Level">{e(b["level"])}</td><td data-th="Where">{e(b["where"])}</td><td data-th="Respawn">{e(b["respawn"])}</td><td data-th="Notes">{e(tidy(b.get("notes","")))}</td></tr>' for b in LEV["bosses"])
     notes = "".join(f'<details><summary>{e(n["class"])}</summary><p>{e(tidy(n["note"]))}</p>{srcs(n.get("source"))}</details>' for n in LEV["classNotes"])
     tips = "".join(f'<li>{e(tidy(t["tip"]))}</li>' for t in LEV["tips"])
     body = f'''<h1>MapleStory Classic Leveling Guide 1–100</h1>
@@ -177,7 +227,8 @@ def build_jobs():
     for c in JOBS["classes"]:
         fj = c["firstJob"]
         jobs = "".join(f'<a class="card" href="/jobs/{e(j["id"])}/"><h3>{e(j["name"])}</h3><p class="meta">{e(j["weapon"])}</p><p>{e(tidy(j["playstyle"]))}</p></a>' for j in c["jobs"])
-        blocks += f'''<h2 id="{e(c["id"])}">{e(c["name"])}</h2>
+        cn = IMG["classNpc"][c["id"]]
+        blocks += f'''<h2 id="{e(c["id"])}">{e(c["name"])}</h2><div class="npc-row">{npc_img(cn[0], cn[1])}<span>{e(cn[1])}, {e(fj["town"])}</span></div>
 <p><b>1st job:</b> level {e(fj["level"])} with {e(fj["npc"])} in {e(fj["town"])}. {e(tidy(fj["notes"]))}</p>
 <div class="grid">{jobs}</div>'''
     body = f'''<h1>MapleStory Classic Job Builds</h1>
@@ -208,7 +259,7 @@ def build_jobs():
 <div class="ad ad-in" data-slot=""></div>
 <h2 id="sp">SP build</h2><h3>1st job (levels 10–29)</h3><ol class="steps" style="margin-top:8px">{steps(j["sp"]["firstJob"])}</ol>
 <h3 style="margin-top:20px">2nd job (level 30+)</h3><ol class="steps" style="margin-top:8px">{steps(j["sp"]["secondJob"])}</ol>
-<h2 id="adv">Job advancement</h2><p><b>1st job:</b> level {e(c["firstJob"]["level"])}, {e(c["firstJob"]["npc"])} in {e(c["firstJob"]["town"])}.</p>
+<h2 id="adv">Job advancement</h2><div class="pics">{map_img(IMG["testMap"][c["id"]], "2nd job test map")}<div class="sprites">{npc_img(IMG["classNpc"][c["id"]][0], IMG["classNpc"][c["id"]][1])}</div></div><p><b>1st job:</b> level {e(c["firstJob"]["level"])}, {e(c["firstJob"]["npc"])} in {e(c["firstJob"]["town"])}.</p>
 <p><b>2nd job:</b> level {e(adv["level"])}, {e(adv["npc"])} in {e(adv["town"])}. {e(tidy(adv["test"]))}</p>
 <h2 id="pros">Pros &amp; cons</h2><div class="pc"><div class="card"><h3>Pros</h3><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in j["pros"])}</ul></div><div class="card"><h3>Cons</h3><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in j["cons"])}</ul></div></div>
 <p style="margin-top:20px">Other {e(c["name"])} jobs: {" · ".join(f'<a href="/jobs/{e(x["id"])}/">{e(x["name"])}</a>' for x in c["jobs"] if x["id"] != j["id"])}</p>
@@ -219,7 +270,7 @@ def build_jobs():
                                         schema={"@context": "https://schema.org", "@type": "Article", "headline": f"{j['name']} Build Guide: MapleStory Classic", "dateModified": CHECKED_ISO}))
 
 def build_adv():
-    first = "".join(f'<tr><td data-th="Class"><b>{e(c["name"])}</b></td><td data-th="Level">{e(c["firstJob"]["level"])}</td><td data-th="NPC">{e(c["firstJob"]["npc"])}</td><td data-th="Where">{e(c["firstJob"]["town"])}</td><td data-th="Stat req">{e(c["firstJob"]["statReq"])}</td></tr>' for c in JOBS["classes"])
+    first = "".join(f'<tr><td data-th="Class">{npc_img(IMG["classNpc"][c["id"]][0], IMG["classNpc"][c["id"]][1], "sprite sm")}<b>{e(c["name"])}</b></td><td data-th="Level">{e(c["firstJob"]["level"])}</td><td data-th="NPC">{e(c["firstJob"]["npc"])}</td><td data-th="Where">{e(c["firstJob"]["town"])}</td><td data-th="Stat req">{e(c["firstJob"]["statReq"])}</td></tr>' for c in JOBS["classes"])
     second = "".join(f'<tr><td data-th="Job"><a href="/jobs/{e(j["id"])}/"><b>{e(j["name"])}</b></a></td><td data-th="NPC">{e(j["advancement"]["npc"])}, {e(j["advancement"]["town"])}</td><td data-th="Test">{e(tidy(j["advancement"]["test"]))}</td></tr>' for c, j in ALLJOBS)
     body = f'''<h1>MapleStory Classic Job Advancement</h1>
 <p class="lede">1st job at level 10 with no stat requirement, 2nd job at level 30 after a short Dark Marble test. Here's who to see and where.</p>
@@ -243,7 +294,7 @@ def build_secrets():
     cards = ""
     for s in SEC["secrets"]:
         future = "" if s.get("classicConfirmed", True) else ' <span class="tag">Not confirmed in Classic</span>'
-        cards += f'''<article class="card" data-type="{slug(s["type"])}"><h3>{e(s["name"])}</h3>
+        cards += f'''<article class="card" data-type="{slug(s["type"])}">{secret_img(s["name"])}<h3>{e(s["name"])}</h3>
 <p class="meta">{e(s["type"].capitalize())} · {e(s["region"])} · Level {e(s["level"])} {conf(s.get("confidence"))}{future}</p>
 <p><b>How to get there:</b> {e(tidy(s["howToGet"]))}</p><p><b>Why go:</b> {e(tidy(s["reward"]))}</p></article>'''
     body = f'''<h1>MapleStory Classic Hidden Maps &amp; Secrets</h1>
