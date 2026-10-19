@@ -296,3 +296,6 @@ body.noscroll{overflow:hidden}
 [id]{scroll-margin-top:90px}
 .result>.btn{grid-column:1/-1;align-self:start;min-height:52px}
 .lvl{max-width:560px}
+
+.spoiler{background:var(--bg);box-shadow:none;border:2px dashed var(--line);margin:4px 0 0}
+.spoiler summary{font-size:14px;color:var(--maple-deep)}
