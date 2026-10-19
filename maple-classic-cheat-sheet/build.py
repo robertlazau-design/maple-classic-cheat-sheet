@@ -9,6 +9,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, "public")
 SITE = "https://www.mapleclassicguide.com"
 NAME = "Maple Classic Guide"
+COFFEE = ""  # your Buy Me a Coffee link, e.g. "https://buymeacoffee.com/yourname". Empty = hidden.
 CHECKED = "Oct 19, 2026"
 CHECKED_ISO = "2026-10-19"
 DATA_NOTE = "Founder's Access data"
@@ -130,7 +131,7 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 <footer class="site-f"><div class="wrap">
 <a class="brand" href="/">{LEAF}<span>Maple Classic <span>Guide</span></span></a>
 <nav aria-label="Footer">{"".join(f'<a href="{h}">{t}</a>' for h, t in NAV)}<a href="/about/">About &amp; sources</a><a href="/privacy/">Privacy</a></nav>
-<p>Unofficial fan site. Not affiliated with or endorsed by NEXON. MapleStory © NEXON. Data checked {CHECKED} ({DATA_NOTE}); we re-check after every patch. <a href="mailto:robertlazau@gmail.com?subject=Maple%20Classic%20Guide%20fix">Spotted a mistake? Tell us</a>.</p>
+{coffee_btn()}<p>Unofficial fan site. Not affiliated with or endorsed by NEXON. MapleStory © NEXON. Data checked {CHECKED} ({DATA_NOTE}); we re-check after every patch. <a href="mailto:robertlazau@gmail.com?subject=Maple%20Classic%20Guide%20fix">Spotted a mistake? Tell us</a>.</p>
 <p>Game sprites and minimaps © Nexon, loaded from <a href="https://maplestory.io" rel="nofollow noopener">maplestory.io</a>. Built by <a href="https://www.robertlazau.com">Golden Boy Productions</a>.</p>
 </div></footer>
 </div>
@@ -141,6 +142,10 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 <script src="/site.js" defer></script>
 </body>
 </html>"""
+
+def coffee_btn(big=False):
+    if not COFFEE: return ""
+    return f'<a class="coffee{" big" if big else ""}" href="{COFFEE}" target="_blank" rel="noopener">☕ Buy me a coffee</a>'
 
 def stamp():
     return f'<p class="stamp"><b>✓ Checked {CHECKED}</b><span>{DATA_NOTE}. Tags show how sure we are: {conf("high")} {conf("medium")} {conf("low")}</span></p>'
@@ -206,6 +211,7 @@ def build_home():
 <script type="application/json" id="finder-data">{json.dumps(fdata).replace("</", "<\\/")}</script></section>
 <div class="ad ad-in" data-slot=""></div>
 <h2>Don't be that guy</h2><ol class="musts">{"".join(f"<li>{e(m)}</li>" for m in musts)}</ol>
+{f'<div class="tipjar"><div><b>This guide is free and stays free.</b><span>If it saved you a reset scroll, a coffee keeps it updated every patch.</span></div>{coffee_btn(True)}</div>' if COFFEE else ""}
 <h2>Everything else</h2><div class="grid tiles">{"".join(f'<a class="card" href="{h}"><div class="icon">{_img(f"{API}/{ic}/render/stand", "", "")}</div><h3>{t}</h3><p>{d}</p></a>' for h, t, d, ic in cards)}</div>
 <div class="facts" style="margin-top:28px"><div><b>Lv 100</b><span>Level cap</span></div><div><b>1st + 2nd job</b><span>3rd job planned for 2027</span></div><div><b>Victoria Island</b><span>Plus Maple Island; no Ossyria yet</span></div><div><b>7,000 NX</b><span>Per AP or SP reset</span></div></div>
 <details style="margin-top:20px"><summary>What's different in Classic (60-second version)</summary><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in JOBS["classicChanges"][:8])}</ul></details>'''
@@ -355,6 +361,7 @@ def build_static():
 <h2>Huge thanks</h2><p>Most Classic numbers on this site trace back to the community's own research, above all <a href="https://meowdb.com/msclassic" rel="noopener">NiaMeowDB</a>. If you want the full database (every item, map and drop), go there. We link the exact source on each entry.</p>
 <h2>How this site is made</h2><p>We gather Classic facts from the sources above, rewrite them as short answers, and tag how sure we are. AI tools helped us research and draft it, which is why every entry carries a confidence tag and a source link. We're checking routes and builds in game after launch and fix anything players report. No meso sellers, boosting or account services, ever.</p>
 <h2>How sure are we?</h2><p>{conf("high")} several Classic sources agree. {conf("medium")} one Classic source, or partly our estimate. {conf("low")} unverified, or content that isn't live yet.</p>
+{f'<h2>Support the guide</h2><p>No paywalls, ever. If you want to help keep it updated, {coffee_btn()}</p>' if COFFEE else ""}
 <h2>Found a mistake?</h2><p>Classic is new and numbers change with patches. Email <a href="mailto:robertlazau@gmail.com?subject=Maple%20Classic%20Guide%20fix">robertlazau@gmail.com</a> with what you saw in game and we'll fix it.</p>
 <h2>Not affiliated with Nexon</h2><p>This is an unofficial fan site. MapleStory and related names are trademarks of Nexon Korea Corporation and Nexon America Inc.</p>'''
     write("/about/", page("/about/", "About & Sources | Maple Classic Guide", "Where the Maple Classic Guide gets its data, how we rate confidence, and how to report a fix.", about, crumbs=[("/", "Guide"), (None, "About")]))
