@@ -185,7 +185,7 @@ def build_home():
              "Carry a Return Scroll. There's no cab back out of the Ant Tunnel.",
              "Buy Orange Potions or Lemons for MP, not Blue Potions. Better value."]
     cast = [("mob", 210100, "mob", 10, 20, 2.4, .4), ("mob", 1210102, "mob", 38, 10, 2.3, .9), ("mob", 100101, "mob", 70, 24, 2.8, 1.3),
-            ("npc", 1022000, "npc", 2, 58, 1.9, 0), ("npc", 1032001, "npc", 27, 50, 1.6, .6), ("npc", 1012100, "npc", 49, 58, 1.9, 1.1), ("npc", 1052001, "npc", 70, 48, 1.25, 1.6)]
+            ("npc", 1022000, "npc", 2, 58, 1.9, 0), ("npc", 1032001, "npc", 27, 50, 1.6, .6), ("npc", 1012100, "npc", 49, 58, 1.9, 1.1), ("npc", 1072003, "npc", 72, 56, 2.0, 1.6)]
     castimg = "".join(f'<img src="{API}/{kind}/{i}/render/stand" alt="" loading="eager" referrerpolicy="no-referrer" onerror="this.remove()" style="left:{left}%;top:{top}%;--k:{k};--d:{d}s">' for _, i, kind, left, top, k, d in cast)
     hero = f'''<section class="hero"><div class="wrap">
 <div class="hero-copy">{HOUSE}<p class="kicker">Classic World · launches Oct 21</p><h1>MapleStory Classic<br>Cheat Sheet</h1>
