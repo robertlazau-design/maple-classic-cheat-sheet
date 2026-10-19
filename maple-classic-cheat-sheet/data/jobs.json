@@ -1,0 +1,663 @@
+{
+  "meta": {
+    "game": "MapleStory Classic World (Global)",
+    "compiledOn": "2026-10-19",
+    "primarySource": "meowdb.com/msclassic (community database; rebranding to NiaDB late Oct/early Nov 2026)",
+    "notes": [
+      "All text paraphrased. Per-level SP/AP tables come from MeowDB's sample builds (mostly Grummash's Lv70 benchmark builds) and are recommendations, not game rules.",
+      "MeowDB guides cover Lv 30-70 for 2nd jobs. Lv 71-100 SP plans are inferred (finish remaining 2nd-job skills) and flagged as such.",
+      "Third job (and El Nath/Orbis) is not in the launch build; at Lv70 you simply keep levelling as a 2nd job up to the Lv100 cap."
+    ]
+  },
+  "classes": [
+    {
+      "id": "warrior",
+      "name": "Warrior",
+      "firstJob": {
+        "level": 10,
+        "statReq": "None (Classic removed 1st-job stat requirements)",
+        "npc": "Dances with Balrog",
+        "town": "Perion",
+        "notes": "Starting stats 12 STR / 5 DEX / 4 INT / 4 LUK. +28 HP and +12 MP per level; job advancement grants +350 HP / +150 MP. 1st-job skills in Classic: Power Strike (20), Slash Blast (20, hits up to 6, costs HP+MP), Precise Strikes (15, new: +ACC and crit rate), Improved HP Recovery (15), Max HP Increase (15, now a % of max HP, not HP-per-level), Iron Body (20). Warrior is the only class with an AoE attack before Lv30."
+      },
+      "jobs": [
+        {
+          "id": "fighter",
+          "name": "Fighter",
+          "weapon": "Swords or axes (1H with shield, or 2H)",
+          "playstyle": "Front-line melee bruiser: Rush mobs together, Power Strike singles, Slash Blast groups, keep Rage + Booster up.",
+          "pros": [
+            "Best damage-per-MP of the warrior branches at Lv70 in MeowDB benchmarks",
+            "Rage is a party Attack Power buff (+40 ATK at max)",
+            "Widest weapon choice (1H/2H sword and axe)"
+          ],
+          "cons": [
+            "Short reach and slow movement; takes lots of hits",
+            "Rage lowers your WDEF (-40 at max)",
+            "Mastery/Booster/Final Attack lock you to one weapon family",
+            "Power Guard moved to 3rd job in Classic"
+          ],
+          "advancement": {
+            "level": 30,
+            "npc": "Dances with Balrog (quest: The Warrior's Next Journey)",
+            "town": "Perion",
+            "test": "Take his letter to the Warrior Job Instructor at West Rocky Mountain IV, enter the hidden test map, kill mobs for 30 Dark Marbles, trade for The Proof of a Hero, return to Dances with Balrog and pick Fighter."
+          },
+          "ap": {
+            "summary": "STR primary; keep total DEX (base + gear) only at your next weapon's requirement. Lv1-10 all STR; Lv10-30 mostly 4 STR / 1 DEX; Lv31-36 3 STR / 2 DEX; Lv37-57 4 STR / 1 DEX; Lv58+ all STR once DEX reaches 60 base.",
+            "steps": [
+              "Lv1-10: all AP into STR (about 57 STR / 5 DEX at Lv10). No DEX needed to advance.",
+              "Lv10-30: ~4 STR / 1 DEX per level with a few 3/2 levels; target ~135 STR / 27 DEX at Lv30.",
+              "Lv31-36: 3 STR / 2 DEX per level (~153 STR / 39 DEX at Lv36).",
+              "Lv37-57: 4 STR / 1 DEX per level (~237 STR / 60 DEX at Lv57).",
+              "Lv58-70: all STR (~302 STR / 60 DEX at Lv70). Lv70 2H weapons need 70 total DEX; cover the rest with gear.",
+              "Lv70-100 (inference, verify): keep DEX at weapon requirement, rest STR.",
+              "Pitfall: adding DEX for damage or advancement is wasted; levels add ACC (~0.8 ACC per level vs 0.48 per DEX). Use Precise Strikes, gear and Sniper potions to fix accuracy.",
+              "Pitfall: check gear DEX before adding base DEX; you may need less than 60."
+            ]
+          },
+          "sp": {
+            "firstJob": [
+              "Beginner: Three Snails 3, Recovery 3, Nimble Feet 3 by Lv10",
+              "Lv10-12: Power Strike 4, Slash Blast 3",
+              "Lv13-14: Slash Blast 4, Precise Strikes 5",
+              "Lv15-20: Power Strike to 20 (max), Slash Blast 6",
+              "Lv21-25: Slash Blast to 20 (max), Precise Strikes 6",
+              "Lv26-28: Precise Strikes to 15 (max)",
+              "Lv29-30: Improved HP Recovery 3, Max HP Increase 3",
+              "Skip: Iron Body. Don't rush Max HP Increase (no longer adds HP per level, so delaying costs nothing).",
+              "2nd-job SP cannot be spent on 1st-job skills: finish this by Lv30."
+            ],
+            "secondJob": [
+              "Lv30: Rush 1",
+              "Lv31-38: Weapon Mastery (Sword or Axe) to 20; Booster 1 at Mastery 5; Final Attack 1-2",
+              "Lv39-48: Rage to 30",
+              "Lv49-57: Final Attack to 30",
+              "Lv58-64: Booster to 20",
+              "Lv64-70: Rush to 20 (1 SP spare at 70)",
+              "Lv71-100 (inference): all Fighter skills are maxed by ~Lv70; extra SP has nowhere to go until 3rd job.",
+              "Options: Booster 10 or Rush 10 earlier for upkeep/mobility. Don't push Rush early (Rush 1 costs 35 MP). Pick sword vs axe before spending Mastery SP. Turn Final Attack off when PS already one-shots.",
+              "Classic changes: Final Attack proc 25% (was 50% in test), Rush moved into 2nd job (6 targets, 15 MP at max), Power Guard is 3rd job."
+            ]
+          },
+          "confidence": "medium",
+          "sources": [
+            "https://meowdb.com/msclassic/guides/fighter-class-guide",
+            "https://meowdb.com/msclassic/guides/warrior-class-guide",
+            "https://meowdb.com/msclassic/skill-changes"
+          ]
+        },
+        {
+          "id": "page",
+          "name": "Page",
+          "weapon": "Swords or blunt weapons (1H with shield, or 2H)",
+          "playstyle": "Tanky crowd-control melee: Threaten to slow and lower WDEF, Rush to pull, then Power Strike / Slash Blast.",
+          "pros": [
+            "#2 damage-per-MP at Lv70 in MeowDB benchmarks",
+            "Threaten slows up to 4 mobs and lowers their WDEF",
+            "1H + shield option with Guard blocks",
+            "Sword or blunt both viable (Titan Lv40 blunt is craftable)"
+          ],
+          "cons": [
+            "Short reach, low mobility",
+            "Threaten needs frequent recasts and caps at 4 mobs",
+            "Mastery/Booster/Final Attack lock you to one weapon family"
+          ],
+          "advancement": {
+            "level": 30,
+            "npc": "Dances with Balrog (quest: The Warrior's Next Journey)",
+            "town": "Perion",
+            "test": "Same Warrior test: letter to the Warrior Job Instructor at West Rocky Mountain IV, collect 30 Dark Marbles in the test map, bring The Proof of a Hero back and pick Page."
+          },
+          "ap": {
+            "summary": "Same as Fighter: STR primary, DEX only to weapon requirement (3/2 to Lv36, 4/1 to Lv57, pure STR after ~60 base DEX).",
+            "steps": [
+              "Lv1-30: as Warrior (~135 STR / 27 DEX at Lv30).",
+              "Lv31-36: 3 STR / 2 DEX.",
+              "Lv37-57: 4 STR / 1 DEX (~237 STR / 60 DEX).",
+              "Lv58-70: all STR (~302 STR / 60 DEX).",
+              "Lv70-100 (inference, verify): DEX to weapon req, rest STR.",
+              "Pitfall: ACC from gear/potions is not DEX and does not satisfy weapon requirements."
+            ]
+          },
+          "sp": {
+            "firstJob": [
+              "Same as Warrior 1st-job plan: Power Strike 20, Slash Blast 20, Precise Strikes 15, Improved HP Recovery 3, Max HP Increase 3 by Lv30; skip Iron Body."
+            ],
+            "secondJob": [
+              "Lv30: Rush 1",
+              "Lv31-38: Blunt (or Sword) Mastery to 20, Booster 1, Threaten 1, Final Attack 2",
+              "Lv39-48: Final Attack to 30",
+              "Lv48-57: Threaten to 30",
+              "Lv58-64: Booster to 20",
+              "Lv64-70: Rush to 20; spare point into the other Mastery",
+              "Lv71-100 (inference): skills effectively maxed; nothing left to put SP into until 3rd job.",
+              "Options: Threaten earlier for mob pulling; Booster 10 or Rush 10 earlier. Skip sword skills on a blunt build (and vice versa).",
+              "Classic changes: Final Attack 25% proc; Rush added to 2nd job (6 targets)."
+            ]
+          },
+          "confidence": "medium",
+          "sources": [
+            "https://meowdb.com/msclassic/guides/page-class-guide",
+            "https://meowdb.com/msclassic/guides/warrior-class-guide",
+            "https://meowdb.com/msclassic/skill-changes"
+          ]
+        },
+        {
+          "id": "spearman",
+          "name": "Spearman",
+          "weapon": "Spears or polearms (2H only, no shield)",
+          "playstyle": "Long-reach melee: Rush to group, Power Strike / Slash Blast, Final Attack for sustain via HP absorb.",
+          "pros": [
+            "Longest basic melee reach of warrior weapons",
+            "#3 damage-per-MP at Lv70 in MeowDB benchmarks",
+            "Polearm Mastery adds +20 Speed; Spear Mastery adds 20% chance to ignore WDEF",
+            "Final Attack: Spear heals 10% of damage dealt"
+          ],
+          "cons": [
+            "No shield or Guard",
+            "No party buff until 3rd job (Hyper Body is Dragon Knight)",
+            "Iron Will is a weak late pick",
+            "Weapon family locks Mastery/Booster/FA"
+          ],
+          "advancement": {
+            "level": 30,
+            "npc": "Dances with Balrog",
+            "town": "Perion",
+            "test": "Same Warrior test (West Rocky Mountain IV instructor, 30 Dark Marbles, The Proof of a Hero), then pick Spearman."
+          },
+          "ap": {
+            "summary": "Same as Fighter/Page. Each Lv30-70 spear/polearm needs DEX equal to its level; gear DEX lowers the base DEX you need.",
+            "steps": [
+              "Lv1-30: as Warrior (~135 STR / 27 DEX).",
+              "Lv31-36: 3 STR / 2 DEX.",
+              "Lv37-57: 4 STR / 1 DEX (~237 / 60).",
+              "Lv58-70: all STR (~302 / 60 base; ~337 STR / 70 DEX with gear in the sample build).",
+              "Lv70-100 (inference, verify): DEX to weapon req, rest STR.",
+              "Pitfall: don't miss weapon and accuracy breakpoints chasing small defense gains; aim for 90-100% hit rate."
+            ]
+          },
+          "sp": {
+            "firstJob": [
+              "Same as Warrior 1st-job plan (PS 20, SB 20, Precise Strikes 15, IHR 3, MHI 3)."
+            ],
+            "secondJob": [
+              "Lv30: Rush 1",
+              "Lv31-38: Spear (or Polearm) Mastery to 20, Booster 1, Final Attack 3",
+              "Lv39-47: Final Attack to 30",
+              "Lv48-54: Booster to 20",
+              "Lv54-60: Rush to 20",
+              "Lv60-70: Iron Will to 30; spare point into other Mastery",
+              "Lv71-100 (inference): skills maxed; no further sinks until 3rd job.",
+              "Skip: splitting SP between spear and polearm families; early Iron Will.",
+              "Classic changes: Final Attack 25% proc; Rush in 2nd job; Iron Will gives +50 WDEF and 35% knockback resist at max."
+            ]
+          },
+          "confidence": "medium",
+          "sources": [
+            "https://meowdb.com/msclassic/guides/spearman-class-guide",
+            "https://meowdb.com/msclassic/guides/warrior-class-guide"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "magician",
+      "name": "Magician",
+      "firstJob": {
+        "level": 10,
+        "statReq": "None",
+        "npc": "Grendel the Really Old",
+        "town": "Ellinia (Magic Library)",
+        "notes": "Classic sources list Lv10 for Magician, not the old Lv8 early advancement. Advancing gives a free Beginner's Wooden Wand. Starting stats 4 STR / 4 DEX / 12 INT / 5 LUK. +16 HP / +22 MP per level; advancement +150 HP / +350 MP. INT does not add extra MP in Classic, and HP washing is not viable. 1st-job skills: Energy Bolt (20), Magic Claw (20), Magic Guard (15), Magic Armor (20), Improved MP Recovery (15), Max MP Increase (15, +25% max MP at 15)."
+      },
+      "jobs": [
+        {
+          "id": "fp-wizard",
+          "name": "Fire/Poison Wizard",
+          "weapon": "Wand or staff (+ shield)",
+          "playstyle": "Damage-over-time caster: Fire Arrow for single targets with burn, Poison Breath to spread poison across groups.",
+          "pros": [
+            "#4 AoE at Lv70 in MeowDB benchmarks",
+            "Fire Arrow bonus vs fire-weak mobs",
+            "Poison Breath explosion can hit up to 6",
+            "Meditation party M.ATK buff; Teleport and MP Eater"
+          ],
+          "cons": [
+            "Fire-resistant mobs blunt Fire Arrow",
+            "Poison Breath costs 40 MP at max",
+            "Low HP makes Magic Guard upkeep pricey"
+          ],
+          "advancement": {
+            "level": 30,
+            "npc": "Grendel the Really Old (quest: The Magician's Next Journey)",
+            "town": "Ellinia",
+            "test": "Take Grendel's letter to the Magician Job Instructor in The Forest North of Ellinia, enter the hidden test map, collect 30 Dark Marbles, trade for The Proof of a Hero, return to Grendel and pick F/P."
+          },
+          "ap": {
+            "summary": "INT primary; LUK only to wand/staff requirements (LUK ~ level minus 7 to 10). Lv1-30 near-pure INT with 5 LUK at Lv20/25/30; then 3 INT/2 LUK to Lv40, 4/1 to Lv63, pure INT after.",
+            "steps": [
+              "Lv1-10: all INT (57 INT / 5 LUK).",
+              "Lv10-30: all INT except put 5 into LUK at Lv20, 25, 30 (142 INT / 20 LUK at Lv30).",
+              "Lv31-40: 3 INT / 2 LUK (172 / 40).",
+              "Lv41-63: 4 INT / 1 LUK (264 / 63).",
+              "Lv64-70: all INT (299 / 63).",
+              "Lv70-100 (inference, verify): LUK to weapon requirement, rest INT.",
+              "Alternative: pure INT with LUK from gear (budget). DEX/LUK hybrid mage is not covered by Classic sources; not recommended.",
+              "Pitfall: don't add LUK for advancement or beyond weapon requirement; check gear LUK first. INT gives no extra MP in Classic."
+            ]
+          },
+          "sp": {
+            "firstJob": [
+              "Beginner: Three Snails 3, Recovery 3, Nimble Feet 3",
+              "Lv10-17: Energy Bolt to 20 (plus Improved MP Recovery 1 at Lv11)",
+              "Lv17-19: Magic Guard 3, Improved MP Recovery 3, Max MP Increase 2",
+              "Lv20-26: Magic Armor to 20",
+              "Lv26-30: Max MP Increase to 15",
+              "Alternatives: Safety (MG 15 / IMR 3 / MMI 15 / MA 8) or Low-contact (MG 3 / IMR 15 / MMI 15 / MA 8). Magic Claw is skipped in the default EB build.",
+              "Finish by Lv30; 2nd-job SP can't go into 1st-job skills."
+            ],
+            "secondJob": [
+              "Lv30: Teleport 1",
+              "Lv31-40: Fire Arrow to 30",
+              "Lv41-50: Poison Breath to 30",
+              "Lv51-58: MP Eater 3-4, Meditation to 20",
+              "Lv59-64: MP Eater to 20",
+              "Lv64-70: Teleport to 20, Slow 1",
+              "Lv71-100 (inference): Slow is the only skill left to fill.",
+              "Options: Poison Breath first if you hit 3+ mobs per cast; Meditation before PB for single-target farming; Teleport earlier for mobility. Don't spam Teleport at Lv1 (55 MP)."
+            ]
+          },
+          "confidence": "medium",
+          "sources": [
+            "https://meowdb.com/msclassic/guides/fp-wizard-class-guide",
+            "https://meowdb.com/msclassic/guides/magician-class-guide",
+            "https://meowdb.com/msclassic/quest-tracker/20102"
+          ]
+        },
+        {
+          "id": "il-wizard",
+          "name": "Ice/Lightning Wizard",
+          "weapon": "Wand or staff (+ shield)",
+          "playstyle": "Fast mobber: Thunder Bolt hits up to 6 mobs, Cold Beam for single targets and slows.",
+          "pros": [
+            "Thunder Bolt is the only 2nd-job attack hitting 6 mobs (fastest mobbing per MeowDB)",
+            "Cold Beam slows and does +25% vs ice-weak mobs",
+            "Meditation party buff, Teleport"
+          ],
+          "cons": [
+            "Thunder Bolt costs 40 MP at max",
+            "Many Victoria mobs resist ice",
+            "Low HP; Magic Guard dependency"
+          ],
+          "advancement": {
+            "level": 30,
+            "npc": "Grendel the Really Old",
+            "town": "Ellinia",
+            "test": "Same Magician test: instructor in The Forest North of Ellinia, 30 Dark Marbles, The Proof of a Hero, then pick I/L."
+          },
+          "ap": {
+            "summary": "Same as F/P: INT primary, LUK to weapon requirements only.",
+            "steps": [
+              "Lv1-30: as Magician (142 INT / 20 LUK at Lv30).",
+              "Lv31-40: 3 INT / 2 LUK (172 / 40).",
+              "Lv41-63: 4 INT / 1 LUK (264 / 63).",
+              "Lv64-70: all INT (299 / 63).",
+              "Lv70-100 (inference, verify): LUK to weapon req, rest INT.",
+              "Budget alternative: pure INT (e.g. 177 INT / 10 LUK at Lv35) using gear LUK.",
+              "Pitfall: stop adding base LUK once total LUK meets the next weapon."
+            ]
+          },
+          "sp": {
+            "firstJob": [
+              "Same as Magician 1st-job plan (Energy Bolt 20 first, then MG 3 / IMR 3 / MA 20 / MMI 15)."
+            ],
+            "secondJob": [
+              "Lv30: Teleport 1",
+              "Lv31-40: Cold Beam to 30",
+              "Lv41-50: Thunder Bolt to 30",
+              "Lv51-58: MP Eater 3-4, Meditation to 20",
+              "Lv59-64: MP Eater to 20",
+              "Lv64-70: Teleport to 20, Slow 1",
+              "Lv71-100 (inference): finish Slow.",
+              "Option: Thunder Bolt first if you consistently hit 3+ mobs (roughly double EXP/min at Lv40 in MeowDB's benchmark). Don't use Thunder Bolt on single mobs.",
+              "Classic change: Cold Beam cast speed improved."
+            ]
+          },
+          "confidence": "medium",
+          "sources": [
+            "https://meowdb.com/msclassic/guides/il-wizard-class-guide",
+            "https://meowdb.com/msclassic/guides/magician-class-guide",
+            "https://meowdb.com/msclassic/skill-changes"
+          ]
+        },
+        {
+          "id": "cleric",
+          "name": "Cleric",
+          "weapon": "Wand or staff (+ shield)",
+          "playstyle": "Support healer: Heal and Bless for parties, Holy Arrow for single-target damage, Invincible for solo survival.",
+          "pros": [
+            "Highest physical and magical EHP in MeowDB Lv70 comparison",
+            "Heal and Bless are strong party support",
+            "Heal damages undead"
+          ],
+          "cons": [
+            "Lowest single-target damage at Lv70",
+            "Holy Arrow is single-target only in Classic",
+            "Heal damage is much lower than pre-Big Bang; awkward targeting"
+          ],
+          "advancement": {
+            "level": 30,
+            "npc": "Grendel the Really Old",
+            "town": "Ellinia",
+            "test": "Same Magician test (instructor at The Forest North of Ellinia, 30 Dark Marbles), then pick Cleric."
+          },
+          "ap": {
+            "summary": "INT primary; keep base LUK at level minus 10 (4 INT / 1 LUK per level from Lv30).",
+            "steps": [
+              "Lv1-30: as Magician.",
+              "Lv31-70: 4 INT / 1 LUK per level (182/30 at Lv40, 222/40 at Lv50, 262/50 at Lv60, 302/60 at Lv70).",
+              "Lv70-100 (inference, verify): continue LUK = level - 10, or less with LUK gear.",
+              "Gear: Green Goldwind Shoes (+5 LUK) at Lv50 cover LUK through Angel Wings.",
+              "Pitfall: LUK above level-10 starves INT; skip Arc Staff (40 LUK too early on this plan)."
+            ]
+          },
+          "sp": {
+            "firstJob": [
+              "Same as Magician 1st-job plan."
+            ],
+            "secondJob": [
+              "Party build: Lv30 Heal 1; Lv31 Teleport 1, MP Eater 1, Holy Arrow 1; Lv32-41 Holy Arrow to 30; Lv42-44 Heal 5, Invincible 5, Bless 1; Lv45-49 Bless to 16; Lv50-58 Heal to 30; Lv58-64 MP Eater to 20; Lv64-70 Teleport to 20.",
+              "Solo build: Heal 2 / Teleport 1 / MP Eater 1 at Lv30-31; Holy Arrow to 30 by Lv41; Heal 5 + Invincible to 20 by Lv49; MP Eater to 20 by Lv55; Teleport to 20 by Lv62; Heal to 30 + Bless 1 by Lv70.",
+              "Lv71-100 (inference): finish Bless and Invincible (party) or Bless (solo).",
+              "Classic changes: Holy Arrow now hits 1 target but M.ATK 160 (was 3 targets / 60 in test); Invincible reduces touch damage 20% at max; Bless -15% party damage taken at max."
+            ]
+          },
+          "confidence": "medium",
+          "sources": [
+            "https://meowdb.com/msclassic/guides/cleric-class-guide",
+            "https://meowdb.com/msclassic/skill-changes"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bowman",
+      "name": "Bowman",
+      "firstJob": {
+        "level": 10,
+        "statReq": "None",
+        "npc": "Athena Pierce",
+        "town": "Henesys",
+        "notes": "Starting stats 5 STR / 12 DEX / 4 INT / 4 LUK. +22 HP / +17 MP per level; advancement +250 HP / +250 MP. 1st-job skills: Arrow Blow (20), Double Shot (20), Critical Shot (15), The Eye of Amazon (15, +range), Focus (10), Power Knockback (20). Bows are not sold in shops in Classic; most come from Woodcrafting (Vicious, Henesys)."
+      },
+      "jobs": [
+        {
+          "id": "hunter",
+          "name": "Hunter",
+          "weapon": "Bow",
+          "playstyle": "Long-range AoE: Arrow Bomb grouped mobs (stuns), Booster + Soul Arrow upkeep, keep distance.",
+          "pros": [
+            "#2 AoE at Lv70 and best long-range AoE (MeowDB)",
+            "Arrow Bomb hits 6 and can stun",
+            "Faster attack than crossbows; rarely has accuracy issues",
+            "Soul Arrow removes arrow cost"
+          ],
+          "cons": [
+            "Squishiest class in benchmarks",
+            "Weak melee whack inside ~65 px",
+            "Arrow Bomb is MP-hungry (28 MP)",
+            "No movement skill; bows must be crafted"
+          ],
+          "advancement": {
+            "level": 30,
+            "npc": "Athena Pierce",
+            "town": "Henesys",
+            "test": "Take Athena's letter to the Bowman Job Instructor on The Road to the Dungeon (near Henesys), collect 30 Dark Marbles in the hidden test map, trade for The Proof of a Hero, return to Athena and pick Hunter."
+          },
+          "ap": {
+            "summary": "DEX primary; STR to bow requirement (roughly 1 STR per level). Lv1-10 all DEX; Lv11-15 10 STR/15 DEX; Lv16-30 1 STR/4 DEX; Lv31-70 1 STR/4 DEX (70 STR for Golden Hinkel).",
+            "steps": [
+              "Lv1-10: all DEX (57 DEX).",
+              "Lv11-15: +10 STR / +15 DEX (15 / 72).",
+              "Lv16-30: +1 STR / +4 DEX per level (30 STR / 132 DEX at Lv30).",
+              "Lv31-70: +1 STR / +4 DEX per level (70 STR / 292 DEX at Lv70).",
+              "Lv70-100 (inference, verify): STR only if a higher bow needs it, else DEX.",
+              "Pitfall: don't add STR for advancement; weapon's own stats can't help you equip it."
+            ]
+          },
+          "sp": {
+            "firstJob": [
+              "Beginner: 3/3/3",
+              "Lv10-18: Arrow Blow to 20 (Eye of Amazon 1-3 along the way)",
+              "Lv18-23: Critical Shot to 15",
+              "Lv23-27: Eye of Amazon to 15",
+              "Lv27-30: Focus to 10, Power Knockback 1",
+              "Variant: PKB 1 at Lv11 for close-range utility. Double Shot 0 in default build (an SP Reset later can move points into Double Shot 20).",
+              "Finish by Lv30."
+            ],
+            "secondJob": [
+              "Lv30: Arrow Bomb 1",
+              "Lv31-39: Bow Mastery to 20, Bow Booster 5, Soul Arrow 1, Final Attack 1",
+              "Lv40-49: Arrow Bomb to 30",
+              "Lv50-59: Final Attack to 30, Amazon's Judgement 1",
+              "Lv59-64: Booster to 20",
+              "Lv64-70: Soul Arrow to 20",
+              "Lv71-100 (inference): Amazon's Judgement (crit slow) to 20.",
+              "Option: Arrow Bomb first if mobs already die cleanly. Mistake to avoid: maxing Final Attack before Arrow Bomb.",
+              "Classic changes: Final Attack 25% proc; skill renamed Arrow Bomb (from Arrow Bomb: Bow)."
+            ]
+          },
+          "confidence": "medium",
+          "sources": [
+            "https://meowdb.com/msclassic/guides/hunter-class-guide",
+            "https://meowdb.com/msclassic/guides/bowman-class-guide"
+          ]
+        },
+        {
+          "id": "crossbowman",
+          "name": "Crossbowman",
+          "weapon": "Crossbow (2H)",
+          "playstyle": "Line-piercing ranged: Iron Arrow down long flat lanes, Final Attack/Double Shot on singles.",
+          "pros": [
+            "Iron Arrow pierces up to 6 mobs (raised from 4 in test)",
+            "Max Mastery adds +20% crit damage",
+            "Higher base W.ATK crossbows Lv50-70",
+            "Needs less STR than Hunter"
+          ],
+          "cons": [
+            "Slower attack speed than bows (except Heckler Lv40)",
+            "Iron Arrow loses 20% damage per pierced mob",
+            "No movement skill; wants long flat maps"
+          ],
+          "advancement": {
+            "level": 30,
+            "npc": "Athena Pierce",
+            "town": "Henesys",
+            "test": "Same Bowman test (Bowman Job Instructor, The Road to the Dungeon, 30 Dark Marbles), then pick Crossbowman."
+          },
+          "ap": {
+            "summary": "DEX primary; STR = crossbow level minus 10. Lv1-15 all DEX; then 1 STR/4 DEX.",
+            "steps": [
+              "Lv1-15: all DEX (5 STR / 82 DEX at Lv15).",
+              "Lv16-30: +1 STR / +4 DEX (20 STR / 142 DEX).",
+              "Lv31-70: +1 STR / +4 DEX (60 STR / 302 DEX). Gross Jaeger needs 60 STR.",
+              "Lv70-100 (inference, verify): STR to requirement, rest DEX.",
+              "Pitfall: don't follow Hunter STR numbers; crossbows need 10 less."
+            ]
+          },
+          "sp": {
+            "firstJob": [
+              "Same as Bowman 1st-job plan (Arrow Blow 20, Critical Shot 15, Eye of Amazon 15, Focus 10, PKB 1)."
+            ],
+            "secondJob": [
+              "Lv30: Iron Arrow 1",
+              "Lv31-39: Crossbow Mastery to 20, Booster 5, Soul Arrow 1, Final Attack 1",
+              "Lv40-49: Iron Arrow to 30, Amazon's Judgement 1",
+              "Lv50-54: Booster to 20",
+              "Lv55-61: Soul Arrow to 20",
+              "Lv62-70: Final Attack to 30",
+              "Lv71-100 (inference): Amazon's Judgement to 20.",
+              "Classic changes: Iron Arrow 6 targets, renamed (was Iron Arrow: Crossbow); Final Attack 25% proc."
+            ]
+          },
+          "confidence": "medium",
+          "sources": [
+            "https://meowdb.com/msclassic/guides/crossbowman-class-guide",
+            "https://meowdb.com/msclassic/guides/bowman-class-guide",
+            "https://meowdb.com/msclassic/skill-changes"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "thief",
+      "name": "Thief",
+      "firstJob": {
+        "level": 10,
+        "statReq": "None",
+        "npc": "Dark Lord",
+        "town": "Kerning City (beneath the Fusion Jazz Bar)",
+        "notes": "Starting stats 4 STR / 5 DEX / 4 INT / 12 LUK. +22 HP / +17 MP per level; advancement +250 HP / +250 MP. 1st-job skills: Lucky Seven (20), Double Stab (20), Nimble Body (15), Keen Eyes (15, +range), Disorder (20), Dark Sight (20)."
+      },
+      "jobs": [
+        {
+          "id": "assassin",
+          "name": "Assassin",
+          "weapon": "Claw + throwing stars",
+          "playstyle": "Ranged single-target: Lucky Seven spam with Haste, Booster and Critical Throw; Drain as an emergency heal.",
+          "pros": [
+            "#2 single-target and highest ranged damage at Lv70 (MeowDB)",
+            "Haste party Speed/Jump buff",
+            "Claw Mastery returns stars; Critical Recovery sustains"
+          ],
+          "cons": [
+            "No real mobbing until 3rd job",
+            "Stars cost mesos and inventory",
+            "Low HP and defense"
+          ],
+          "advancement": {
+            "level": 30,
+            "npc": "Dark Lord (quest: The Thief's Next Journey)",
+            "town": "Kerning City",
+            "test": "Take the letter to the Thief Job Instructor at the Construction Site north of Kerning City, collect 30 Dark Marbles in the test map, return The Proof of a Hero, pick Assassin."
+          },
+          "ap": {
+            "summary": "LUK primary; DEX = claw requirement (about level). Lv1-10 all LUK; 1 DEX/4 LUK onward.",
+            "steps": [
+              "Lv1-10: all LUK (57 LUK).",
+              "Lv11-30: mostly LUK, DEX to claw breakpoints (15 at Lv15 Steel Titans, 20, 25, 30 at Adamantium Guards): 30 DEX / 132 LUK at Lv30.",
+              "Lv31-70: +1 DEX / +4 LUK (70 DEX / 292 LUK at Lv70).",
+              "Lv70-100 (inference, verify): DEX to claw requirement, rest LUK.",
+              "Pitfall: count gear DEX first; male/female gear differences change LUK totals."
+            ]
+          },
+          "sp": {
+            "firstJob": [
+              "Beginner 3/3/3",
+              "Lv10-18: Lucky Seven to 20 (Nimble Body 3, Keen Eyes 2 early)",
+              "Lv18-23: Keen Eyes to 15",
+              "Lv23-27: Nimble Body to 15",
+              "Lv27-30: Disorder 3, Dark Sight 8",
+              "Skip Double Stab on claw builds. Finish by Lv30."
+            ],
+            "secondJob": [
+              "Lv30: Haste 1",
+              "Lv31-37: Claw Mastery to 20 (Booster 1 at Lv32)",
+              "Lv38-47: Critical Throw to 30",
+              "Lv48-54: Haste to 20",
+              "Lv54-63: Claw Booster 10, Critical Recovery to 20",
+              "Lv64-67: Booster to 20",
+              "Lv67-70: Drain 11",
+              "Lv71-100 (inference): Drain to 30.",
+              "Classic changes: Haste max +30 Speed / +10 Jump (old: +40 / +20); Booster gives full 2-stage speed from Lv1."
+            ]
+          },
+          "confidence": "medium",
+          "sources": [
+            "https://meowdb.com/msclassic/guides/assassin-class-guide",
+            "https://meowdb.com/msclassic/guides/thief-class-guide"
+          ]
+        },
+        {
+          "id": "bandit",
+          "name": "Bandit",
+          "weapon": "Dagger (+ shield/wristguard)",
+          "playstyle": "Close-range burst: Steal fresh targets for an ATK buff, Savage Blow to finish, Double Stab when it's enough.",
+          "pros": [
+            "Highest single-target damage at Lv70 (MeowDB)",
+            "Haste party buff; Steal stuns and grants +35 ATK",
+            "Shield Guard available"
+          ],
+          "cons": [
+            "Very short reach, constant face-tanking",
+            "Savage Blow costs 28 MP",
+            "Best path usually needs a 7,000 NX SP Reset (Sindit)"
+          ],
+          "advancement": {
+            "level": 30,
+            "npc": "Dark Lord",
+            "town": "Kerning City",
+            "test": "Same Thief test (Construction Site north of Kerning, 30 Dark Marbles, The Proof of a Hero), then pick Bandit."
+          },
+          "ap": {
+            "summary": "LUK primary; DEX to dagger requirement. 1 DEX/4 LUK Lv31-61, then pure LUK.",
+            "steps": [
+              "Lv1-30: as Thief (30 DEX / 132 LUK at Lv30). Reef Claw dagger at Lv30 needs 25 DEX / 60 LUK.",
+              "Lv31-61: +1 DEX / +4 LUK.",
+              "Lv62-70: all LUK (61 DEX / 301 LUK; last DEX for Kandine from gear).",
+              "Lv70-100 (inference, verify): DEX to dagger requirement, rest LUK.",
+              "Alternative: STR daggers (attack one stage faster, lower W.ATK); about equal at Lv70. Plan dagger line early.",
+              "Pitfall: extra STR/DEX for damage is wasted; LUK is the damage stat."
+            ]
+          },
+          "sp": {
+            "firstJob": [
+              "Default 'Sindit' plan: same as Assassin (Lucky Seven 20, Keen Eyes 15, Nimble Body 15, Disorder 3, Dark Sight 8), level as Lucky Seven until ~Lv40, then SP Reset.",
+              "No-reset alternative: Double Stab 20, Nimble Body 15, Disorder 6, Dark Sight 20 (slower, melee leveling)."
+            ],
+            "secondJob": [
+              "Path A (reset at Lv40): Lv30-37 Haste to 20; Lv37-39 Nimble Recovery 8; Lv40 reset -> Dagger Mastery 20, Booster 1, Savage Blow 10; Lv41-47 Savage Blow to 30; Lv48-54 Haste refill; Lv54-58 Nimble Recovery; Lv58-68 Steal to 30; Lv68-70 Booster 9.",
+              "Path B (no reset): Lv30 Haste 1; Lv31-37 Dagger Mastery 20 (Booster 1); Lv38-47 Savage Blow to 30; then as Path A.",
+              "Lv71-100 (inference): finish Dagger Booster and Nimble Recovery to 20.",
+              "Skip: resetting at Lv30 (L7 still good until ~40). Keep Double Stab after Savage Blow for MP efficiency.",
+              "Classic changes: Savage Blow 4/5/6 hits by level (450% total at 30); Steal duration doubled to 60s and grants ATK; Haste +30/+10."
+            ]
+          },
+          "confidence": "medium",
+          "sources": [
+            "https://meowdb.com/msclassic/guides/bandit-class-guide",
+            "https://meowdb.com/msclassic/guides/thief-class-guide",
+            "https://meowdb.com/msclassic/skill-changes"
+          ]
+        }
+      ]
+    }
+  ],
+  "classicChanges": [
+    "Level cap 100 at launch; 1st job at Lv10, 2nd job at Lv30; no 3rd job, El Nath or Orbis at launch.",
+    "1st-job advancement has no stat requirement for any class (Magician also at Lv10, not Lv8).",
+    "Every character starts with 25 AP (12 primary / 5 secondary / 4 / 4), +5 AP per level.",
+    "Flat HP/MP per level: Warrior +28/+12, Bowman & Thief +22/+17, Magician +16/+22, Beginner +16/+12; each job advancement adds 500 split by class. INT gives no extra MP and HP washing is not viable.",
+    "Beginner skills: Three Snails, Recovery, Nimble Feet (max 3 each, 9 SP by Lv10).",
+    "Reworked 1st/2nd job skills: Precise Strikes (warrior 1st), Max HP/MP Increase as % of base, Rush in warrior 2nd job, Power Guard moved to 3rd job, Holy Arrow single-target, Savage Blow for Bandit, Haste +30 Speed/+10 Jump.",
+    "Final Attack proc chance 25% across all classes; Slash Blast, Rush and Iron Arrow hit up to 6.",
+    "2nd-job SP cannot be spent on 1st-job skills.",
+    "AP Reset Scroll and SP Reset Scroll: 7,000 NX each (AP reset usable from Lv10).",
+    "Scroll grades: Lesser 100%, Intermediate 60%, Greater 10%, Chaos 10% (larger bonus); only Chaos can destroy an item.",
+    "Six crafting professions (Smithing, Weaponcrafting, Tailoring, Woodcrafting, Leatherworking, Arcforge), from Lv10; bows mostly crafted.",
+    "Citizenship at Lv12 (Henesys or Kerning) for shop/taxi discounts.",
+    "Separate economy from modern MapleStory; only NX is shared.",
+    "Forgotten Hollow (Lv39-60) arrives in a Nov 18 update."
+  ],
+  "unverified": [
+    "All per-job data relies on one community source (MeowDB); I could not cross-check against maplestory-classic.wiki or the official Nexon release notes (the official URL was blocked for fetching).",
+    "SP and AP plans for Lv71-100 are inferred: guides stop at Lv70 and no source says what happens to spare 2nd-job SP.",
+    "Warrior test map (West Rocky Mountain IV) is stated only in the Fighter guide; Page and Spearman pages don't name it.",
+    "Bowman test location given as 'The Road to the Dungeon' by MeowDB; not independently confirmed.",
+    "No Classic source covers DEX/LUK hybrid mage builds; treat pure INT vs INT/LUK-to-requirement as the only documented options.",
+    "Some MeowDB numbers conflict: Rush MP (35 at Lv1 vs 15 at max), Page Mastery effect, Cleric Teleport MP, I/L per-level SP table.",
+    "Warrior Lv1 AP row in MeowDB doesn't add up; check totals in-game.",
+    "Hunter skill list shows six skills; MeowDB doesn't confirm it is complete."
+  ]
+}
