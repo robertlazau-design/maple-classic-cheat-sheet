@@ -299,3 +299,11 @@ body.noscroll{overflow:hidden}
 
 .spoiler{background:var(--bg);box-shadow:none;border:2px dashed var(--line);margin:4px 0 0}
 .spoiler summary{font-size:14px;color:var(--maple-deep)}
+
+/* buy me a coffee */
+.coffee{display:inline-flex;align-items:center;gap:6px;font-weight:800;text-decoration:none;color:#2a1606;background:#ffdd00;border-radius:999px;padding:8px 16px;justify-self:start}
+.coffee:hover{filter:brightness(1.05);text-decoration:none}
+.coffee.big{font-size:17px;padding:12px 22px;flex:none}
+.tipjar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;background:var(--surface);border-radius:20px;padding:18px 20px;box-shadow:var(--shadow);margin-top:28px}
+.tipjar b{display:block;color:var(--ink);font-size:18px}
+.tipjar span{color:var(--muted);font-size:15px}
