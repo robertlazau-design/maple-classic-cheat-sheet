@@ -1,4 +1,4 @@
-// Maple Classic Cheat Sheet: ads switch, level finder, secret filters.
+// Maple Classic Cheat Sheet: ads switch, "your run" picker, search, secret filters.
 (function () {
   // ---- Ads: paste your AdSense publisher ID here once approved (e.g. "ca-pub-1234567890"). Empty = no ad space shown.
   var ADSENSE_CLIENT = "";
@@ -21,6 +21,10 @@
   }
 
   var esc = function (t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  var store = {
+    get: function (k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
 
   // ---- Secrets filters
   var fb = document.querySelector("[data-filters]");
@@ -33,48 +37,104 @@
     });
   }
 
-  // ---- Level finder
-  var form = document.getElementById("finder");
-  var dataEl = document.getElementById("finder-data");
-  if (!form || !dataEl) return;
-  var D = JSON.parse(dataEl.textContent);
-  var out = document.getElementById("finder-out");
-  var jobSel = form.querySelector("[name=job]"), lvIn = form.querySelector("[name=lv]");
-
-  function ranges(text) {
-    // "Lv11-15", "Lv 30", "Lv31-70", "lv 21-30"
-    var m = String(text).match(/lv\s?(\d+)\s*(?:[-–]\s*(\d+))?/i);
-    if (!m) return null;
-    return [Number(m[1]), Number(m[2] || m[1])];
+  // ---- Search
+  var box = document.getElementById("search"), q = document.getElementById("q"), hits = document.getElementById("hits");
+  var idx = null, sel = 0, last = [];
+  function openSearch() {
+    if (!box) return;
+    box.hidden = false; document.body.classList.add("noscroll"); q.value = ""; renderHits(""); q.focus();
+    if (!idx) fetch("/search.json").then(function (r) { return r.json(); }).then(function (d) { idx = d; renderHits(q.value); }).catch(function () {});
   }
-  function pick(list, lv) {
-    var hits = [];
-    (list || []).forEach(function (t) { var r = ranges(t); if (r && lv >= r[0] && lv <= r[1]) hits.push(t); });
-    return hits;
+  function closeSearch() { if (box) { box.hidden = true; document.body.classList.remove("noscroll"); } }
+  function score(it, words, lvl) {
+    var hay = (it.t + " " + (it.k || "") + " " + (it.x || "")).toLowerCase(), s = 0;
+    for (var i = 0; i < words.length; i++) { var w = words[i]; if (!w) continue; var p = hay.indexOf(w); if (p < 0) return 0; s += p === 0 ? 3 : 1; if (it.t.toLowerCase().indexOf(w) >= 0) s += 2; }
+    if (lvl != null) { if (it.lo == null) return 0; if (lvl < it.lo || lvl > it.hi) return 0; s += 5; }
+    return s;
+  }
+  function renderHits(text) {
+    if (!hits) return;
+    if (!idx) { hits.innerHTML = '<li class="muted">Loading…</li>'; return; }
+    var t = text.trim().toLowerCase(), lvl = null;
+    var m = t.match(/(?:lv|level|lvl)?\s*(\d{1,3})$/);
+    if (m && Number(m[1]) <= 100 && /^(lv|level|lvl)?\s*\d{1,3}$/.test(t)) { lvl = Number(m[1]); t = ""; }
+    var words = t.split(/\s+/);
+    last = !t && lvl == null ? idx.filter(function (i) { return i.k === "page"; })
+      : idx.map(function (i) { return [score(i, words, lvl), i]; }).filter(function (x) { return x[0] > 0; }).sort(function (a, b) { return b[0] - a[0]; }).slice(0, 12).map(function (x) { return x[1]; });
+    sel = 0;
+    hits.innerHTML = last.length ? last.map(function (it, i) {
+      return '<li role="option" aria-selected="' + (i === 0) + '"><a href="' + esc(it.u) + '"><b>' + esc(it.t) + "</b><span>" + esc(it.k === "page" ? "Page" : it.k) + "</span></a></li>";
+    }).join("") : '<li class="muted">Nothing for that. Try a job, a monster or a level number.</li>';
+  }
+  document.addEventListener("click", function (e) {
+    if (e.target.closest("[data-search]")) { e.preventDefault(); openSearch(); }
+    else if (e.target.closest("[data-close]") || e.target === box) closeSearch();
+    else if (e.target.closest("#hits a")) closeSearch();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "/" && box && box.hidden && !/input|textarea|select/i.test(document.activeElement.tagName)) { e.preventDefault(); openSearch(); }
+    else if (e.key === "Escape" && box && !box.hidden) closeSearch();
+    else if (box && !box.hidden && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
+      e.preventDefault(); var li = hits.querySelectorAll("[role=option]"); if (!li.length) return;
+      sel = (sel + (e.key === "ArrowDown" ? 1 : -1) + li.length) % li.length;
+      li.forEach(function (x, i) { x.setAttribute("aria-selected", String(i === sel)); }); li[sel].scrollIntoView({ block: "nearest" });
+    } else if (box && !box.hidden && e.key === "Enter" && last[sel]) { location.href = last[sel].u; closeSearch(); }
+  });
+  if (q) q.addEventListener("input", function () { renderHits(q.value); });
+
+  // ---- Your run (home page)
+  var dataEl = document.getElementById("finder-data");
+  if (!dataEl) return;
+  var D = JSON.parse(dataEl.textContent);
+  var out = document.getElementById("finder-out"), chips = document.getElementById("jobchips");
+  var lvIn = document.getElementById("lv"), lvOut = document.getElementById("lvout");
+  var saved = store.get("mccs-run") || {};
+  var state = { cls: saved.cls || null, job: saved.job || null, lv: Number(saved.lv) || 1 };
+
+  function ranges(text) { var m = String(text).match(/lv\s?(\d+)\s*(?:[-–]\s*(\d+))?/i); return m ? [Number(m[1]), Number(m[2] || m[1])] : null; }
+  function pick(list, lv) { return (list || []).filter(function (t) { var r = ranges(t); return r && lv >= r[0] && lv <= r[1]; }); }
+  function sprite(id) { return '<img src="' + D.api + "/mob/" + id + '/render/stand" alt="" referrerpolicy="no-referrer" onerror="this.remove()">'; }
+
+  function drawChips() {
+    document.querySelectorAll(".cls").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.cls === state.cls)); });
+    var c = D.classes.filter(function (x) { return x.id === state.cls; })[0];
+    chips.innerHTML = c ? c.jobs.map(function (id) {
+      return '<button type="button" class="chipbtn" data-job="' + id + '" aria-pressed="' + (id === state.job) + '">' + esc(D.jobs[id].name) + "</button>";
+    }).join("") : '<p class="muted">Pick a class first.</p>';
   }
   function render() {
-    var job = D.jobs[jobSel.value]; var lv = Math.max(1, Math.min(100, Number(lvIn.value) || 1));
-    if (!job) { out.innerHTML = ""; return; }
+    lvIn.value = state.lv; lvOut.textContent = state.lv;
+    lvIn.style.setProperty("--p", ((state.lv - 1) / 99 * 100) + "%");
+    store.set("mccs-run", state);
+    var job = D.jobs[state.job];
+    if (!job) { out.innerHTML = '<p class="muted">Pick your class and job, then slide to your level.</p>'; return; }
+    var lv = state.lv, c = D.classes.filter(function (x) { return x.id === job.cls; })[0];
     var spots = D.route.filter(function (r) { return lv >= r.from && lv <= r.to; });
-    var html = "";
-    // what's next
-    var next = lv < 10 ? "Make your 1st job at level 10 with " + job.cls.npc + " in " + job.cls.town + ". There's no stat requirement in Classic."
-      : lv < 30 ? "2nd job opens at level 30: " + job.adv.test
-      : "You're in 2nd job until 3rd job arrives (planned for 2027). Level cap is 100.";
-    html += '<div class="box"><h3>Next milestone</h3><p>' + esc(next) + "</p></div>";
-    html += '<div class="box"><h3>Train here</h3>' + (spots.length ? "<ul>" + spots.map(function (r) {
-      return "<li><b>" + esc(r.map) + "</b> <span class=\"chip c-" + r.confidence + "\">" + r.confidence + "</span><br><span>" + esc(r.monsters) + " (lv " + esc(r.monsterLevel) + ")</span></li>";
-    }).join("") + "</ul>" : "<p>No set spot for this level yet. Grind wherever you kill fastest.</p>") + '<p style="margin-top:6px"><a href="/leveling/">Full leveling route →</a></p></div>';
-    var ap = pick(job.ap, lv);
-    html += '<div class="box"><h3>Your AP right now</h3><p>' + (ap.length ? ap.map(esc).join("<br>") : esc(job.apSummary)) + "</p></div>";
-    var sp = lv < 10 ? ["Beginner: put your 9 SP into Three Snails, Recovery and Nimble Feet (3 each)."] : pick(lv < 30 ? job.sp1 : job.sp2, lv);
-    html += '<div class="box"><h3>Your SP right now</h3><p>' + (sp.length ? sp.map(esc).join("<br>") : "Follow the skill order on the build page.") + "</p></div>";
-    html += '<p><a href="/jobs/' + jobSel.value + '/">Full ' + esc(job.name) + " build →</a></p>";
-    out.innerHTML = html;
-    try { localStorage.setItem("mccs-finder", JSON.stringify({ job: jobSel.value, lv: lv })); } catch (e) {}
+    var next = lv < 10 ? "Hit level 10, then talk to " + c.npc + " in " + c.town + " for 1st job. No stat requirement."
+      : lv < 30 ? "2nd job at level 30. " + job.adv.test
+      : "You're set until 3rd job drops (planned for 2027). Cap is level 100.";
+    var ap = pick(job.ap, lv), sp = lv < 10 ? ["Beginner: 3 points each into Three Snails, Recovery and Nimble Feet."] : pick(lv < 30 ? job.sp1 : job.sp2, lv);
+    var h = "";
+    h += '<div class="box grind"><h3>🗺️ Grind here rn</h3>' + (spots.length ? spots.map(function (r) {
+      return '<div class="spot"><div class="spr">' + r.sprites.map(sprite).join("") + '</div><div><b>' + esc(r.map) + '</b><span>' + esc(r.monsters) + " · lv " + esc(r.monsterLevel) + '</span><a href="/leveling/#lv-' + r.from + "-" + r.to + '">Details →</a></div></div>';
+    }).join("") : "<p>No set spot at this level yet. Grind wherever you kill fastest.</p>") + "</div>";
+    h += '<div class="box"><h3>💪 Your AP rn</h3><p>' + (ap.length ? ap.map(esc).join("<br>") : esc(job.apSummary)) + "</p></div>";
+    h += '<div class="box"><h3>✨ Your SP rn</h3><p>' + (sp.length ? sp.map(esc).join("<br>") : "Follow the skill order on your build page.") + "</p></div>";
+    h += '<div class="box"><h3>⏭️ Next up</h3><p>' + esc(next) + "</p></div>";
+    h += '<a class="btn btn-primary full" href="/jobs/' + state.job + '/">Full ' + esc(job.name) + " build →</a>";
+    out.innerHTML = h;
   }
-  try { var saved = JSON.parse(localStorage.getItem("mccs-finder") || "null"); if (saved && D.jobs[saved.job]) { jobSel.value = saved.job; lvIn.value = saved.lv; } } catch (e) {}
-  form.addEventListener("input", render);
-  form.addEventListener("submit", function (e) { e.preventDefault(); render(); });
-  render();
+  document.querySelector(".classes").addEventListener("click", function (e) {
+    var b = e.target.closest(".cls"); if (!b) return;
+    state.cls = b.dataset.cls;
+    var c = D.classes.filter(function (x) { return x.id === state.cls; })[0];
+    if (!state.job || D.jobs[state.job].cls !== state.cls) state.job = c.jobs[0];
+    drawChips(); render();
+  });
+  chips.addEventListener("click", function (e) { var b = e.target.closest("[data-job]"); if (!b) return; state.job = b.dataset.job; drawChips(); render(); });
+  lvIn.addEventListener("input", function () { state.lv = Number(lvIn.value); render(); });
+  document.querySelectorAll(".lv-btn").forEach(function (b) {
+    b.addEventListener("click", function () { state.lv = Math.max(1, Math.min(100, state.lv + Number(b.dataset.step))); render(); });
+  });
+  drawChips(); render();
 })();

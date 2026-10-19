@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Builds the Maple Classic Cheat Sheet into ./public as plain static HTML.
+"""Builds the Maple Classic Guide into ./public as plain static HTML.
 Edit the JSON in ./data, run `python3 build.py`, commit, and Vercel serves ./public.
 No dependencies."""
 import json, os, re, shutil, html
@@ -7,8 +7,9 @@ from datetime import date
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, "public")
-SITE = "https://www.mapleclassiccheatsheet.com"
-NAME = "Maple Classic Cheat Sheet"
+SITE = "https://www.mapleclassicguide.com"
+NAME = "Maple Classic Guide"
+COFFEE = ""  # your Buy Me a Coffee link, e.g. "https://buymeacoffee.com/yourname". Empty = hidden.
 CHECKED = "Oct 19, 2026"
 CHECKED_ISO = "2026-10-19"
 DATA_NOTE = "Founder's Access data"
@@ -80,7 +81,7 @@ LEAVES = '<div class="leaves" aria-hidden="true">' + "".join(
 HOUSE = '<svg class="house" viewBox="0 0 120 110" aria-hidden="true"><path fill="currentColor" d="M60 4C28 4 6 24 6 46c0 6 4 9 10 9h88c6 0 10-3 10-9C114 24 92 4 60 4z"/><rect x="26" y="55" width="68" height="48" rx="10" fill="currentColor"/><rect x="50" y="70" width="20" height="33" rx="10" fill="#fff" opacity=".5"/></svg>'
 LEAF_SM = '<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 2l2.6 5.4 4.2-2-1 5.6 5.2-1.6-2.6 4.6 4.6 1.6-6 3.6 1.4 3.2-6.2-1.2.4 6.8h-5.2l.4-6.8-6.2 1.2 1.4-3.2-6-3.6 4.6-1.6L5 9.4l5.2 1.6-1-5.6 4.2 2z"/></svg>'
 
-NAV = [("/", "Cheat sheet"), ("/leveling/", "Leveling"), ("/jobs/", "Job builds"), ("/job-advancement/", "Job advancement"), ("/secrets/", "Secrets"), ("/classic-rules/", "Classic rules")]
+NAV = [("/", "Home"), ("/leveling/", "Grind spots"), ("/jobs/", "Builds"), ("/job-advancement/", "Job up"), ("/secrets/", "Secrets"), ("/classic-rules/", "Rules")]
 
 def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=""):
     canon = SITE + path
@@ -92,6 +93,8 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
         ld.append({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
             {"@type": "ListItem", "position": i + 1, "name": t, **({"item": SITE + h} if h else {})} for i, (h, t) in enumerate(crumbs)]})
     if schema: ld.append(schema)
+    tabs = [("/", "🏠", "Home"), ("/leveling/", "🗺️", "Grind"), ("/jobs/", "⚔️", "Builds"), ("/secrets/", "🤫", "Secrets")]
+    tabbar = "".join(f'<a href="{h}"{" aria-current=page" if h == path else ""}><span aria-hidden="true">{ic}</span>{t}</a>' for h, ic, t in tabs) + '<button type="button" data-search><span aria-hidden="true">🔍</span>Search</button>'
     ldtxt = "".join(f'<script type="application/ld+json">{json.dumps(x)}</script>' for x in ld)
     return f"""<!doctype html>
 <html lang="en">
@@ -115,8 +118,9 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 <a class="skip" href="#main">Skip to content</a>
 <div class="frame">{LEAVES}
 <header class="site-h"><div class="wrap">
-<a class="brand" href="/">{LEAF}<span>Maple Classic <span>Cheat Sheet</span></span></a>
+<a class="brand" href="/">{LEAF}<span>Maple Classic <span>Guide</span></span></a>
 <nav class="nav" aria-label="Main">{nav}</nav>
+<button class="search-btn" type="button" data-search aria-label="Search the guide"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span>Search</span><kbd>/</kbd></button>
 </div></header>
 {hero}
 <div class="wrap"><div class="ad ad-top" data-slot=""></div>
@@ -125,15 +129,23 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 <aside class="side" aria-label="Sidebar"><div class="sticky">{side_extra}<div class="ad ad-side" data-slot=""></div></div></aside>
 </div></div>
 <footer class="site-f"><div class="wrap">
-<a class="brand" href="/">{LEAF}<span>Maple Classic <span>Cheat Sheet</span></span></a>
+<a class="brand" href="/">{LEAF}<span>Maple Classic <span>Guide</span></span></a>
 <nav aria-label="Footer">{"".join(f'<a href="{h}">{t}</a>' for h, t in NAV)}<a href="/about/">About &amp; sources</a><a href="/privacy/">Privacy</a></nav>
-<p>Fan-made guide, not affiliated with or endorsed by Nexon. MapleStory is a trademark of Nexon. Data checked {CHECKED} ({DATA_NOTE}); we re-check after every patch.</p>
+{coffee_btn()}<p>Unofficial fan site. Not affiliated with or endorsed by NEXON. MapleStory © NEXON. Data checked {CHECKED} ({DATA_NOTE}); we re-check after every patch. <a href="mailto:robertlazau@gmail.com?subject=Maple%20Classic%20Guide%20fix">Spotted a mistake? Tell us</a>.</p>
 <p>Game sprites and minimaps © Nexon, loaded from <a href="https://maplestory.io" rel="nofollow noopener">maplestory.io</a>. Built by <a href="https://www.robertlazau.com">Golden Boy Productions</a>.</p>
 </div></footer>
 </div>
+<nav class="tabbar" aria-label="Quick nav">{tabbar}</nav>
+<div class="search" id="search" hidden><div class="search-box" role="dialog" aria-modal="true" aria-label="Search">
+<input id="q" type="search" placeholder="Try: assassin, mushmom, level 35, scrolls" autocomplete="off" aria-label="Search the guide"><button type="button" class="search-x" data-close aria-label="Close search">Esc</button>
+<ul id="hits" role="listbox"></ul></div></div>
 <script src="/site.js" defer></script>
 </body>
 </html>"""
+
+def coffee_btn(big=False):
+    if not COFFEE: return ""
+    return f'<a class="coffee{" big" if big else ""}" href="{COFFEE}" target="_blank" rel="noopener">☕ Buy me a coffee</a>'
 
 def stamp():
     return f'<p class="stamp"><b>✓ Checked {CHECKED}</b><span>{DATA_NOTE}. Tags show how sure we are: {conf("high")} {conf("medium")} {conf("low")}</span></p>'
@@ -153,48 +165,58 @@ def route_li(r):
     sprites = "".join(mob_img(m) for m in mobs_in(r.get("monsters", "")))
     mm = next((v for k, v in IMG["routeMaps"].items() if k in r["map"]), None)
     pics = f'<div class="pics">{map_img(mm, tidy(r["map"]).split(" / ")[0].split(" (")[0]) if mm else ""}<div class="sprites">{sprites}</div></div>' if (sprites or mm) else ""
-    return f'''<li class="{cls}"><span class="lv">Lv {lv}</span>{pics}
+    return f'''<li class="{cls}" id="lv-{r["from"]}-{r["to"]}"><span class="lv">Lv {lv}</span>{pics}
 <span class="map">{e(tidy(r["map"]))} {conf(r.get("confidence"))}</span>
 <span class="sub">{e(r.get("region",""))} · {e(r.get("monsters",""))} (lv {e(r.get("monsterLevel",""))}){" · best for " + e(best) if best and best != "all" else ""}</span>
 <span class="tip">{e(tidy(r.get("tip","")))}</span></li>'''
 
 def build_home():
-    route = sorted([r for r in LEV["route"]], key=lambda r: (r["from"], r["to"]))
-    fdata = {"route": [{"from": r["from"], "to": r["to"], "map": tidy(r["map"]), "monsters": r.get("monsters", ""), "monsterLevel": r.get("monsterLevel", ""), "confidence": r.get("confidence", "medium")} for r in route],
-             "jobs": {j["id"]: {"name": j["name"], "cls": {"npc": c["firstJob"]["npc"], "town": c["firstJob"]["town"]}, "adv": {"test": tidy(j["advancement"]["test"])},
-                                 "apSummary": tidy(j["ap"]["summary"]), "ap": [tidy(x) for x in j["ap"]["steps"]], "sp1": [tidy(x) for x in j["sp"]["firstJob"]], "sp2": [tidy(x) for x in j["sp"]["secondJob"]]} for c, j in ALLJOBS}}
-    opts = "".join(f'<optgroup label="{e(c["name"])}">' + "".join(f'<option value="{e(j["id"])}">{e(j["name"])}</option>' for j in c["jobs"]) + "</optgroup>" for c in JOBS["classes"])
-    cards = [("/leveling/", "Leveling route 1–100", "Where to train at every level on Victoria Island, plus party quests, bosses and quests worth doing."),
-             ("/jobs/", "Job builds", "AP and SP plans for all 10 second jobs. Resets cost 7,000 NX, so get it right the first time."),
-             ("/job-advancement/", "Job advancement", "Who to talk to at level 10 and 30, and how the Dark Marble test works."),
-             ("/secrets/", "Hidden maps & secrets", f'{len(SEC["secrets"])} hidden streets, jump quests, boss rooms and missable rewards.'),
-             ("/classic-rules/", "Classic rules", "Scroll odds, the EXP wall at 90+, crafting, Cash Shop buys and ways to make mesos.")]
+    route = sorted([r for r in LEV["route"]], key=lambda r: ("Nov 18" in r["map"], r["from"], r["to"]))
+    fdata = {"route": [{"from": r["from"], "to": r["to"], "map": tidy(r["map"]), "monsters": r.get("monsters", ""), "monsterLevel": r.get("monsterLevel", ""), "confidence": r.get("confidence", "medium"),
+                        "sprites": [IMG["mobs"][m] for m in mobs_in(r.get("monsters", ""), 2)]} for r in route],
+             "classes": [{"id": c["id"], "name": c["name"], "npc": c["firstJob"]["npc"], "town": c["firstJob"]["town"], "sprite": IMG["classNpc"][c["id"]][0],
+                          "jobs": [j["id"] for j in c["jobs"]]} for c in JOBS["classes"]],
+             "jobs": {j["id"]: {"name": j["name"], "cls": c["id"], "weapon": j["weapon"], "play": tidy(j["playstyle"]), "adv": {"test": tidy(j["advancement"]["test"])},
+                                 "apSummary": tidy(j["ap"]["summary"]), "ap": [tidy(x) for x in j["ap"]["steps"]], "sp1": [tidy(x) for x in j["sp"]["firstJob"]], "sp2": [tidy(x) for x in j["sp"]["secondJob"]]} for c, j in ALLJOBS},
+             "api": API}
+    cards = [("/leveling/", "🗺️ Grind spots", "Where to train at every level, 1 to 100.", "mob/1210103"),
+             ("/jobs/", "⚔️ Builds", "AP + SP for all 10 jobs. Resets cost 7,000 NX, so don't wing it.", "npc/1012100"),
+             ("/job-advancement/", "⬆️ Job up", "Who to talk to at 10 and 30, and how the marble test works.", "npc/1032001"),
+             ("/secrets/", "🤫 Secrets", f'{len(SEC["secrets"])} hidden maps, jump quests and boss rooms.', "mob/6130101"),
+             ("/classic-rules/", "📜 Rules", "Scroll odds, the EXP wall, crafting and making mesos.", "mob/1110100")]
+    musts = ["Finish every Maple Island quest before you take the boat. It's one-way.",
+             "Taxi to your job town while you're still a Beginner. It's 90% off.",
+             "Plan your AP and SP. Fixing a mistake costs 7,000 NX.",
+             "Carry a Return Scroll. There's no cab back out of the Ant Tunnel.",
+             "Buy Orange Potions or Lemons for MP, not Blue Potions. Better value."]
     cast = [("mob", 210100, "mob", 10, 20, 2.4, .4), ("mob", 1210102, "mob", 38, 10, 2.3, .9), ("mob", 100101, "mob", 70, 24, 2.8, 1.3),
-            ("npc", 1022000, "npc", 2, 58, 1.9, 0), ("npc", 1032001, "npc", 27, 50, 1.6, .6), ("npc", 1012100, "npc", 49, 58, 1.9, 1.1), ("npc", 1052001, "npc", 70, 48, 1.25, 1.6)]
-    castimg = ""
-    for _, i, kind, left, top, k, d in cast:
-        castimg += f'<img src="{API}/{kind}/{i}/render/stand" alt="" loading="eager" referrerpolicy="no-referrer" onerror="this.remove()" style="left:{left}%;top:{top}%;--k:{k};--d:{d}s">'
+            ("npc", 1022000, "npc", 2, 58, 1.9, 0), ("npc", 1032001, "npc", 27, 50, 1.6, .6), ("npc", 1012100, "npc", 49, 58, 1.9, 1.1), ("npc", 1072003, "npc", 72, 56, 2.0, 1.6)]
+    castimg = "".join(f'<img src="{API}/{kind}/{i}/render/stand" alt="" loading="eager" referrerpolicy="no-referrer" onerror="this.remove()" style="left:{left}%;top:{top}%;--k:{k};--d:{d}s">' for _, i, kind, left, top, k, d in cast)
     hero = f'''<section class="hero"><div class="wrap">
-<div class="hero-copy">{HOUSE}<h1>MapleStory Classic<br>Cheat Sheet</h1>
-<p class="sub">Every answer you need with the game open, built for your phone.</p>
-<p class="lede">Where to train at your level, where your AP and SP go, when to job up, and the hidden maps and one-time rewards you'll miss if you rush.</p>
-<div class="btns"><a class="btn btn-primary" href="#finder-box">Find my build {LEAF_SM}</a><a class="btn btn-ghost" href="/leveling/">Leveling route</a></div>
+<div class="hero-copy">{HOUSE}<p class="kicker">Classic World · launches Oct 21</p><h1>MapleStory Classic<br>Guide</h1>
+<p class="sub">Pick your class. Get your build, your grind spot and the secrets. That's it.</p>
+<div class="btns"><a class="btn btn-primary" href="#run">Start here {LEAF_SM}</a><button class="btn btn-ghost" type="button" data-search>Search anything</button></div>
 {stamp()}</div>
 <div class="cast" aria-hidden="true">{castimg}</div>
 </div></section>'''
-    body = f'''<div class="facts"><div><b>Lv 100</b><span>Level cap</span></div><div><b>1st + 2nd job</b><span>3rd job planned for 2027</span></div><div><b>Victoria Island</b><span>Plus Maple Island; no Ossyria yet</span></div><div><b>7,000 NX</b><span>Per AP or SP reset</span></div></div>
-<section class="finder" id="finder-box" aria-labelledby="fh"><h2 id="fh">What should I do right now?</h2><p>Pick your job and level.</p>
-<form id="finder"><div><label for="job">Job (or the one you're aiming for)</label><select id="job" name="job">{opts}</select></div>
-<div><label for="lv">Level</label><input id="lv" name="lv" type="number" inputmode="numeric" min="1" max="100" value="1"></div></form>
+    classes = "".join(f'<button type="button" class="cls" data-cls="{e(c["id"])}" aria-pressed="false"><img src="{API}/npc/{IMG["classNpc"][c["id"]][0]}/render/stand" alt="" referrerpolicy="no-referrer" onerror="this.remove()"><b>{e(c["name"])}</b></button>' for c in JOBS["classes"])
+    body = f'''<section class="run" id="run" aria-labelledby="runh">
+<h2 id="runh">Your run</h2>
+<p class="step"><span>1</span>Pick your class</p><div class="classes" role="group" aria-label="Class">{classes}</div>
+<p class="step"><span>2</span>Pick your job</p><div class="jobs" id="jobchips" role="group" aria-label="Job"></div>
+<p class="step"><span>3</span>Your level</p>
+<div class="lvl"><button type="button" class="lv-btn" data-step="-1" aria-label="Level down">−</button><output id="lvout">1</output><button type="button" class="lv-btn" data-step="1" aria-label="Level up">+</button>
+<input id="lv" type="range" min="1" max="100" value="1" aria-label="Level"></div>
 <div class="result" id="finder-out" aria-live="polite"></div>
 <script type="application/json" id="finder-data">{json.dumps(fdata).replace("</", "<\\/")}</script></section>
 <div class="ad ad-in" data-slot=""></div>
-<h2>The cheat sheet</h2><div class="grid">{"".join(f'<a class="card" href="{h}"><div class="icon">{_img(f"{API}/{ic}/render/stand", "", "")}</div><h3>{t}</h3><p>{d}</p><span class="go">Open →</span></a>' for (h, t, d), ic in zip(cards, ["mob/1210103", "npc/1012100", "npc/1032001", "mob/6130101", "mob/1110100"]))}</div>
-<h2>Classic in 60 seconds</h2>
-<ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in JOBS["classicChanges"][:8])}</ul>
-<h2>Quick tips</h2><ul>{"".join(f"<li>{e(tidy(t['tip']))}</li>" for t in LEV["tips"][:6])}</ul>'''
-    write("/", page("/", "MapleStory Classic Cheat Sheet: Leveling, Builds & Secrets (2026)",
-                    "MapleStory Classic World cheat sheet: where to train at every level, AP/SP builds for all 10 jobs, job advancement, hidden maps and Classic rules. Mobile-friendly.", body, hero=hero))
+<h2>Don't be that guy</h2><ol class="musts">{"".join(f"<li>{e(m)}</li>" for m in musts)}</ol>
+{f'<div class="tipjar"><div><b>This guide is free and stays free.</b><span>If it saved you a reset scroll, a coffee keeps it updated every patch.</span></div>{coffee_btn(True)}</div>' if COFFEE else ""}
+<h2>Everything else</h2><div class="grid tiles">{"".join(f'<a class="card" href="{h}"><div class="icon">{_img(f"{API}/{ic}/render/stand", "", "")}</div><h3>{t}</h3><p>{d}</p></a>' for h, t, d, ic in cards)}</div>
+<div class="facts" style="margin-top:28px"><div><b>Lv 100</b><span>Level cap</span></div><div><b>1st + 2nd job</b><span>3rd job planned for 2027</span></div><div><b>Victoria Island</b><span>Plus Maple Island; no Ossyria yet</span></div><div><b>7,000 NX</b><span>Per AP or SP reset</span></div></div>
+<details style="margin-top:20px"><summary>What's different in Classic (60-second version)</summary><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in JOBS["classicChanges"][:8])}</ul></details>'''
+    write("/", page("/", "MapleStory Classic Guide: Leveling, Builds & Secrets (2026)",
+                    "MapleStory Classic World guide and cheat sheet: pick your class and level and get your build, where to train and the secrets you'll miss. All 10 jobs, mobile-first.", body, hero=hero))
 
 def build_leveling():
     route = sorted(LEV["route"], key=lambda r: (r["from"], r["to"]))
@@ -209,7 +231,7 @@ def build_leveling():
 {stamp()}
 <div class="toc"><a href="#route">Route</a><a href="#class">By class</a><a href="#pq">Party quests</a><a href="#quests">Quests</a><a href="#bosses">Bosses</a><a href="#tips">Tips</a><a href="#map">What's in the game</a></div>
 <p class="callout warn" style="margin-top:16px"><b>Heads up:</b> Classic launches with Maple Island and Victoria Island only. Monsters top out around level 75, and every level from 90 to 99 costs about twice the one before. Reaching 100 is a long-haul goal at launch.</p>
-<h2 id="route">Leveling route</h2><ol class="route">{"".join(route_li(r) for r in route)}</ol>
+<h2 id="route">Leveling route</h2><div class="jump" role="group" aria-label="Jump to level">{"".join(f'<a href="#lv-{r["from"]}-{r["to"]}">{r["from"]}–{r["to"]}</a>' for r in route if not (r["from"] == 39 and r["to"] == 60))}</div><ol class="route">{"".join(route_li(r) for r in route)}</ol>
 <div class="ad ad-in" data-slot=""></div>
 <h2 id="class">Where each class should train</h2>{notes}
 <h2 id="pq">Party quests</h2><div class="grid">{pqs}</div>
@@ -219,7 +241,7 @@ def build_leveling():
 <h2 id="map">What's in the game right now</h2><table class="tbl"><thead><tr><th>Region</th><th>Status</th><th>Notes</th></tr></thead><tbody>{regions}</tbody></table>'''
     write("/leveling/", page("/leveling/", "MapleStory Classic Leveling Guide 1–100: Best Training Spots",
                              "Where to train in MapleStory Classic at every level: Maple Island to Victoria Island, Kerning PQ, bosses, quests and class-specific spots.", body,
-                             crumbs=[("/", "Cheat sheet"), (None, "Leveling")],
+                             crumbs=[("/", "Guide"), (None, "Leveling")],
                              schema={"@context": "https://schema.org", "@type": "Article", "headline": "MapleStory Classic Leveling Guide 1–100", "dateModified": CHECKED_ISO}))
 
 def build_jobs():
@@ -238,7 +260,7 @@ def build_jobs():
 <h2>What changed for jobs in Classic</h2><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in JOBS["classicChanges"])}</ul>'''
     write("/jobs/", page("/jobs/", "MapleStory Classic Job Builds: AP & SP for All 10 Jobs",
                          "Every MapleStory Classic 2nd job compared: Fighter, Page, Spearman, F/P, I/L, Cleric, Hunter, Crossbowman, Assassin and Bandit, with AP/SP builds.", body,
-                         crumbs=[("/", "Cheat sheet"), (None, "Job builds")]))
+                         crumbs=[("/", "Guide"), (None, "Job builds")]))
     for c, j in ALLJOBS:
         def steps(lst):
             out = ""
@@ -253,6 +275,12 @@ def build_jobs():
         body = f'''<h1>{e(j["name"])} Build: MapleStory Classic</h1>
 <p class="lede">{e(tidy(j["playstyle"]))}</p>
 <p class="stamp"><span class="tag">{e(c["name"])}</span><span class="tag">{e(j["weapon"])}</span>{conf(j.get("confidence"))}<span>Checked {CHECKED}</span></p>
+<section class="tldr" aria-label="TL;DR"><h2>TL;DR</h2><dl>
+<div><dt>Stats</dt><dd>{e(tidy(j["ap"]["summary"]))}</dd></div>
+<div><dt>Skills first</dt><dd>{e(" · ".join([tidy(x) for x in j["sp"]["secondJob"] if re.match(r"^lv", x, re.I)][:2]))}</dd></div>
+<div><dt>Job up</dt><dd>Level {e(adv["level"])}, {e(adv["npc"])} in {e(adv["town"])}</dd></div>
+<div><dt>Good at</dt><dd>{e(tidy(j["pros"][0]))}</dd></div>
+<div><dt>Watch out</dt><dd>{e(tidy(j["cons"][0]))}</dd></div></dl></section>
 <div class="toc"><a href="#ap">AP build</a><a href="#sp">SP build</a><a href="#adv">Job advancement</a><a href="#pros">Pros &amp; cons</a></div>
 <h2 id="ap">AP build</h2><p class="callout">{e(tidy(j["ap"]["summary"]))}</p>
 <ol class="steps" style="margin-top:12px">{steps(j["ap"]["steps"])}</ol>
@@ -266,7 +294,7 @@ def build_jobs():
 {srcs(j.get("sources"))}'''
         write(f"/jobs/{j['id']}/", page(f"/jobs/{j['id']}/", f"{j['name']} Build Guide: MapleStory Classic AP & SP",
                                         f"MapleStory Classic {j['name']} build: AP stat plan by level, SP skill order for 1st and 2nd job, job advancement and pros/cons.", body,
-                                        crumbs=[("/", "Cheat sheet"), ("/jobs/", "Job builds"), (None, j["name"])], side_extra=side,
+                                        crumbs=[("/", "Guide"), ("/jobs/", "Job builds"), (None, j["name"])], side_extra=side,
                                         schema={"@context": "https://schema.org", "@type": "Article", "headline": f"{j['name']} Build Guide: MapleStory Classic", "dateModified": CHECKED_ISO}))
 
 def build_adv():
@@ -283,7 +311,12 @@ def build_adv():
 <h2>3rd job</h2><p>Not in Classic at launch. Nexon has said a 3rd job test server is planned for early 2027, alongside the Ossyria rework.</p>'''
     write("/job-advancement/", page("/job-advancement/", "MapleStory Classic Job Advancement: 1st & 2nd Job Guide",
                                     "How to job advance in MapleStory Classic: level 10 1st job NPCs, the level 30 2nd job Dark Marble test for all 10 jobs, and when 3rd job arrives.", body,
-                                    crumbs=[("/", "Cheat sheet"), (None, "Job advancement")]))
+                                    crumbs=[("/", "Guide"), (None, "Job advancement")]))
+
+def spoil(inner, s):
+    if "Forgotten Hollow" in (s.get("name", "") + s.get("region", "") + s.get("howToGet", "")):
+        return f'<details class="spoiler"><summary>Spoiler: new content (opens Nov 18). Tap to show</summary>{inner}</details>'
+    return inner
 
 def build_secrets():
     types = []
@@ -294,9 +327,9 @@ def build_secrets():
     cards = ""
     for s in SEC["secrets"]:
         future = "" if s.get("classicConfirmed", True) else ' <span class="tag">Not confirmed in Classic</span>'
-        cards += f'''<article class="card" data-type="{slug(s["type"])}">{secret_img(s["name"])}<h3>{e(s["name"])}</h3>
+        cards += f'''<article class="card" id="{slug(s["name"].split(" (")[0])}" data-type="{slug(s["type"])}">{secret_img(s["name"])}<h3>{e(s["name"])}</h3>
 <p class="meta">{e(s["type"].capitalize())} · {e(s["region"])} · Level {e(s["level"])} {conf(s.get("confidence"))}{future}</p>
-<p><b>How to get there:</b> {e(tidy(s["howToGet"]))}</p><p><b>Why go:</b> {e(tidy(s["reward"]))}</p></article>'''
+{spoil(f'<p><b>How to get there:</b> {e(tidy(s["howToGet"]))}</p><p><b>Why go:</b> {e(tidy(s["reward"]))}</p>', s)}</article>'''
     body = f'''<h1>MapleStory Classic Hidden Maps &amp; Secrets</h1>
 <p class="lede">Hidden streets, jump quests, boss rooms and one-time rewards on Maple Island and Victoria Island, with directions.</p>
 {stamp()}
@@ -306,7 +339,7 @@ def build_secrets():
 <div class="ad ad-in" data-slot=""></div>'''
     write("/secrets/", page("/secrets/", "MapleStory Classic Hidden Maps, Jump Quests & Secrets",
                             f"{len(SEC['secrets'])} MapleStory Classic secrets: hidden streets, Forest of Patience and Shumi jump quests, Mushmom and Jr. Balrog rooms, and missable Maple Island rewards.", body,
-                            crumbs=[("/", "Cheat sheet"), (None, "Secrets")]))
+                            crumbs=[("/", "Guide"), (None, "Secrets")]))
 
 def build_rules():
     mech = "".join(f'<h2 id="m{i}">{e(m["topic"])}</h2><p>{conf(m.get("confidence"))}</p><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in m["facts"])}</ul>{srcs(m.get("source"))}' for i, m in enumerate(SEC["mechanics"]))
@@ -319,24 +352,27 @@ def build_rules():
 <h2 id="money">Making mesos</h2><div class="grid">{money}</div>'''
     write("/classic-rules/", page("/classic-rules/", "MapleStory Classic Mechanics: Scrolls, EXP, Crafting & Mesos",
                                   "MapleStory Classic rules explained: scroll success rates, AP/SP reset cost, EXP table and the 90+ wall, crafting professions, boss timers and money making.", body,
-                                  crumbs=[("/", "Cheat sheet"), (None, "Classic rules")]))
+                                  crumbs=[("/", "Guide"), (None, "Classic rules")]))
 
 def build_static():
-    about = f'''<h1>About this cheat sheet</h1>
+    about = f'''<h1>About this guide</h1>
 <p class="lede">A fan-made quick reference for MapleStory Classic World, built to stay open on your phone while you play.</p>
 <h2>Where the data comes from</h2><p>We compile Classic-specific information from community databases and guides, chiefly <a href="https://meowdb.com/msclassic" rel="nofollow noopener">MeowDB</a> (becoming NiaDB), <a href="https://mapleclassic.wiki" rel="nofollow noopener">mapleclassic.wiki</a>, <a href="https://metaroad.gg/maplestory-classic" rel="nofollow noopener">Metaroad</a>, <a href="https://maplestory.quest" rel="nofollow noopener">maplestory.quest</a> and launch-week player reports, and we link the source on each entry. All of it is rewritten in our own words.</p>
+<h2>Huge thanks</h2><p>Most Classic numbers on this site trace back to the community's own research, above all <a href="https://meowdb.com/msclassic" rel="noopener">NiaMeowDB</a>. If you want the full database (every item, map and drop), go there. We link the exact source on each entry.</p>
+<h2>How this site is made</h2><p>We gather Classic facts from the sources above, rewrite them as short answers, and tag how sure we are. AI tools helped us research and draft it, which is why every entry carries a confidence tag and a source link. We're checking routes and builds in game after launch and fix anything players report. No meso sellers, boosting or account services, ever.</p>
 <h2>How sure are we?</h2><p>{conf("high")} several Classic sources agree. {conf("medium")} one Classic source, or partly our estimate. {conf("low")} unverified, or content that isn't live yet.</p>
-<h2>Found a mistake?</h2><p>Classic is new and numbers change with patches. Email <a href="mailto:robertlazau@gmail.com?subject=Maple%20Classic%20Cheat%20Sheet%20fix">robertlazau@gmail.com</a> with what you saw in game and we'll fix it.</p>
+{f'<h2>Support the guide</h2><p>No paywalls, ever. If you want to help keep it updated, {coffee_btn()}</p>' if COFFEE else ""}
+<h2>Found a mistake?</h2><p>Classic is new and numbers change with patches. Email <a href="mailto:robertlazau@gmail.com?subject=Maple%20Classic%20Guide%20fix">robertlazau@gmail.com</a> with what you saw in game and we'll fix it.</p>
 <h2>Not affiliated with Nexon</h2><p>This is an unofficial fan site. MapleStory and related names are trademarks of Nexon Korea Corporation and Nexon America Inc.</p>'''
-    write("/about/", page("/about/", "About & Sources | Maple Classic Cheat Sheet", "Where the Maple Classic Cheat Sheet gets its data, how we rate confidence, and how to report a fix.", about, crumbs=[("/", "Cheat sheet"), (None, "About")]))
+    write("/about/", page("/about/", "About & Sources | Maple Classic Guide", "Where the Maple Classic Guide gets its data, how we rate confidence, and how to report a fix.", about, crumbs=[("/", "Guide"), (None, "About")]))
     priv = f'''<h1>Privacy policy</h1><p>Last updated {CHECKED}.</p>
-<p>This site doesn't ask for accounts or personal information. Your last job and level in the cheat-sheet finder are saved only in your own browser.</p>
+<p>This site doesn't ask for accounts or personal information. Your last job and level in the "Your run" picker are saved only in your own browser.</p>
 <h2>Analytics</h2><p>We use Vercel Web Analytics to count page views. It doesn't use cookies or track you across sites.</p>
 <h2>Advertising</h2><p>We show ads from Google AdSense. Google and its partners use cookies to serve ads based on your visits to this and other websites. You can opt out of personalized advertising at <a href="https://www.google.com/settings/ads" rel="nofollow noopener">Google Ads Settings</a>, and learn more at <a href="https://policies.google.com/technologies/ads" rel="nofollow noopener">How Google uses information from sites that use its services</a>. Visitors in the EEA, UK and Switzerland are asked for consent before personalized ads are shown.</p>
 <h2>Contact</h2><p><a href="mailto:robertlazau@gmail.com">robertlazau@gmail.com</a></p>'''
-    write("/privacy/", page("/privacy/", "Privacy Policy | Maple Classic Cheat Sheet", "Privacy policy for the Maple Classic Cheat Sheet, including analytics and Google AdSense cookies.", priv, crumbs=[("/", "Cheat sheet"), (None, "Privacy")]))
-    nf = page("/404", "Page not found | Maple Classic Cheat Sheet", "Page not found.", '<h1>Lost in the Ant Tunnel?</h1><p class="lede">That page doesn\'t exist. Use a Return Scroll:</p><p><a href="/">Back to the cheat sheet →</a></p>')
-    with open(os.path.join(OUT, "404.html"), "w") as f: f.write(nf.replace('<link rel="canonical" href="https://www.mapleclassiccheatsheet.com/404">', '<meta name="robots" content="noindex">'))
+    write("/privacy/", page("/privacy/", "Privacy Policy | Maple Classic Guide", "Privacy policy for the Maple Classic Guide, including analytics and Google AdSense cookies.", priv, crumbs=[("/", "Guide"), (None, "Privacy")]))
+    nf = page("/404", "Page not found | Maple Classic Guide", "Page not found.", '<h1>Lost in the Ant Tunnel?</h1><p class="lede">That page doesn\'t exist. Use a Return Scroll:</p><p><a href="/">Back to the guide →</a></p>')
+    with open(os.path.join(OUT, "404.html"), "w") as f: f.write(nf.replace(f'<link rel="canonical" href="{SITE}/404">', '<meta name="robots" content="noindex">'))
 
 def main():
     if os.path.exists(OUT): shutil.rmtree(OUT)
@@ -344,7 +380,29 @@ def main():
     for n in ["style.css", "site.js", "favicon.svg", "og.png"]:
         p = os.path.join(ROOT, "src", n)
         if os.path.exists(p): shutil.copy(p, OUT)
+    b64 = os.path.join(ROOT, "src", "og.b64")  # share image kept as text so it can be edited on github.com
+    if os.path.exists(b64):
+        import base64
+        with open(b64) as f, open(os.path.join(OUT, "og.png"), "wb") as g:
+            g.write(base64.b64decode(f.read()))
     build_home(); build_leveling(); build_jobs(); build_adv(); build_secrets(); build_rules(); build_static()
+    idx = [{"t": "Home: pick your class and level", "u": "/", "k": "page"}, {"t": "Grind spots: leveling route 1–100", "u": "/leveling/", "k": "page"},
+           {"t": "Builds: all 10 jobs", "u": "/jobs/", "k": "page"}, {"t": "Job up: 1st and 2nd job advancement", "u": "/job-advancement/", "k": "page"},
+           {"t": "Secrets: hidden maps and jump quests", "u": "/secrets/", "k": "page"}, {"t": "Rules: scrolls, EXP, crafting, mesos", "u": "/classic-rules/", "k": "page"}]
+    for c, j in ALLJOBS:
+        idx.append({"t": f"{j['name']} build", "u": f"/jobs/{j['id']}/", "k": c["name"], "x": j["weapon"] + " " + c["name"]})
+    for r in sorted(LEV["route"], key=lambda r: (r["from"], r["to"])):
+        idx.append({"t": f"Lv {r['from']}–{r['to']}: {tidy(r['map'])[:70]}", "u": f"/leveling/#lv-{r['from']}-{r['to']}", "k": "Grind spot", "x": r.get("monsters", ""), "lo": r["from"], "hi": r["to"]})
+    for s_ in SEC["secrets"]:
+        idx.append({"t": s_["name"], "u": "/secrets/#" + re.sub(r"[^a-z]+", "-", s_["name"].split(" (")[0].lower()).strip("-"), "k": "Secret", "x": s_["region"] + " " + s_["type"]})
+    for b in LEV["bosses"]:
+        idx.append({"t": f"{b['name']} (boss, lv {b['level']})", "u": "/leveling/#bosses", "k": "Boss", "x": b["where"]})
+    for i, m in enumerate(SEC["mechanics"]):
+        idx.append({"t": m["topic"], "u": f"/classic-rules/#m{i}", "k": "Rules"})
+    for q in LEV["quests"]:
+        idx.append({"t": q["name"], "u": "/leveling/#quests", "k": "Quest", "x": f"level {q['level']} {q['where']}"})
+    with open(os.path.join(OUT, "search.json"), "w") as f:
+        json.dump(idx, f, separators=(",", ":"))
     paths = ["/", "/leveling/", "/jobs/", "/job-advancement/", "/secrets/", "/classic-rules/", "/about/", "/privacy/"] + [f"/jobs/{j['id']}/" for _, j in ALLJOBS]
     with open(os.path.join(OUT, "sitemap.xml"), "w") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"  <url><loc>{SITE}{p}</loc><lastmod>{CHECKED_ISO}</lastmod></url>\n" for p in paths) + "</urlset>\n")
