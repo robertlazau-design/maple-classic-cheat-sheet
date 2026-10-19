@@ -130,7 +130,7 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 <footer class="site-f"><div class="wrap">
 <a class="brand" href="/">{LEAF}<span>Maple Classic <span>Cheat Sheet</span></span></a>
 <nav aria-label="Footer">{"".join(f'<a href="{h}">{t}</a>' for h, t in NAV)}<a href="/about/">About &amp; sources</a><a href="/privacy/">Privacy</a></nav>
-<p>Fan-made guide, not affiliated with or endorsed by Nexon. MapleStory is a trademark of Nexon. Data checked {CHECKED} ({DATA_NOTE}); we re-check after every patch.</p>
+<p>Unofficial fan site. Not affiliated with or endorsed by NEXON. MapleStory © NEXON. Data checked {CHECKED} ({DATA_NOTE}); we re-check after every patch. <a href="mailto:robertlazau@gmail.com?subject=Maple%20Classic%20Cheat%20Sheet%20fix">Spotted a mistake? Tell us</a>.</p>
 <p>Game sprites and minimaps © Nexon, loaded from <a href="https://maplestory.io" rel="nofollow noopener">maplestory.io</a>. Built by <a href="https://www.robertlazau.com">Golden Boy Productions</a>.</p>
 </div></footer>
 </div>
@@ -307,6 +307,11 @@ def build_adv():
                                     "How to job advance in MapleStory Classic: level 10 1st job NPCs, the level 30 2nd job Dark Marble test for all 10 jobs, and when 3rd job arrives.", body,
                                     crumbs=[("/", "Cheat sheet"), (None, "Job advancement")]))
 
+def spoil(inner, s):
+    if "Forgotten Hollow" in (s.get("name", "") + s.get("region", "") + s.get("howToGet", "")):
+        return f'<details class="spoiler"><summary>Spoiler: new content (opens Nov 18). Tap to show</summary>{inner}</details>'
+    return inner
+
 def build_secrets():
     types = []
     for s in SEC["secrets"]:
@@ -318,7 +323,7 @@ def build_secrets():
         future = "" if s.get("classicConfirmed", True) else ' <span class="tag">Not confirmed in Classic</span>'
         cards += f'''<article class="card" id="{slug(s["name"].split(" (")[0])}" data-type="{slug(s["type"])}">{secret_img(s["name"])}<h3>{e(s["name"])}</h3>
 <p class="meta">{e(s["type"].capitalize())} · {e(s["region"])} · Level {e(s["level"])} {conf(s.get("confidence"))}{future}</p>
-<p><b>How to get there:</b> {e(tidy(s["howToGet"]))}</p><p><b>Why go:</b> {e(tidy(s["reward"]))}</p></article>'''
+{spoil(f'<p><b>How to get there:</b> {e(tidy(s["howToGet"]))}</p><p><b>Why go:</b> {e(tidy(s["reward"]))}</p>', s)}</article>'''
     body = f'''<h1>MapleStory Classic Hidden Maps &amp; Secrets</h1>
 <p class="lede">Hidden streets, jump quests, boss rooms and one-time rewards on Maple Island and Victoria Island, with directions.</p>
 {stamp()}
@@ -347,6 +352,8 @@ def build_static():
     about = f'''<h1>About this cheat sheet</h1>
 <p class="lede">A fan-made quick reference for MapleStory Classic World, built to stay open on your phone while you play.</p>
 <h2>Where the data comes from</h2><p>We compile Classic-specific information from community databases and guides, chiefly <a href="https://meowdb.com/msclassic" rel="nofollow noopener">MeowDB</a> (becoming NiaDB), <a href="https://mapleclassic.wiki" rel="nofollow noopener">mapleclassic.wiki</a>, <a href="https://metaroad.gg/maplestory-classic" rel="nofollow noopener">Metaroad</a>, <a href="https://maplestory.quest" rel="nofollow noopener">maplestory.quest</a> and launch-week player reports, and we link the source on each entry. All of it is rewritten in our own words.</p>
+<h2>Huge thanks</h2><p>Most Classic numbers on this site trace back to the community's own research, above all <a href="https://meowdb.com/msclassic" rel="noopener">NiaMeowDB</a>. If you want the full database (every item, map and drop), go there. We link the exact source on each entry.</p>
+<h2>How this site is made</h2><p>We gather Classic facts from the sources above, rewrite them as short answers, and tag how sure we are. AI tools helped us research and draft it, which is why every entry carries a confidence tag and a source link. We're checking routes and builds in game after launch and fix anything players report. No meso sellers, boosting or account services, ever.</p>
 <h2>How sure are we?</h2><p>{conf("high")} several Classic sources agree. {conf("medium")} one Classic source, or partly our estimate. {conf("low")} unverified, or content that isn't live yet.</p>
 <h2>Found a mistake?</h2><p>Classic is new and numbers change with patches. Email <a href="mailto:robertlazau@gmail.com?subject=Maple%20Classic%20Cheat%20Sheet%20fix">robertlazau@gmail.com</a> with what you saw in game and we'll fix it.</p>
 <h2>Not affiliated with Nexon</h2><p>This is an unofficial fan site. MapleStory and related names are trademarks of Nexon Korea Corporation and Nexon America Inc.</p>'''
