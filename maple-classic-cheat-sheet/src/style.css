@@ -307,3 +307,5 @@ body.noscroll{overflow:hidden}
 .tipjar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;background:var(--surface);border-radius:20px;padding:18px 20px;box-shadow:var(--shadow);margin-top:28px}
 .tipjar b{display:block;color:var(--ink);font-size:18px}
 .tipjar span{color:var(--muted);font-size:15px}
+.site-f a.coffee,a.coffee{color:#2a1606;opacity:1}
+.site-f .coffee{margin-bottom:6px}
