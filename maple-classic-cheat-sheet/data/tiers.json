@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "basis": "Level 70, 1st and 2nd job, launch build (no 3rd job yet). Grades are our own call per playstyle, built on NiaMeowDB's Lv70 benchmark numbers (Grummash's realistic builds) plus the job data on this site. We'll re-rank with real launch data.",
+    "confidence": "medium",
+    "sources": ["https://meowdb.com/msclassic/es/tier-list", "https://meowdb.com/msclassic/maplestory-classic-guide"]
+  },
+  "picks": [
+    {"label": "Best all-rounder", "job": "fighter", "why": "Top-tier group damage, very tanky, and the most damage per point of mana of any job."},
+    {"label": "Best boss damage", "job": "bandit", "why": "Highest single-target damage at level 70 by a clear margin."},
+    {"label": "Safest solo", "job": "page", "why": "With a one-handed weapon and shield it's the hardest job to kill in the game."},
+    {"label": "Best ranged grinder", "job": "hunter", "why": "Hits groups of monsters from long range, so most of them never reach you."},
+    {"label": "Best with friends", "job": "cleric", "why": "Heal and Bless make every party better. Slow alone, loved in groups."},
+    {"label": "Best for getting around", "job": "fp-wizard", "why": "Teleport plus strong group spells. Bring a lot of mana potions."}
+  ],
+  "lists": [
+    {"id": "grinding", "title": "Solo grinding", "emoji": "🗺️",
+     "intro": "Leveling alone: how fast you clear a map full of monsters, how much damage you can take, and how much your potions cost.",
+     "tiers": {
+       "S": [["fighter", "Hits a whole group with Slash Blast, takes hits well, best damage per mana."],
+             ["page", "Same group damage as Fighter, a little lower, with more defense."],
+             ["hunter", "Arrow Bomb hits groups from long range; strongest group damage of the ranged jobs."]],
+       "A": [["fp-wizard", "Big group damage, but drinks mana and folds if mobs reach you."],
+             ["spearman", "Tanky and solid group damage, a step behind Fighter and Page."],
+             ["crossbowman", "Long range and decent group damage, a bit slower than Hunter."]],
+       "B": [["il-wizard", "Group spells are weak until 3rd job."],
+             ["bandit", "Strong hits, but mostly one target at a time and up close."],
+             ["assassin", "No attack that hits several monsters in 2nd job, and restocking stars costs mesos."],
+             ["cleric", "No group attack except Heal on undead. Painful alone."]]}},
+    {"id": "bossing", "title": "Bossing", "emoji": "🐉",
+     "intro": "Damage on one big target plus how far your mana goes, for Mushmom, Jr. Balrog and other area bosses.",
+     "tiers": {
+       "S": [["bandit", "Highest single-target damage at level 70."]],
+       "A": [["assassin", "Second-best single-target damage, safely from range."],
+             ["fighter", "Strong hits and the best damage per mana spent."],
+             ["hunter", "Good damage from a safe distance."],
+             ["page", "Solid hits and survives boss attacks easily."],
+             ["crossbowman", "Steady ranged damage."],
+             ["spearman", "Good damage per mana, tanky."]],
+       "B": [["fp-wizard", "Low single-target damage in 2nd job; shines vs monsters weak to fire or poison."],
+             ["il-wizard", "Low single-target damage; better on monsters weak to ice or lightning."],
+             ["cleric", "Lowest damage, but a huge help to the party (see below)."]]}},
+    {"id": "party", "title": "Party play", "emoji": "🤝",
+     "intro": "What you bring to a group of friends or a party quest beyond your own damage: buffs, heals and utility.",
+     "tiers": {
+       "S": [["cleric", "Heal and Bless. Every party wants one."]],
+       "A": [["fighter", "Rage raises the whole party's attack."],
+             ["page", "Threaten weakens monsters for everyone."],
+             ["fp-wizard", "Meditation boosts the party's magic attack."],
+             ["il-wizard", "Meditation boosts the party's magic attack."],
+             ["bandit", "Haste speeds up the party."],
+             ["assassin", "Haste speeds up the party."]],
+       "B": [["spearman", "Few party tools until 3rd job."],
+             ["hunter", "Mostly brings damage."],
+             ["crossbowman", "Mostly brings damage."]]}},
+    {"id": "beginner", "title": "New or returning player", "emoji": "🌱",
+     "intro": "Our take on which jobs forgive mistakes: simple builds, cheap to run, hard to die with.",
+     "tiers": {
+       "S": [["fighter", "Simple build, cheap potions, survives mistakes."],
+             ["page", "The tankiest start in the game."]],
+       "A": [["hunter", "Easy to play from range, just watch your HP."],
+             ["spearman", "Tanky and simple."],
+             ["fp-wizard", "Fun and fast, but mana management matters."],
+             ["crossbowman", "Easy from range, a bit slower than Hunter."]],
+       "B": [["bandit", "Melee with a thief's lower HP. More to manage."],
+             ["assassin", "No group attack and restocking stars costs mesos."],
+             ["il-wizard", "Weak until later levels."],
+             ["cleric", "Very slow to level alone. Great if you have a group."]]}}
+  ],
+  "grades": {
+    "cols": ["Grinding", "Bossing", "Tanky", "Party", "Mobility"],
+    "rows": {
+      "fighter": ["S", "A", "S", "A", "A"],
+      "page": ["S", "A", "S", "A", "A"],
+      "spearman": ["A", "A", "S", "B", "A"],
+      "fp-wizard": ["A", "B", "B", "A", "S"],
+      "il-wizard": ["B", "B", "B", "A", "S"],
+      "cleric": ["B", "B", "S", "S", "S"],
+      "hunter": ["S", "A", "B", "B", "B"],
+      "crossbowman": ["A", "A", "B", "B", "B"],
+      "assassin": ["B", "A", "A", "A", "S"],
+      "bandit": ["B", "S", "S", "A", "S"]
+    }
+  },
+  "faq": [
+    ["What is the best class in MapleStory Classic?", "There's no single best class. For most players Fighter is the safest pick: top-tier grinding, tanky and easy on mana. Bandit has the highest boss damage, Hunter is the best ranged grinder, and Cleric is the best party support."],
+    ["What's the best class for beginners?", "Fighter or Page. Both have simple builds, take hits well and use little mana, so mistakes don't get you killed."],
+    ["What's the best class to solo level?", "Fighter, Page and Hunter. All three hit groups of monsters, and Hunter does it from a safe distance."],
+    ["Is Assassin good in MapleStory Classic?", "Assassin is great for bosses and safe ranged damage, but it has no attack that hits several monsters in 2nd job and restocking throwing stars costs mesos, so it levels slower than Hunter or Fighter."],
+    ["Is Cleric worth it?", "In a party, yes: Heal and Bless make everyone stronger. Alone it's the slowest job to level because it has almost no way to hit groups (except healing undead monsters)."],
+    ["Can I change my job later?", "No. Your 2nd job choice is permanent. Even fixing a misplaced AP or SP point costs 7,000 NX, so pick with care."],
+    ["Will this tier list change?", "Yes. It's based on level 70 benchmarks before launch, and 3rd job isn't in the game yet. We'll re-rank with real data after Classic World launches on Oct 21."]
+  ]
+}
