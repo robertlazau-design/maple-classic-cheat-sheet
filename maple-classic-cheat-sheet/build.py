@@ -127,9 +127,26 @@ NAV = [("/", "Home"), ("/news/", "News"), ("/events/", "Events"), ("/leveling/",
 MORE_EMOJI = {"/news/": "📰", "/events/": "🎃", "/citizenship/": "🏠", "/free-market/": "🏪", "/leveling/": "🗺️", "/jobs/": "⚔️", "/tier-list/": "🏆", "/bosses/": "👑", "/party-quest/": "🎟️", "/quests/": "📜", "/money-making/": "💰",
               "/crafting/": "⚒️", "/tools/": "🧮", "/job-advancement/": "⬆️", "/secrets/": "🤫", "/classic-rules/": "📏"}
 
+# Top bar: five menus instead of 17 links. Every page in NAV should appear in exactly one group.
+NAV_GROUPS = [
+    ("News", [("/news/", "News", "Launch day, patch notes, deadlines"), ("/events/", "Events", "Mark of the Beta, Halloween, daily gifts"), ("/updates/", "What's new", "Changes to this guide")]),
+    ("Leveling", [("/leveling/", "Grind spots", "Where to train at every level"), ("/quests/", "Quests", "Best quests by level"), ("/party-quest/", "KPQ", "Every answer and combo"), ("/bosses/", "Bosses", "Respawn timers and drops")]),
+    ("Classes", [("/jobs/", "Builds", "AP and SP for all 10 jobs"), ("/tier-list/", "Tier list", "Best class for how you play"), ("/job-advancement/", "Job up", "1st and 2nd job tests")]),
+    ("Mesos", [("/money-making/", "Mesos", "What sells and what to keep"), ("/free-market/", "Market", "Shops, prices and scams"), ("/crafting/", "Crafting", "What each profession needs"), ("/citizenship/", "Citizenship", "Grades, perks and housing")]),
+    ("More", [("/tools/", "Tools", "EXP calculator, scroll simulator"), ("/secrets/", "Secrets", "Hidden maps and jump quests"), ("/classic-rules/", "Rules", "How Classic works")]),
+]
+
+def nav_html(cur):
+    out = ""
+    for label, items in NAV_GROUPS:
+        here = any(h == cur for h, _, _ in items)
+        links = "".join(f'<a href="{h}"{" aria-current=page" if h == cur else ""}><span class="dd-e" aria-hidden="true">{MORE_EMOJI.get(h, "✨")}</span><span><b>{e(t)}</b><small>{e(d)}</small></span></a>' for h, t, d in items)
+        out += f'<details class="dd"{" data-here" if here else ""}><summary>{label}</summary><div class="dd-menu">{links}</div></details>'
+    return out
+
 def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=""):
     canon = SITE + path
-    nav = "".join(f'<a href="{h}"{" aria-current=page" if h == path else ""}>{t}</a>' for h, t in NAV)
+    nav = nav_html("/jobs/" if path.startswith("/jobs/") else path)
     bc = ""
     ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": NAME, "url": SITE + "/"}] if path == "/" else []
     if crumbs:
@@ -146,7 +163,7 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
     tabbar = "".join(f'<a href="{h}"{" aria-current=page" if h == cur else ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{d}"/></svg>{t}</a>' for h, d, t in tabs)
     in_more = cur not in [h for h, _, _ in tabs]
     tabbar += f'<button type="button" class="tb-more" data-more aria-expanded="false" aria-controls="more-sheet"{" aria-current=page" if in_more else ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z"/></svg>More</button>'
-    more = "".join(f'<a href="{h}"{" aria-current=page" if h == cur else ""}><span aria-hidden="true">{MORE_EMOJI.get(h, "🍁")}</span>{t}</a>' for h, t in NAV if h != "/") + '<a href="/updates/"><span aria-hidden="true">✨</span>What\'s new</a>'
+    more = "".join(f'<p class="more-sec">{label}</p><nav class="more-grid">' + "".join(f'<a href="{h}"{" aria-current=page" if h == cur else ""}><span aria-hidden="true">{MORE_EMOJI.get(h, "✨")}</span>{t}</a>' for h, t, _ in items) + "</nav>" for label, items in NAV_GROUPS)
 
     ldtxt = "".join(f'<script type="application/ld+json">{json.dumps(x)}</script>' for x in ld)
     return f"""<!doctype html>
@@ -160,7 +177,7 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 <meta property="og:type" content="website"><meta property="og:site_name" content="{NAME}">
 <meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{canon}">
 <meta property="og:image" content="{SITE}/og.png"><meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#3b2210">
+<meta name="theme-color" content="#120a05">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap">
@@ -190,7 +207,7 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 </div></footer>
 </div>
 <nav class="tabbar" aria-label="Quick nav">{tabbar}</nav>
-<div class="more-sheet" id="more-sheet" hidden><div class="more-box" tabindex="-1" role="dialog" aria-modal="true" aria-label="All guides"><p class="more-h"><b>All guides</b><button type="button" class="search-x" data-more-close aria-label="Close menu">Close</button></p><nav class="more-grid">{more}</nav></div></div>
+<div class="more-sheet" id="more-sheet" hidden><div class="more-box" tabindex="-1" role="dialog" aria-modal="true" aria-label="All guides"><p class="more-h"><b>All guides</b><button type="button" class="search-x" data-more-close aria-label="Close menu">Close</button></p>{more}</div></div>
 <div class="search" id="search" hidden><div class="search-box" role="dialog" aria-modal="true" aria-label="Search">
 <input id="q" type="search" placeholder="Try: assassin, mushmom, level 35, scrolls" autocomplete="off" aria-label="Search the guide"><button type="button" class="search-x" data-close aria-label="Close search">Esc</button>
 <ul id="hits" role="listbox"></ul></div></div>
