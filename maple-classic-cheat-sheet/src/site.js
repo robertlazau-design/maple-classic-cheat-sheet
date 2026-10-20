@@ -47,7 +47,7 @@
     b.type = "button"; b.className = "linkbtn"; b.setAttribute("aria-label", "Copy link to this section"); b.title = "Copy link";
     b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
     b.addEventListener("click", function () { copy(location.origin + location.pathname + "#" + el.id); });
-    (el.tagName === "H2" ? el : (el.querySelector("h3") || el)).appendChild(b);
+    (el.tagName === "H2" ? el : (el.querySelector("h3, h2") || el)).appendChild(b);
   });
 
   // ---- Return Scroll: back to the top once you've scrolled a bit
@@ -128,6 +128,125 @@
   });
   if (q) q.addEventListener("input", function () { renderHits(q.value); });
 
+  // ---- "Was this page right?" feedback (Web3Forms when a key is set, email otherwise)
+  var fb = document.querySelector(".fb");
+  if (fb) {
+    var fbForm = fb.querySelector(".fb-form"), fbKey = fb.dataset.fbKey, page = location.pathname;
+    fb.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-fb]"); if (!b) return;
+      fb.querySelectorAll("[data-fb]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      if (b.dataset.fb === "up") { fbForm.hidden = true; store.set("mccs-fb" + page, "up"); toast("Thanks! +1 EXP for the guide"); }
+      else { fbForm.hidden = false; fbForm.querySelector("textarea").focus(); }
+    });
+    fbForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var msg = fbForm.message.value.trim(); if (!msg || fbForm.botcheck.checked) return;
+      var subject = "Maple Guide fix: " + page;
+      if (!fbKey) { location.href = "mailto:robertlazau@gmail.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(msg + "\n\nPage: " + location.href); return; }
+      var btn = fbForm.querySelector("button[type=submit]"); btn.disabled = true; btn.textContent = "Sending…";
+      fetch("https://api.web3forms.com/submit", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ access_key: fbKey, subject: subject, from_name: "Maple Classic Guide", page: location.href, message: msg }) })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (!d.success) throw new Error(d.message || "failed");
+          fb.innerHTML = '<p class="fb-q">Got it, thank you! 🍁</p><p class="muted">We check every report against the game and log fixes on <a href="/updates/">What\'s new</a>.</p>';
+          toast("Fix sent! +5 EXP");
+        })
+        .catch(function () { btn.disabled = false; btn.textContent = "Send fix"; toast("Couldn't send. Try again in a sec?"); });
+    });
+  }
+
+  // ---- EXP calculator (/tools/)
+  var xc = document.getElementById("expcalc");
+  if (xc) {
+    var T = JSON.parse(document.getElementById("exp-data").textContent).toNext;
+    var f = { lv: document.getElementById("xc-lv"), pct: document.getElementById("xc-pct"), goal: document.getElementById("xc-goal"), rate: document.getElementById("xc-rate") };
+    var xo = document.getElementById("xc-out"), timerEl = document.getElementById("xc-timer"), startBtn = document.getElementById("xc-start");
+    var fmt = function (n) { return Math.round(n).toLocaleString("en-US"); };
+    var big = function (n) { return n >= 1e9 ? (n / 1e9).toFixed(n >= 1e10 ? 1 : 2) + "B" : n >= 1e6 ? (n / 1e6).toFixed(1) + "M" : n >= 1e4 ? Math.round(n / 1e3) + "k" : fmt(n); };
+    var dur = function (h) {
+      if (!isFinite(h)) return "";
+      if (h < 1) return Math.max(1, Math.round(h * 60)) + " min";
+      if (h < 48) return Math.floor(h) + " h " + Math.round((h % 1) * 60) + " min";
+      if (h < 24 * 365) return Math.round(h / 24) + " days of non-stop grinding";
+      return (h / 24 / 365).toFixed(1) + " years of non-stop grinding";
+    };
+    var saved = store.get("mccs-exp") || {};
+    var qs2 = new URLSearchParams(location.search);
+    if (qs2.get("lv") && Number(qs2.get("lv")) !== Number(saved.lv)) { saved.lv = Number(qs2.get("lv")); saved.pct = 0; }
+    ["lv", "pct", "goal", "rate"].forEach(function (k) { if (saved[k] != null && saved[k] !== "") f[k].value = saved[k]; });
+    if (qs2.get("lv") && !qs2.get("goal")) f.goal.value = Math.min(100, Number(qs2.get("lv")) + 1);
+    var clamp = function (v, a, b) { v = Number(v); return isNaN(v) ? a : Math.max(a, Math.min(b, v)); };
+    var expAt = function () { var lv = clamp(f.lv.value, 1, 99); return { lv: lv, pct: clamp(f.pct.value, 0, 99.99) }; };
+    var calc = function () {
+      var c = expAt(), goal = clamp(f.goal.value, c.lv + 1, 100), rate = Number(f.rate.value) || 0;
+      store.set("mccs-exp", { lv: f.lv.value, pct: f.pct.value, goal: f.goal.value, rate: f.rate.value });
+      var need = T[c.lv - 1] * (1 - c.pct / 100);
+      for (var l = c.lv + 1; l < goal; l++) need += T[l - 1];
+      var toNext = T[c.lv - 1] * (1 - c.pct / 100);
+      var h = '<div class="xc-big"><span>EXP to level ' + goal + '</span><b>' + big(need) + '</b><small>' + fmt(need) + ' EXP</small></div>';
+      if (rate > 0) {
+        var hrs = need / rate, eta = new Date(Date.now() + hrs * 36e5);
+        h += '<div class="xc-big"><span>At ' + big(rate) + ' EXP/hour</span><b>' + dur(hrs) + '</b>' + (hrs < 24 * 60 ? '<small>Done around ' + eta.toLocaleString(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" }) + '</small>' : '') + '</div>';
+        h += '<p class="xc-line">Next level (' + (c.lv + 1) + ') in <b>' + dur(toNext / rate) + '</b>.</p>';
+      } else h += '<p class="xc-line">Add your EXP per hour (or measure it below) to see how long that takes.</p>';
+      var quip = goal >= 100 && c.lv >= 90 ? "Level 99 to 100 alone is 9.5 billion EXP. Bring snacks. Lots of snacks."
+        : goal > 90 ? "Heads up: from level 90 every level costs 2.1× the one before. The wall is real."
+        : goal >= 30 && c.lv < 30 ? "Level 30 means your 2nd job test. Stock up on potions first."
+        : goal >= 10 && c.lv < 10 ? "Level 10 means 1st job. Ride the taxi to your job town before you advance (Beginner discount)." : "";
+      if (quip) h += '<p class="xc-quip">' + esc(quip) + '</p>';
+      xo.innerHTML = h;
+    };
+    Object.keys(f).forEach(function (k) { f[k].addEventListener("input", calc); });
+    // stopwatch: measure EXP/hour from two readings
+    var run = store.get("mccs-exp-run");
+    var tick = function () {
+      if (!run) { timerEl.textContent = ""; startBtn.textContent = "⏱ Measure my EXP/hour"; return; }
+      var m = Math.floor((Date.now() - run.t) / 60000);
+      startBtn.textContent = "✅ Stop & calculate"; timerEl.textContent = "Measuring… " + m + " min. Update your level and EXP %, then tap stop.";
+    };
+    var totalAt = function (lv, pct) { var s = 0; for (var i = 1; i < lv; i++) s += T[i - 1]; return s + T[lv - 1] * pct / 100; };
+    startBtn.addEventListener("click", function () {
+      var c = expAt();
+      if (!run) { run = { t: Date.now(), lv: c.lv, pct: c.pct }; store.set("mccs-exp-run", run); toast("Stopwatch started. Go grind!"); tick(); return; }
+      var hrs = (Date.now() - run.t) / 36e5, gained = totalAt(c.lv, c.pct) - totalAt(run.lv, run.pct);
+      if (hrs < 1 / 60 || gained <= 0) { toast("Grind a bit longer, then update your EXP %."); return; }
+      f.rate.value = Math.round(gained / hrs); run = null; store.set("mccs-exp-run", null); tick(); calc();
+      toast("Measured: " + big(Number(f.rate.value)) + " EXP/hour");
+    });
+    setInterval(tick, 30000); tick(); calc();
+  }
+
+  // ---- Scroll simulator (/tools/)
+  var ss = document.getElementById("scrollsim");
+  if (ss) {
+    var G = { lesser: { p: 1, s: 1, n: "Lesser" }, inter: { p: 0.6, s: 2, n: "Intermediate" }, greater: { p: 0.1, s: 3, n: "Greater" }, chaos: { p: 0.1, s: 4, n: "Chaos", boom: 0.5 } };
+    var grade = document.getElementById("ss-grade"), slotsIn = document.getElementById("ss-slots"), itemEl = document.getElementById("ss-item"), log = document.getElementById("ss-log");
+    var it;
+    var fresh = function () { it = { slots: Math.max(1, Math.min(10, Number(slotsIn.value) || 7)), plus: 0, used: 0, pass: 0, boom: false }; log.innerHTML = ""; draw(); };
+    var draw = function () {
+      var left = it.slots - it.used;
+      itemEl.className = "item" + (it.boom ? " boom" : "");
+      itemEl.innerHTML = it.boom ? '<b>💥 BOOM</b><span>Your item is gone. That\'s Chaos for you.</span>'
+        : '<b>Weapon +' + it.plus + ' ATK</b><span>' + left + ' slot' + (left === 1 ? "" : "s") + ' left · ' + it.pass + ' of ' + it.used + ' passed</span>';
+      document.getElementById("ss-one").disabled = document.getElementById("ss-all").disabled = it.boom || left <= 0;
+    };
+    var one = function () {
+      if (it.boom || it.used >= it.slots) return;
+      var g = G[grade.value], ok = Math.random() < g.p, li = document.createElement("li");
+      it.used++;
+      if (ok) { it.plus += g.s; it.pass++; li.className = "ok"; li.textContent = "✨ " + g.n + " passed: +" + g.s; }
+      else if (g.boom && Math.random() < g.boom) { it.boom = true; li.className = "boom"; li.textContent = "💥 " + g.n + " failed and destroyed the item"; }
+      else { li.className = "fail"; li.textContent = "💨 " + g.n + " failed (slot used)"; }
+      log.prepend(li); draw();
+    };
+    document.getElementById("ss-one").addEventListener("click", one);
+    document.getElementById("ss-all").addEventListener("click", function () { while (!it.boom && it.used < it.slots) one(); if (!it.boom && it.used) toast(it.plus >= it.slots * 2 ? "Perfect item! Screenshot it." : "Done: +" + it.plus + " ATK"); });
+    document.getElementById("ss-reset").addEventListener("click", fresh);
+    slotsIn.addEventListener("change", fresh);
+    fresh();
+  }
+
   // ---- Your run (home page)
   var dataEl = document.getElementById("finder-data");
   if (!dataEl) return;
@@ -181,6 +300,7 @@
     h += '<div class="box"><h3>⏭️ Next up</h3><p>' + esc(next) + "</p></div>";
     h += '<a class="btn btn-primary full" href="/jobs/' + state.job + '/">Full ' + esc(job.name) + " build →</a>";
     h += '<button type="button" class="btn btn-ghost full share-run">🔗 Share my run</button>';
+    if (lv < 100) h += '<a class="btn btn-ghost full" href="/tools/?lv=' + lv + '#exp">⏱ How long until level ' + (lv + 1) + '?</a>';
     out.innerHTML = h;
   }
   document.querySelector(".classes").addEventListener("click", function (e) {
