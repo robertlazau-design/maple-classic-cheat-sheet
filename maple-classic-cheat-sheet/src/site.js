@@ -233,6 +233,72 @@
     fresh();
   }
 
+  // ---- Boss respawn timers (/bosses/): saved on this device only
+  var timers = store.get("mccs-boss") || {};
+  var tEls = document.querySelectorAll(".timer[data-boss]");
+  function fmt(ms) { var m = Math.max(0, Math.round(ms / 60000)); return m >= 60 ? Math.floor(m / 60) + "h " + (m % 60) + "m" : m + "m"; }
+  function drawTimers() {
+    var now = Date.now();
+    tEls.forEach(function (el) {
+      var t = timers[el.dataset.boss], out = el.querySelector(".timer-out"), b = el.querySelector("[data-kill]");
+      if (!t) { out.textContent = ""; out.classList.remove("ready"); b.textContent = "⏱ I just killed it"; return; }
+      var lo = t + Number(el.dataset.min) * 60000, hi = t + Number(el.dataset.max) * 60000;
+      b.textContent = "⏱ Killed it again";
+      if (now < lo) { out.classList.remove("ready"); out.textContent = "Back in " + fmt(lo - now) + (hi > lo ? " to " + fmt(hi - now) : ""); }
+      else if (now < hi) { out.classList.add("ready"); out.textContent = "Spawn window open now! Up to " + fmt(hi - now) + " left."; }
+      else { out.classList.add("ready"); out.textContent = "Should be up. Go check!"; }
+    });
+  }
+  if (tEls.length) {
+    tEls.forEach(function (el) {
+      el.querySelector("[data-kill]").addEventListener("click", function () {
+        timers[el.dataset.boss] = Date.now(); store.set("mccs-boss", timers); drawTimers();
+        toast("Timer started. GG!");
+      });
+    });
+    drawTimers(); setInterval(drawTimers, 30000);
+  }
+
+  // ---- KPQ combo tracker: tap combos as you try them, long-press or double-tap the winner
+  document.querySelectorAll("[data-combo]").forEach(function (box) {
+    box.addEventListener("click", function (e) {
+      if (e.target.closest(".combo-reset")) { box.querySelectorAll(".combo-g button").forEach(function (b) { b.setAttribute("aria-pressed", "false"); b.classList.remove("win"); }); return; }
+      var b = e.target.closest(".combo-g button"); if (!b) return;
+      var on = b.getAttribute("aria-pressed") !== "true";
+      b.setAttribute("aria-pressed", String(on)); b.classList.remove("win");
+      var left = box.querySelectorAll('.combo-g button[aria-pressed="false"]').length;
+      if (on && left === 1) toast("Only one left. That's gotta be it!");
+    });
+    box.addEventListener("dblclick", function (e) {
+      var b = e.target.closest(".combo-g button"); if (!b) return;
+      b.setAttribute("aria-pressed", "false"); b.classList.add("win"); toast("Cleared! On to the next stage.");
+    });
+  });
+
+  // ---- Quest checklist (/quests/)
+  var qs = document.querySelectorAll(".quest[data-q]");
+  if (qs.length) {
+    var done = store.get("mccs-quests") || {};
+    var drawBands = function () {
+      document.querySelectorAll("[data-bandgrid]").forEach(function (g) {
+        var all = g.querySelectorAll(".quest").length, d = g.querySelectorAll(".quest.done").length;
+        var p = document.querySelector('[data-band="' + g.dataset.bandgrid + '"]');
+        if (p) p.textContent = d ? "✓ " + d + "/" + all : "";
+      });
+    };
+    qs.forEach(function (q) {
+      var b = q.querySelector(".q-done");
+      var set = function (v) { q.classList.toggle("done", v); b.setAttribute("aria-pressed", String(v)); b.textContent = v ? "✓ Done" : "Mark done"; };
+      set(!!done[q.dataset.q]);
+      b.addEventListener("click", function () {
+        var v = !done[q.dataset.q]; if (v) done[q.dataset.q] = 1; else delete done[q.dataset.q];
+        store.set("mccs-quests", done); set(v); drawBands();
+        if (v) toast("Quest complete! +EXP");
+      });
+    });
+    drawBands();
+  }
+
   // ---- Your run (home page)
   var dataEl = document.getElementById("finder-data");
   if (!dataEl) return;
