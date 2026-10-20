@@ -131,8 +131,13 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
         ld.append({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
             {"@type": "ListItem", "position": i + 1, "name": t, **({"item": SITE + h} if h else {})} for i, (h, t) in enumerate(crumbs)]})
     if schema: ld.append(schema)
-    tabs = [("/", "🏠", "Home"), ("/leveling/", "🗺️", "Grind"), ("/jobs/", "⚔️", "Builds"), ("/tier-list/", "🏆", "Tiers"), ("/secrets/", "🤫", "Secrets")]
-    tabbar = "".join(f'<a href="{h}"{" aria-current=page" if h == path else ""}><span aria-hidden="true">{ic}</span>{t}</a>' for h, ic, t in tabs) + '<button type="button" data-search><span aria-hidden="true">🔍</span>Search</button>'
+    tabs = [("/", "M3.5 11 12 4l8.5 7v8.5a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z", "Home"),
+            ("/leveling/", "M9 4.5 3.5 6.5v13l5.5-2 6 2 5.5-2v-13l-5.5 2zM9 4.5v13M15 6.5v13", "Grind"),
+            ("/jobs/", "M14.5 3.5h6v6L10 20l-6-6zM7 11l6 6M3.5 20.5l3-3", "Builds"),
+            ("/tier-list/", "M8 3.5h8V9a4 4 0 0 1-8 0zM8 5.5H5a3 3 0 0 0 3 4.5M16 5.5h3a3 3 0 0 1-3 4.5M12 13v4M8.5 20.5h7M10 17h4", "Tiers"),
+            ("/secrets/", "M12 3l2 5.5 5.5 2-5.5 2L12 18l-2-5.5-5.5-2 5.5-2zM19 15.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z", "Secrets")]
+    cur = "/jobs/" if path.startswith("/jobs/") else path
+    tabbar = "".join(f'<a href="{h}"{" aria-current=page" if h == cur else ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{d}"/></svg>{t}</a>' for h, d, t in tabs)
     ldtxt = "".join(f'<script type="application/ld+json">{json.dumps(x)}</script>' for x in ld)
     return f"""<!doctype html>
 <html lang="en">
