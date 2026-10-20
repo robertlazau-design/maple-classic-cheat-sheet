@@ -77,7 +77,7 @@
               "Lv64-70: Rush to 20 (1 SP spare at 70)",
               "Lv71-100 (inference): all Fighter skills are maxed by ~Lv70; extra SP has nowhere to go until 3rd job.",
               "Options: Booster 10 or Rush 10 earlier for upkeep/mobility. Don't push Rush early (Rush 1 costs 35 MP). Pick sword vs axe before spending Mastery SP. Turn Final Attack off when PS already one-shots.",
-              "Classic changes: Final Attack proc 25% (was 50% in test), Rush moved into 2nd job (6 targets, 15 MP at max), Power Guard is 3rd job."
+              "Classic changes: Final Attack proc 25% (was 50% in test), Rush moved into 2nd job (6 targets, 15 MP at max), Power Guard is 3rd job. Since Oct 15, Rush no longer pushes bosses."
             ]
           },
           "confidence": "medium",
@@ -133,7 +133,7 @@
               "Lv64-70: Rush to 20; spare point into the other Mastery",
               "Lv71-100 (inference): skills effectively maxed; nothing left to put SP into until 3rd job.",
               "Options: Threaten earlier for mob pulling; Booster 10 or Rush 10 earlier. Skip sword skills on a blunt build (and vice versa).",
-              "Classic changes: Final Attack 25% proc; Rush added to 2nd job (6 targets)."
+              "Classic changes: Final Attack 25% proc; Rush added to 2nd job (6 targets). Since the Oct 15 patch, Rush no longer pushes bosses."
             ]
           },
           "confidence": "medium",
@@ -190,7 +190,7 @@
               "Lv60-70: Iron Will to 30; spare point into other Mastery",
               "Lv71-100 (inference): skills maxed; no further sinks until 3rd job.",
               "Skip: splitting SP between spear and polearm families; early Iron Will.",
-              "Classic changes: Final Attack 25% proc; Rush in 2nd job; Iron Will gives +50 WDEF and 35% knockback resist at max."
+              "Classic changes: Final Attack 25% proc; Rush in 2nd job (no longer pushes bosses since Oct 15); Iron Will gives +50 WDEF and 35% knockback resist at max."
             ]
           },
           "confidence": "medium",
@@ -265,7 +265,8 @@
               "Lv59-64: MP Eater to 20",
               "Lv64-70: Teleport to 20, Slow 1",
               "Lv71-100 (inference): Slow is the only skill left to fill.",
-              "Options: Poison Breath first if you hit 3+ mobs per cast; Meditation before PB for single-target farming; Teleport earlier for mobility. Don't spam Teleport at Lv1 (55 MP)."
+              "Options: Poison Breath first if you hit 3+ mobs per cast; Meditation before PB for single-target farming; Teleport earlier for mobility. Don't spam Teleport at Lv1 (55 MP).",
+              "Classic changes: Fire Arrow is single-target with a 3 s burn; Poison Breath hits 6. A bug that doubled EXP and drops from burn kills was fixed Oct 15, so week-one F/P leveling reports run fast."
             ]
           },
           "confidence": "medium",
@@ -370,7 +371,7 @@
               "Party build: Lv30 Heal 1; Lv31 Teleport 1, MP Eater 1, Holy Arrow 1; Lv32-41 Holy Arrow to 30; Lv42-44 Heal 5, Invincible 5, Bless 1; Lv45-49 Bless to 16; Lv50-58 Heal to 30; Lv58-64 MP Eater to 20; Lv64-70 Teleport to 20.",
               "Solo build: Heal 2 / Teleport 1 / MP Eater 1 at Lv30-31; Holy Arrow to 30 by Lv41; Heal 5 + Invincible to 20 by Lv49; MP Eater to 20 by Lv55; Teleport to 20 by Lv62; Heal to 30 + Bless 1 by Lv70.",
               "Lv71-100 (inference): finish Bless and Invincible (party) or Bless (solo).",
-              "Classic changes: Holy Arrow now hits 1 target but M.ATK 160 (was 3 targets / 60 in test); Invincible reduces touch damage 20% at max; Bless -15% party damage taken at max."
+              "Classic changes: Holy Arrow now hits 1 target but M.ATK 160 (was 3 targets / 60 in test); Invincible reduces touch damage 20% at max; Bless -15% party damage taken at max (it no longer gives accuracy or avoid). Heal's range was trimmed in the Oct 8 maintenance."
             ]
           },
           "confidence": "medium",
@@ -445,7 +446,7 @@
               "Lv64-70: Soul Arrow to 20",
               "Lv71-100 (inference): Amazon's Judgement (crit slow) to 20.",
               "Option: Arrow Bomb first if mobs already die cleanly. Mistake to avoid: maxing Final Attack before Arrow Bomb.",
-              "Classic changes: Final Attack 25% proc; skill renamed Arrow Bomb (from Arrow Bomb: Bow)."
+              "Classic changes: Final Attack 25% proc; Arrow Bomb (renamed from Arrow Bomb: Bow) hits 6 targets with a 2 s stun."
             ]
           },
           "confidence": "medium",
@@ -621,7 +622,7 @@
               "Path B (no reset): Lv30 Haste 1; Lv31-37 Dagger Mastery 20 (Booster 1); Lv38-47 Savage Blow to 30; then as Path A.",
               "Lv71-100 (inference): finish Dagger Booster and Nimble Recovery to 20.",
               "Skip: resetting at Lv30 (L7 still good until ~40). Keep Double Stab after Savage Blow for MP efficiency.",
-              "Classic changes: Savage Blow 4/5/6 hits by level (450% total at 30); Steal duration doubled to 60s and grants ATK; Haste +30/+10."
+              "Classic changes: Savage Blow 4/5/6 hits by level (450% total at 30); Steal duration doubled to 60s and grants ATK; Haste +30/+10. Since the Oct 15 patch, Steal only works when it hits."
             ]
           },
           "confidence": "medium",
@@ -637,7 +638,7 @@
   "classicChanges": [
     "Level cap 100 at launch; 1st job at Lv10, 2nd job at Lv30; no 3rd job, El Nath or Orbis at launch.",
     "1st-job advancement has no stat requirement for any class (Magician also at Lv10, not Lv8).",
-    "Every character starts with 25 AP (12 primary / 5 secondary / 4 / 4), +5 AP per level.",
+    "Every character starts with 25 AP: each stat starts at 4 and you place the other 9 (12/5/4/4 is the usual split), then +5 AP per level.",
     "Flat HP/MP per level: Warrior +28/+12, Bowman & Thief +22/+17, Magician +16/+22, Beginner +16/+12; each job advancement adds 500 split by class. INT gives no extra MP and HP washing is not viable.",
     "Beginner skills: Three Snails, Recovery, Nimble Feet (max 3 each, 9 SP by Lv10).",
     "Reworked 1st/2nd job skills: Precise Strikes (warrior 1st), Max HP/MP Increase as % of base, Rush in warrior 2nd job, Power Guard moved to 3rd job, Holy Arrow single-target, Savage Blow for Bandit, Haste +30 Speed/+10 Jump.",
@@ -648,7 +649,7 @@
     "Six crafting professions (Smithing, Weaponcrafting, Tailoring, Woodcrafting, Leatherworking, Arcforge), from Lv10; bows mostly crafted.",
     "Citizenship at Lv12 (Henesys or Kerning) for shop/taxi discounts.",
     "Separate economy from modern MapleStory; only NX is shared.",
-    "Forgotten Hollow (Lv39-60) arrives in a Nov 18 update."
+    "Forgotten Hollow (monsters Lv39-59, plus the Lv60 Rotten Mushmom) arrives in a Nov 18 update."
   ],
   "unverified": [
     "All per-job data relies on one community source (MeowDB); I could not cross-check against maplestory-classic.wiki or the official Nexon release notes (the official URL was blocked for fetching).",
