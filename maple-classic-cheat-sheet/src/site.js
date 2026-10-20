@@ -206,7 +206,11 @@
   // ---- Scroll simulator (/tools/)
   var ss = document.getElementById("scrollsim");
   if (ss) {
-    var G = { lesser: { p: 1, s: 1, n: "Lesser" }, inter: { p: 0.6, s: 2, n: "Intermediate" }, greater: { p: 0.1, s: 3, n: "Greater" }, chaos: { p: 0.1, s: 4, n: "Chaos", boom: 0.5 } };
+    var G = { lesser: { p: 1, n: "Lesser" }, inter: { p: 0.6, n: "Intermediate" }, greater: { p: 0.1, n: "Greater" }, chaos: { p: 0.1, n: "Chaos", boom: 0.5 } };
+    // Classic launch values per scroll type: weapon attack 1/2/4/5, magic attack 2/4/8/10, stats 1/2/3/4
+    var T = { watk: { lesser: 1, inter: 2, greater: 4, chaos: 5, u: "ATK", w: "Weapon" }, matk: { lesser: 2, inter: 4, greater: 8, chaos: 10, u: "M.ATK", w: "Staff" }, stat: { lesser: 1, inter: 2, greater: 3, chaos: 4, u: "stat", w: "Item" } };
+    var typeEl = document.getElementById("ss-type");
+    var ty = function () { return T[(typeEl && typeEl.value) || "watk"]; };
     var grade = document.getElementById("ss-grade"), slotsIn = document.getElementById("ss-slots"), itemEl = document.getElementById("ss-item"), log = document.getElementById("ss-log");
     var it;
     var fresh = function () { it = { slots: Math.max(1, Math.min(10, Number(slotsIn.value) || 7)), plus: 0, used: 0, pass: 0, boom: false }; log.innerHTML = ""; draw(); };
@@ -214,23 +218,116 @@
       var left = it.slots - it.used;
       itemEl.className = "item" + (it.boom ? " boom" : "");
       itemEl.innerHTML = it.boom ? '<b>💥 BOOM</b><span>Your item is gone. That\'s Chaos for you.</span>'
-        : '<b>Weapon +' + it.plus + ' ATK</b><span>' + left + ' slot' + (left === 1 ? "" : "s") + ' left · ' + it.pass + ' of ' + it.used + ' passed</span>';
+        : '<b>' + ty().w + ' +' + it.plus + ' ' + ty().u + '</b><span>' + left + ' slot' + (left === 1 ? "" : "s") + ' left · ' + it.pass + ' of ' + it.used + ' passed</span>';
       document.getElementById("ss-one").disabled = document.getElementById("ss-all").disabled = it.boom || left <= 0;
     };
     var one = function () {
       if (it.boom || it.used >= it.slots) return;
       var g = G[grade.value], ok = Math.random() < g.p, li = document.createElement("li");
       it.used++;
-      if (ok) { it.plus += g.s; it.pass++; li.className = "ok"; li.textContent = "✨ " + g.n + " passed: +" + g.s; }
+      var gain = ty()[grade.value];
+      if (ok) { it.plus += gain; it.pass++; li.className = "ok"; li.textContent = "✨ " + g.n + " passed: +" + gain; }
       else if (g.boom && Math.random() < g.boom) { it.boom = true; li.className = "boom"; li.textContent = "💥 " + g.n + " failed and destroyed the item"; }
       else { li.className = "fail"; li.textContent = "💨 " + g.n + " failed (slot used)"; }
       log.prepend(li); draw();
     };
     document.getElementById("ss-one").addEventListener("click", one);
-    document.getElementById("ss-all").addEventListener("click", function () { while (!it.boom && it.used < it.slots) one(); if (!it.boom && it.used) toast(it.plus >= it.slots * 2 ? "Perfect item! Screenshot it." : "Done: +" + it.plus + " ATK"); });
+    document.getElementById("ss-all").addEventListener("click", function () { while (!it.boom && it.used < it.slots) one(); if (!it.boom && it.used) toast(it.plus >= it.slots * ty().inter ? "Perfect item! Screenshot it." : "Done: +" + it.plus + " " + ty().u); });
+    if (typeEl) typeEl.addEventListener("change", fresh);
     document.getElementById("ss-reset").addEventListener("click", fresh);
     slotsIn.addEventListener("change", fresh);
     fresh();
+  }
+
+  // ---- "More" menu on the phone tab bar
+  var moreBtn = document.querySelector("[data-more]"), sheet = document.getElementById("more-sheet");
+  if (moreBtn && sheet) {
+    var setMore = function (open) {
+      sheet.hidden = !open; moreBtn.setAttribute("aria-expanded", String(open));
+      document.documentElement.style.overflow = open ? "hidden" : "";
+      if (open) sheet.querySelector(".more-box").focus({ preventScroll: true }); else moreBtn.focus({ preventScroll: true });
+    };
+    moreBtn.addEventListener("click", function () { setMore(sheet.hidden); });
+    sheet.addEventListener("click", function (e) { if (e.target === sheet || e.target.closest("[data-more-close]")) setMore(false); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !sheet.hidden) setMore(false); });
+  }
+
+  // ---- Event countdowns (/news/) and the home launch banner
+  var nowT = Date.now();
+  document.querySelectorAll("[data-at]").forEach(function (el) {
+    var at = Date.parse(el.dataset.at), card = el.closest(".evt"), badge = card && card.querySelector(".evt-live");
+    if (!badge || isNaN(at)) return;
+    var days = Math.ceil((at - nowT) / 86400000);
+    if (nowT >= at) { badge.textContent = "Live now"; badge.className = "evt-live on"; }
+    else { badge.textContent = days <= 1 ? "Tomorrow" : "In " + days + " days"; badge.className = "evt-live soon"; }
+  });
+  var lb = document.querySelector("[data-launch-news]");
+  if (lb && nowT >= Date.parse("2026-10-21T18:00:00Z")) lb.textContent = "Classic World is live: events and patch notes";
+
+  // ---- Boss respawn timers (/bosses/): saved on this device only
+  var timers = store.get("mccs-boss") || {};
+  var tEls = document.querySelectorAll(".timer[data-boss]");
+  function fmt(ms) { var m = Math.max(0, Math.round(ms / 60000)); return m >= 60 ? Math.floor(m / 60) + "h " + (m % 60) + "m" : m + "m"; }
+  function drawTimers() {
+    var now = Date.now();
+    tEls.forEach(function (el) {
+      var t = timers[el.dataset.boss], out = el.querySelector(".timer-out"), b = el.querySelector("[data-kill]");
+      if (!t) { out.textContent = ""; out.classList.remove("ready"); b.textContent = "⏱ I just killed it"; return; }
+      var lo = t + Number(el.dataset.min) * 60000, hi = t + Number(el.dataset.max) * 60000;
+      b.textContent = "⏱ Killed it again";
+      if (now < lo) { out.classList.remove("ready"); out.textContent = "Back in " + fmt(lo - now) + (hi > lo ? " to " + fmt(hi - now) : ""); }
+      else if (now < hi) { out.classList.add("ready"); out.textContent = "Spawn window open now! Up to " + fmt(hi - now) + " left."; }
+      else { out.classList.add("ready"); out.textContent = "Should be up. Go check!"; }
+    });
+  }
+  if (tEls.length) {
+    tEls.forEach(function (el) {
+      el.querySelector("[data-kill]").addEventListener("click", function () {
+        timers[el.dataset.boss] = Date.now(); store.set("mccs-boss", timers); drawTimers();
+        toast("Timer started. GG!");
+      });
+    });
+    drawTimers(); setInterval(drawTimers, 30000);
+  }
+
+  // ---- KPQ combo tracker: tap combos as you try them, long-press or double-tap the winner
+  document.querySelectorAll("[data-combo]").forEach(function (box) {
+    box.addEventListener("click", function (e) {
+      if (e.target.closest(".combo-reset")) { box.querySelectorAll(".combo-g button").forEach(function (b) { b.setAttribute("aria-pressed", "false"); b.classList.remove("win"); }); return; }
+      var b = e.target.closest(".combo-g button"); if (!b) return;
+      var on = b.getAttribute("aria-pressed") !== "true";
+      b.setAttribute("aria-pressed", String(on)); b.classList.remove("win");
+      var left = box.querySelectorAll('.combo-g button[aria-pressed="false"]').length;
+      if (on && left === 1) toast("Only one left. That's gotta be it!");
+    });
+    box.addEventListener("dblclick", function (e) {
+      var b = e.target.closest(".combo-g button"); if (!b) return;
+      b.setAttribute("aria-pressed", "false"); b.classList.add("win"); toast("Cleared! On to the next stage.");
+    });
+  });
+
+  // ---- Quest checklist (/quests/)
+  var qs = document.querySelectorAll(".quest[data-q]");
+  if (qs.length) {
+    var done = store.get("mccs-quests") || {};
+    var drawBands = function () {
+      document.querySelectorAll("[data-bandgrid]").forEach(function (g) {
+        var all = g.querySelectorAll(".quest").length, d = g.querySelectorAll(".quest.done").length;
+        var p = document.querySelector('[data-band="' + g.dataset.bandgrid + '"]');
+        if (p) p.textContent = d ? "✓ " + d + "/" + all : "";
+      });
+    };
+    qs.forEach(function (q) {
+      var b = q.querySelector(".q-done");
+      var set = function (v) { q.classList.toggle("done", v); b.setAttribute("aria-pressed", String(v)); b.textContent = v ? "✓ Done" : "Mark done"; };
+      set(!!done[q.dataset.q]);
+      b.addEventListener("click", function () {
+        var v = !done[q.dataset.q]; if (v) done[q.dataset.q] = 1; else delete done[q.dataset.q];
+        store.set("mccs-quests", done); set(v); drawBands();
+        if (v) toast("Quest complete! +EXP");
+      });
+    });
+    drawBands();
   }
 
   // ---- Your run (home page)

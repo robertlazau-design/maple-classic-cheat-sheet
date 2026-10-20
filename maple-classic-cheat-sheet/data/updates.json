@@ -2,6 +2,27 @@
  "entries": [
   {
    "date": "2026-10-20",
+   "title": "Fact-check pass after Founder's Access",
+   "items": [
+    "New News page: launch-day info, events (The Journey Begins, Mark of the Beta, Halloween, Moon Bunny, Dec 9 guilds), deadlines and every patch since Oct 6.",
+    "Fixed: AoE skills like Slash Blast, Rush, Iron Arrow, Arrow Bomb, Poison Breath and Thunder Bolt hit 6 monsters, not 4. Holy Arrow is single-target.",
+    "Fixed: weapon attack scrolls are Greater +4 and Chaos +5 at launch. The scroll simulator now has weapon, magic and stat scroll types.",
+    "Fixed: Super Megaphone is 1,500 NX, and megaphones need Lv 15 from Oct 21. Party EXP needs activity every 10 seconds, not 15.",
+    "Updated class notes for the Oct 8 and Oct 15 patches (Heal range, Steal must hit, Rush no longer moves bosses, Bless), plus KPQ answers 21 and 30 and current Free Market prices."
+   ]
+  },
+  {
+   "date": "2026-10-20",
+   "title": "Bosses, KPQ, quests and mesos",
+   "items": [
+    "New Bosses page: all 7 bosses with sprites, drops, when you're ready to fight them, and a respawn timer you can start on your phone.",
+    "New KPQ guide: Cloto's coupon answers and every rope, kitten and barrel combo, with a tracker to cross them off.",
+    "New Quest guide: the quests worth doing at every level, what they're worth in levels, rewards, and a checklist.",
+    "New Money making guide: launch-week Free Market prices, the best meso quests, boss meso drops and crafting profit."
+   ]
+  },
+  {
+   "date": "2026-10-20",
    "title": "Crafting guide",
    "items": [
     "New Crafting page: what to keep for each of the six professions, with item icons and the monsters that drop each material.",
