@@ -1,0 +1,635 @@
+{
+ "checked": "Oct 20, 2026",
+ "icons": {
+  "Mushroom Spore": 4000011,
+  "Squishy Liquid": 4000004,
+  "Orange Mushroom Cap": 4000001,
+  "Green Mushroom Cap": 4000012,
+  "Blue Mushroom Cap": 4000009,
+  "Horny Mushroom Cap": 4000015,
+  "Charm of the Undead": 4000008,
+  "Wild Boar Tooth": 4000020,
+  "Evil Eye Tail": 4000007,
+  "Ligator Skin": 4000032,
+  "Curse Eye Tail": 4000013,
+  "Lorang Claw": 4000043,
+  "Cold Eye Tail": 4000023,
+  "Tortie Shell": 4000045,
+  "Leaf": 4000005,
+  "Pig's Ribbon": 4000002,
+  "Octopus Leg": 4000006,
+  "Bubbling's Huge Bubble": 4000037,
+  "Firewood": 4000018,
+  "Stirge Wing": 4000042,
+  "Fire Boar's Tooth": 4000024,
+  "Tablecloth": 4000035,
+  "Lupin's Banana": 4000029,
+  "Medicine With Weird Vibes": 4000036,
+  "Halloween Candies": 4031203,
+  "Red Malady's Candy": 2022106,
+  "Blue Malady's Candy": 2022107,
+  "Green Malady's Candy": 2022105,
+  "Pumpkin Basket": 1302034,
+  "Pumpkin Hat": 1002699,
+  "Witch Hat": 1001002,
+  "Maple Leaf": 4001126,
+  "Mark of the Beta": 1002419,
+  "Regular Store Permit": 5140000,
+  "Fall Store Permit": 5140003,
+  "Pink Store Permit": 5140002,
+  "Megaphone": 5071000,
+  "Super Megaphone": 5072000,
+  "Bronze Arrow": 2060001,
+  "Dragon Skin": 4000030,
+  "Tauromacis Horn": 4000028,
+  "Taurospear Horn": 4000046,
+  "Supreme Sniper Potion": 2002005,
+  "Sharpness Potion": 2002008,
+  "Supreme Dexterity Potion": 2002000,
+  "Destructive Potion": 2002006,
+  "Steel Plate": 4011001,
+  "Dark Stone Golem Rubble": 4000025,
+  "Steely Throwing-Knives": 2070005,
+  "Resident's Chair": 3010001
+ },
+ "citizenship": {
+  "quick": [
+   "Hit level 12. Sign up with Arthur in Henesys Town Hall or Roxy in the Kerning City Civic Center.",
+   "Every day, open your town's Community Board and greet that day's neighbor. That's +100 points, more at higher grades.",
+   "Once a week, donate 30 of the item the board asks for. That's +700 to +2,100 points.",
+   "Grade 2 (level 17 and 1,500 points, about 8 days) lets you buy a house."
+  ],
+  "towns": [
+   {
+    "id": "henesys",
+    "name": "Henesys",
+    "emoji": "🍄",
+    "clerk": "Arthur, Town Hall",
+    "best": "Warriors and bowmen",
+    "perks": [
+     ["Bronze Arrow|2-meso Bronze Arrows", "Grade 3. Bow and crossbow arrows, +1 attack."],
+     ["Supreme Sniper Potion", "+7 accuracy for 15 min, 600 mesos. Any grade."],
+     ["Sharpness Potion", "+3% crit for 15 min, 750 mesos. Grade 3."],
+     ["Armor scroll|Overall stat scrolls", "STR or DEX overall scrolls (100%), grade 7."]
+    ],
+    "neighbors": [[1010100, "Rina"], [1012106, "Mrs. Ming Ming"], [1012108, "Camila"], [1012111, "Bruce"], [1012101, "Maya"], [1012102, "Pia"]],
+    "vip": "Chief Stan and Athena Pierce",
+    "home": "Yellow Mushroom House"
+   },
+   {
+    "id": "kerning",
+    "name": "Kerning City",
+    "emoji": "🌃",
+    "clerk": "Roxy, Civic Center",
+    "best": "Thieves and magicians",
+    "perks": [
+     ["Wolbi Throwing-Stars|1,000-meso Wolbi stars", "Grade 3. Cheap stars for assassins."],
+     ["Supreme Dexterity Potion", "+7 avoid, 600 mesos. Any grade."],
+     ["Destructive Potion", "+3% crit damage, 750 mesos. Grade 3."],
+     ["Armor scroll|Overall stat scrolls", "LUK or INT overall scrolls (100%), grade 7. Dr. Faymus's potions get cheaper too."]
+    ],
+    "neighbors": [
+     [1052000, "Alex"],
+     [1052102, "Shumi"],
+     [1052103, "Nella"],
+     [1052106, "Icarus"],
+     [1052105, "Jane Doe"],
+     [1052006, "Jake"],
+     [9000008, "Mr. Pickall"]
+    ],
+    "vip": "Chun Ji and the Dark Lord",
+    "home": "Backalley Semi-Basement"
+   }
+  ],
+  "both": "Same in both towns: the discounts, housing, the Resident's Chair, glove attack scrolls at grade 9, Elixirs at grade 10 and the story quests. Only the shops differ, so pick the town that sells what your class burns through.",
+  "grades": [
+   [1, "Traveler", 12, 0, "5%", 95, "Town shop, 5% off cabs and some store items", 0],
+   [2, "Visitor", 17, 1500, "7%", 90, "🏠 Buy a house · Resident's Chair · Lv 17 story", 8],
+   [3, "Helpful Stranger", 22, 3500, "9%", 85, "Cheap arrows or stars · crit potions · earring scroll", 14],
+   [4, "Recognized Guest", 27, 6000, "11%", 80, "Lv 27 story", 20],
+   [5, "Town Resident", 32, 9000, "13%", 75, "VIP neighbors (big EXP dailies) · top and bottom DEF scrolls", 26],
+   [6, "Trusted Neighbor", 37, 12500, "15%", 70, "Lv 37 story", 32],
+   [7, "Distinguished Citizen", 42, 16500, "17%", 65, "Overall stat scrolls", 37],
+   [8, "Town Patron", 47, 21000, "19%", 60, "Lv 47 story", 42],
+   [9, "Guardian of the Village", 52, 26000, "21%", 55, "Glove attack scrolls (100%)", 48],
+   [10, "Citizen of Honor", 57, 32000, "25%", 50, "Elixirs · Lv 57 story → town earrings", 54]
+  ],
+  "gradeNote": "Points are from the launch client and count per grade (128,000 in all). Some guides still show the closed-test numbers (1,000 to 10,000). You need the level and the points. Day counts are maplestory.quest's estimate if you do every daily and one donation a week; nobody has hit grade 10 yet.",
+  "daily": "Each day the board shows one neighbor. Your first visit is a \"First Greeting\" and later visits are \"Asking After\". Each one is worth 100 points at grade 1, plus 25 for every grade above that (325 at grade 10), with a little EXP, mesos and a fruit snack. From grade 5 (level 32) you also get VIP neighbors whose greetings pay about 5,850 EXP.",
+  "donations": {
+   "henesys": [
+    ["Blue Snail Shell", 1, 700],
+    ["Mushroom Spore", 1, 700],
+    ["Red Snail Shell", 1, 700],
+    ["Squishy Liquid", 1, 700],
+    ["Orange Mushroom Cap", 1, 700],
+    ["Green Mushroom Cap", 1, 700],
+    ["Blue Mushroom Cap", 2, 875],
+    ["Horny Mushroom Cap", 3, 1050],
+    ["Charm of the Undead", 3, 1050],
+    ["Wild Boar Tooth", 3, 1050],
+    ["Evil Eye Tail", 4, 1225],
+    ["Ligator Skin", 5, 1400],
+    ["Curse Eye Tail", 5, 1400],
+    ["Lorang Claw", 6, 1575],
+    ["Cold Eye Tail", 7, 1750],
+    ["Tortie Shell", 8, 1925],
+    ["Drake Skull", 9, 2100]
+   ],
+   "kerning": [
+    ["Red Snail Shell", 1, 700],
+    ["Orange Mushroom Cap", 1, 700],
+    ["Leaf", 1, 700],
+    ["Pig's Ribbon", 1, 700],
+    ["Octopus Leg", 1, 700],
+    ["Bubbling's Huge Bubble", 1, 700],
+    ["Firewood", 2, 875],
+    ["Stirge Wing", 3, 1050],
+    ["Charm of the Undead", 3, 1050],
+    ["Wild Boar Tooth", 3, 1050],
+    ["Evil Eye Tail", 4, 1225],
+    ["Ligator Skin", 5, 1400],
+    ["Fire Boar's Tooth", 5, 1400],
+    ["Tablecloth", 5, 1400],
+    ["Lupin's Banana", 6, 1575],
+    ["Cold Eye Tail", 7, 1750],
+    ["Tortie Shell", 8, 1925],
+    ["Medicine With Weird Vibes", 9, 2100]
+   ]
+  },
+  "donateNote": "The board picks one item from this pool each week, and better items unlock at higher grades. Every donation also pays EXP, mesos and 20 Blue Potions. Check the board before you farm: the item changes.",
+  "arcs": [
+   [17, 2, "A Family Reunited", "4,320 EXP · 2,441 mesos · +300 points", "Jake's Trauma", "4,615 EXP · 2,608 mesos · +300 points"],
+   [
+    27,
+    4,
+    "After the Festival Ends...",
+    "15,375 EXP · 3,533 mesos · +500 points",
+    "What the City Taught Me",
+    "16,500 EXP · 3,792 mesos · +500 points"
+   ],
+   [
+    37,
+    6,
+    "A Marble of Friendship",
+    "32,164 EXP · 5,148 mesos · +700 points",
+    "The Doctor Who Never Returned",
+    "32,164 EXP · 5,148 mesos · +700 points"
+   ],
+   [
+    47,
+    8,
+    "Maya and Her Peculiar Savior",
+    "57,000 EXP · 10 Elixirs · +1,000 points",
+    "A Grudge That Won't Rest",
+    "50,160 EXP · a glove crit scroll · +1,000 points"
+   ],
+   [
+    57,
+    10,
+    "A Gift for a Citizen of Honor",
+    "78,320 EXP · 10 Elixirs · Henesys Earrings",
+    "A Task for a Citizen of Honor",
+    "83,660 EXP · 10 Mana Elixirs · Kerning City Earrings"
+   ]
+  ],
+  "arcNote": "Each arc is 5 quests and needs the matching grade. Catch: an arc won't start until you've done that neighbor's First Greeting, and the board only shows one neighbor a day. Greet everyone you see. The town earrings are Lv 57, M.DEF 42, +2% crit damage and 5 slots (untradeable).",
+  "housing": {
+   "facts": [
+    ["Grade 2", "In Henesys or Kerning"],
+    ["Lv 17", "Plus 1,500 points"],
+    ["≈ 8 days", "Of dailies + donations"],
+    ["Price: TBA", "Nexon hasn't said yet"]
+   ],
+   "homes": [
+    ["henesys", "🍄 Yellow Mushroom House", "Behind a gold door in Henesys. Plays the Henesys music."],
+    ["kerning", "🌃 Backalley Semi-Basement", "Behind a gold door in Kerning City. Plays the Kerning music."]
+   ],
+   "npcs": [
+    ["Estate agent (buy a house)", "Tommy, Town Hall", "Jack, Civic Center"],
+    ["Housing registrar", "Bianca", "Scarlett"],
+    ["Furniture shop", "Oak", "Weston"]
+   ],
+   "place": [
+    ["🛋️", "52 furniture pieces", "26 per town style. 13 do something: lamps switch on, wardrobes open, you can sit on benches and lie on beds."],
+    ["📦", "2 storage chests", "A Worn and a Reinforced Wooden Chest. How much they hold isn't known yet."],
+    ["⚒️", "6 crafting stations", "Anvil, Weaponcrafting Station, Sewing Machine, Woodworking, Leatherworking and Arcane (Arcforge) stations."],
+    ["🎯", "A training dummy", "A straw dummy you can hit as much as you like. We don't know yet if it shows damage."]
+   ],
+   "extra": [
+    "Return Scroll to My Home warps you home. It has a 60-minute cooldown.",
+    "You can visit friends' homes. The client also has lock and password options and lets pets roam free.",
+    "Nexon says housing will grow with citizenship and crafting. Guild houses come later."
+   ],
+   "unknown": "Not known yet: the house price, how you get furniture, chest size and where to buy the Return Scroll to My Home. We'll fill these in once the game is live."
+  },
+  "gotchas": [
+   "Switching towns costs 50,000 to 100,000 mesos (reports differ). Your old town's progress waits for you if you come back.",
+   "Read every confirm box. Players lost their citizenship to a misclick.",
+   "Points only count for the town you're a citizen of right now.",
+   "Level gates are hard walls. Extra points won't skip a level requirement.",
+   "Don't overspend buying donation items. The discounts are small; the EXP is the real prize.",
+   "If the level 12 quest doesn't show up, check whether another character on your account already joined, talk to the clerk directly, then relog."
+  ],
+  "chair": "Resident's Chair: 500,000 mesos at grade 2 from Oak (Henesys) or Weston (Kerning). +20 HP and +5 MP every 10 seconds. Untradeable, one per town. It cost 10,000 in the closed test, so don't trust old guides.",
+  "faq": [
+   [
+    "How do I become a citizen in MapleStory Classic?",
+    "At level 12, sign up with Arthur in Henesys Town Hall or Roxy in the Kerning City Civic Center. A quest starts on its own at level 12 to walk you there."
+   ],
+   [
+    "Should I pick Henesys or Kerning City?",
+    "Warriors and bowmen should pick Henesys for 2-meso Bronze Arrows, accuracy potions and STR/DEX scrolls. Thieves and magicians should pick Kerning for 1,000-meso Wolbi stars, avoid potions and LUK/INT scrolls. Housing, discounts and story quests are the same in both."
+   ],
+   [
+    "How do I get a house in MapleStory Classic?",
+    "Become a citizen of Henesys or Kerning City and reach citizenship grade 2: level 17 plus 1,500 points, about 8 days of daily greetings and a weekly donation. Then talk to the estate agent in your town."
+   ],
+   ["How much does a house cost?", "Nexon hasn't published a price. We'll add it once housing is live on Oct 21."],
+   [
+    "How much does it cost to change citizenship?",
+    "Between 50,000 and 100,000 mesos; sources disagree and it may depend on your grade. Your progress in the old town is kept if you return."
+   ],
+   [
+    "How fast can I rank up?",
+    "One daily greeting (100+ points) and one weekly donation (700+ points) gets grade 2 in about 8 days. Grade 10 takes most of a year at that pace."
+   ]
+  ],
+  "src": [
+   "https://meowdb.com/msclassic/citizenship",
+   "https://planet-helper.com/gmsclassic/guide/citizenship/",
+   "https://maplestory.quest/citizenship",
+   "https://maplestory.quest/guides/housing",
+   "https://meowdb.com/msclassic/furnitures",
+   "https://metaroad.gg/maplestory-classic/news/maplestory-fest-2026-classic-world-roadmap",
+   "https://henesys.gg/quests/donating-to-kerning-city",
+   "https://maplestory-classic.com/news/classic-world-090-client-72-citizenship-quests-halloween"
+  ]
+ },
+ "events": {
+  "now": [
+   {
+    "id": "mark",
+    "name": "Mark of the Beta",
+    "emoji": "🗺️",
+    "at": "2026-10-21T18:00:00Z",
+    "end": "",
+    "when": "Oct 21 into November",
+    "lv": "Lv 25+",
+    "npc": 1012109,
+    "blurb": "A 7-step treasure hunt across Victoria Island. Finish it for a hat with +1 to every stat.",
+    "conf": "medium"
+   },
+   {
+    "id": "journey",
+    "name": "The Journey Begins",
+    "emoji": "🎁",
+    "at": "2026-10-21T18:00:00Z",
+    "end": "2026-11-19T00:00:00Z",
+    "when": "Oct 21 to about Nov 18",
+    "lv": "Lv 10+",
+    "npc": 9010000,
+    "blurb": "Bring 30 Maple Leaves to the Maple Administrator each day. 14 gifts in all, including a pet.",
+    "conf": "medium"
+   },
+   {
+    "id": "halloween",
+    "name": "Malady's Halloween",
+    "emoji": "🎃",
+    "at": "2026-10-28T15:00:00Z",
+    "end": "2026-11-19T00:00:00Z",
+    "when": "Oct 28 to about Nov 18",
+    "lv": "Lv 10+",
+    "npc": 9201028,
+    "blurb": "A witch has lost her candy. Collect 100 Halloween Candies, then go trick-or-treating for her.",
+    "conf": "medium"
+   }
+  ],
+  "mark": {
+   "intro": "Jay found an old adventurer's journal with the middle pages torn out. Each page is hidden somewhere on Victoria Island, and the clues are written like riddles. All 7 quests need level 25.",
+   "steps": [
+    {
+     "title": "The Marks We Leave Behind",
+     "clue": "",
+     "do": "Talk to Jay in the middle of Henesys. He hands you the Adventurer's Journal. Read page 1.",
+     "npc": 1012109,
+     "mob": null
+    },
+    {
+     "title": "The First Mark",
+     "clue": "a shore guarded by little snouts",
+     "do": "Go to The Pig Beach near Lith Harbor and search the crack in the rocks for page 2.",
+     "npc": null,
+     "mob": 1210100
+    },
+    {
+     "title": "The Second Mark",
+     "clue": "one night beneath a stranger's roof",
+     "do": "Hunt the monsters inside Someone Else's House until page 3 drops.",
+     "npc": null,
+     "mob": null
+    },
+    {
+     "title": "The Third Mark",
+     "clue": "the forest remembers",
+     "do": "Climb to the old tree high up in Marr's Forest. Page 4 is there.",
+     "npc": null,
+     "mob": null
+    },
+    {
+     "title": "The Fourth Mark",
+     "clue": "leave no coin unturned",
+     "do": "A nameless thief in Kerning City (Mong from Kong) sells page 5 for 10 mesos. Bargain!",
+     "npc": 1052012,
+     "mob": null
+    },
+    {
+     "title": "The Fifth Mark",
+     "clue": "the wild ones roam",
+     "do": "Collect 4 scraps and put them together for page 6. The exact map isn't confirmed yet; it's somewhere off the usual paths.",
+     "npc": null,
+     "mob": null
+    },
+    {
+     "title": "The Final Mark",
+     "clue": "even the smallest footsteps",
+     "do": "Head to the end of Ant Tunnel Park and take the hidden portal. The Mark of the Beta is yours.",
+     "npc": null,
+     "mob": null
+    }
+   ],
+   "reward": "Mark of the Beta: a hat with +1 STR, DEX, INT and LUK, 15 weapon defense and 7 upgrade slots. Untradeable. That's a great free hat to scroll.",
+   "note": "Steps come from the game files (via NiaMeowDB and henesys.gg). The EXP and meso rewards aren't in the files. If you finish step 6, tell us where the scraps were!",
+   "rings": "Played a closed test? Accounts that finished both test events (A Strange and Familiar Wood, and Beyond the Unknown) can claim the Classic Beginnings Label Ring and Chat Ring at launch. Nexon hasn't said how yet."
+  },
+  "journey": {
+   "how": [
+    "Be level 10 or higher.",
+    "Collect 30 Maple Leaves. Any level 10+ monster can drop them, so just play.",
+    "Bring them to the Maple Administrator: far left of Henesys, or the new one in Kerning City.",
+    "Get that day's gift. Come back tomorrow for the next one."
+   ],
+   "facts": [["14 gifts", "One claim a day"], ["5 PM PDT", "Daily reset (00:00 UTC)"], ["≈ Nov 18", "Likely end date"], ["Lv 15", "To use event megaphones"]],
+   "gifts": "Nexon's launch slide showed a Snail pet that picks up mesos and items, potions, megaphones and other consumables, plus something to open a shop with. The day-by-day list isn't public yet.",
+   "note": "It counts claims, not calendar days, so a missed day just pushes your last gift back. The event pet in the files lasts until Nov 19, which is why we think the event ends around Nov 18. Megaphones from events after launch need level 15."
+  },
+  "halloween": {
+   "steps": [
+    {"title": "Find Malady", "do": "She's on the left side of Kerning City from Oct 28. Accept [Event] Halloween Candies.", "npc": 9201028},
+    {
+     "title": "Collect 100 Halloween Candies",
+     "do": "Any level 10+ monster can drop them. The quest names Ribbon Pigs, Dark Stumps, Octopuses and Green Mushrooms. Accept the quest first; the candy may only drop while it's active.",
+     "mobs": [1210101, 1110101, 1120100, 1110100]
+    },
+    {
+     "title": "Trick or treat!",
+     "do": "Malady splits the candy into 3 pouches. Deliver one each to the child in the dark tunnel, the child on the open field and the child up on the high ground.",
+     "npc": null
+    },
+    {
+     "title": "Back to Malady",
+     "do": "Turn in [Event] Trick or Treat! for her reward. Got extra candy? Trade it in at the Maple Administrator in Henesys.",
+     "npc": null
+    }
+   ],
+   "facts": [["Oct 28", "Starts"], ["100", "Candies to collect"], ["Lv 10+", "To join"], ["≈ Nov 18", "Ends (game files)"]],
+   "maybe": ["Halloween Candies", "Red Malady's Candy", "Blue Malady's Candy", "Green Malady's Candy", "Pumpkin Basket", "Pumpkin Hat", "Witch Hat"],
+   "maybeNote": "In the game files but not confirmed as rewards: Malady's Candy (Red heals 600 HP, Blue 450 MP, Green 300 of each), the Pumpkin Basket (a one-handed sword with 24 attack, +1 all stats and +8 speed) and a Halloween Broomstick Chair. Pumpkin and witch outfits are probably for a Halloween fashion crate in the Cash Shop.",
+   "tips": [
+    "Candy stacks to 100, can't be traded and is time-limited. Don't plan to sell it.",
+    "Farm the busiest level 10+ map you can clear fast. Kill speed beats monster level here.",
+    "The \"dark tunnel\" child might be in the Kerning subway. That's our guess until someone confirms it.",
+    "It doesn't look repeatable, so it's probably one run per character."
+   ],
+   "note": "Quest text comes from the game files. Nexon hasn't posted the rewards, the candy drop rate or the exchange list yet. We'll update this on Oct 28."
+  },
+  "faq": [
+   [
+    "How do you do Mark of the Beta in MapleStory Classic?",
+    "Talk to Jay in Henesys at level 25. Then find the journal's missing pages: Pig Beach rocks, Someone Else's House, the old tree in Marr's Forest, a thief in Kerning (10 mesos), four scraps, and the hidden portal at the end of Ant Tunnel Park."
+   ],
+   ["What does Mark of the Beta give?", "A hat with +1 to all stats, 15 weapon defense and 7 slots. It's untradeable."],
+   [
+    "When is the MapleStory Classic Halloween event?",
+    "From Oct 28, 2026. The game files run it to about Nov 18. Talk to Malady on the left side of Kerning City."
+   ],
+   ["Where do Halloween Candies drop?", "From any level 10+ monster while you have the quest. Accept it from Malady first."],
+   ["What is The Journey Begins?", "A daily launch gift from Oct 21. Bring 30 Maple Leaves to the Maple Administrator for one of 14 gifts."]
+  ],
+  "src": [
+   "https://meowdb.com/msclassic/quest-tracker/600004",
+   "https://meowdb.com/msclassic/npcs/205",
+   "https://henesys.gg/quests/event-the-marks-we-leave-behind",
+   "https://meowdb.com/msclassic/item-db/2747",
+   "https://meowdb.com/msclassic/quest-tracker/600002",
+   "https://henesys.gg/quests/event-the-journey-begins",
+   "https://maplestory.quest/news/classic-world-roadmap",
+   "https://meowdb.com/msclassic/npcs/900026",
+   "https://meowdb.com/msclassic/quest-tracker/500010",
+   "https://meowdb.com/msclassic/quest-tracker/500011",
+   "https://henesys.gg/quests/event-maladys-halloween",
+   "https://meowdb.com/msclassic/item-db/3127"
+  ]
+ },
+ "market": {
+  "quick": [
+   "Look up what an item actually sold for (NiaMeowDB's price check) before you list it.",
+   "Price at or just under the sold price. Listings sit about 40% above what really sells.",
+   "Sell where buyers already are: potions at dungeon entrances, coconuts at Florina Beach.",
+   "Only trade inside the trade window, and never buy mesos for real money."
+  ],
+  "facts": [
+   ["11 rooms", "Free Market 1-11"],
+   ["No search", "Buyers walk the rooms"],
+   ["12-18 items", "Per shop, by permit"],
+   ["≈ 15", "Mesos per NX (Oct 20)"]
+  ],
+  "how": [
+   "The entrance has portals from Perion and Henesys Market (per the Classic Wiki; check in game).",
+   "Room 1 fills first and has the pricey stuff. Rooms 1-6 are a grassy hall; 7-11 are a cave.",
+   "There's no search or auction house. Shops spill into every channel, so tell people your channel and room when you megaphone.",
+   "Return Scrolls, teleport rocks and Mystic Door don't work inside, and there are no monsters."
+  ],
+  "permits": [
+   ["Regular Store Permit", "1,500 NX", "90 days", 12, "Always in the Cash Shop."],
+   ["Fall Store Permit", "3,000 NX", "90 days", 18, "Orange-tree shop. Sold until Nov 18."],
+   ["Pink Store Permit", "3,000 NX", "90 days", 18, "Always in the Cash Shop."]
+  ],
+  "shopRules": [
+   "You have to stay online. Hired Merchants (offline shops) aren't sold yet.",
+   "You can open a shop in the Free Market or out in the field.",
+   "If a monster hits you, your shop closes. Pick a quiet, monster-free spot.",
+   "Since Oct 15, unsold items go straight back to your inventory when you close."
+  ],
+  "hot": [
+   ["Shoes speed scrolls", "Greater sold ~15,000; 78 sales in a day"],
+   ["Earrings", "Emerald Earrings jumped to ~130,000"],
+   ["SP Reset", "~80,000 each"],
+   ["Squishy Shoes", "~14,000, the most-sold item"],
+   ["Pet speed scrolls", "Lesser ~22,000"],
+   ["Cash Shop outfits", "41% of all mesos spent in week one"]
+  ],
+  "not": [
+   ["Raw ore", "Flooded. Orihalcon had 99 listings and 9 sales. Craft with it or vendor it"],
+   ["Squishy Liquid", "0 sales"],
+   ["White Bandana", "0 sales"],
+   ["Evil Eye Tail", "0 sales"],
+   ["Pig's Head", "81 listings at 199. Too many sellers"],
+   ["60% scrolls (for now)", "Peaked Oct 12, cooling since"]
+  ],
+  "hotNote": "From NiaMeowDB's player-reported sales, Oct 10-19. The full price tables are on the mesos page.",
+  "scams": [
+   ["🔄", "The switcheroo", "The item gets swapped for a look-alike right before you accept. Re-check every slot after any change."],
+   ["🙅", "\"You go first\"", "Never hand over mesos or items outside the trade window. Outside the window you have no protection."],
+   ["📜", "Wrong scroll tier", "Greater sounds better than Intermediate, but it's the 10% gamble. Read the % before you pay."],
+   ["🛡️", "Scrolled vs clean", "Same name, different stats. Check slots and stats on gear before you buy."],
+   ["📣", "Too-good megaphones", "Rushed \"quitting, everything cheap\" deals and meso ads. If it's urgent, it's a trap."],
+   ["🎭", "Fake GMs and \"free NX\"", "GMs never ask for your login. Only log in through Nexon or Steam."],
+   ["🔒", "Tradeable once", "Many Cash items can only be traded once. If you buy one, you can't resell it."]
+  ],
+  "bots": {
+   "spots": "Henesys Hunting Ground (warriors basic-attacking on every channel), the Slime Tree in Ellinia and the Kerning subway.",
+   "signs": [
+    "Random letter-and-number names",
+    "A starter weapon at a high level",
+    "The same attack rhythm with no monsters around",
+    "Two characters copying each other's moves"
+   ],
+   "report": "Right-click the character and pick Report. Some players think there's a daily cap of about 15 reports; Nexon hasn't said.",
+   "bans": "Nexon banned 1,379 accounts in the first days of Founder's Access and 3,121 by Oct 14. Real-money trading is a ban reason, and a ban covers your main MapleStory account too."
+  },
+  "cash": [
+   "Cash Shop items are the main way NX turns into mesos. The rate went from under 2 mesos per NX on Oct 7 to about 15 on Oct 20.",
+   "Equipping a Cash item makes it untradeable. Sell before you try it on.",
+   "Coming soon: after an account's first NX purchase, its Cash items can't be gifted or sold for 48 hours.",
+   "Nobody has published a trade tax for Classic. If you see a % quoted, it's a guess."
+  ],
+  "faq": [
+   [
+    "How do I open a shop in MapleStory Classic?",
+    "Buy a store permit in the Cash Shop (Regular is 1,500 NX for 90 days and 12 items), then open it in the Free Market or in a field. Stay online: Hired Merchants aren't sold yet, and a monster hit closes your shop."
+   ],
+   [
+    "Where is the Free Market?",
+    "The Free Market Entrance has portals from Perion and Henesys Market and leads to 11 rooms. Leaving takes you back to the town you came from."
+   ],
+   [
+    "How do I price items?",
+    "Use the price someone actually paid, not other listings. Listings run about 40% above sale prices, so pricing at the sold median sells fast."
+   ],
+   ["Is there a trade tax?", "Nobody has published one for Classic."],
+   ["Can I get banned for buying mesos?", "Yes. Nexon bans real-money trading, and the ban covers your main MapleStory account too."]
+  ],
+  "src": [
+   "https://meowdb.com/msclassic/free-market",
+   "https://mapleclassic.wiki/wiki/Free_Market",
+   "https://mapleclassic.wiki/wiki/Player_shop",
+   "https://meowdb.com/msclassic/item-db/1540",
+   "https://meowdb.com/msclassic/item-db/1543",
+   "https://maplestory-classic.com/cash-shop",
+   "https://maplestory-classic.com/news/free-market-prices-oct-10",
+   "https://maplestory-classic.com/news/founder-s-access-week-one-what-niadb-data-shows",
+   "https://steamcommunity.com/app/216150/discussions/0/564796840407532661/",
+   "https://maplestory-classic.com/news/players-report-bots-in-founder-s-access-what-to-do",
+   "https://maplestory.quest/news",
+   "https://metaroad.gg/maplestory-classic/news/maplestory-classic-world-october-15-patch-notes"
+  ]
+ },
+ "endgame": {
+  "facts": [["15.6M", "EXP for 60 → 70"], ["26.5M", "EXP for 70 → 80"], ["45.2M", "EXP for 80 → 90"], ["18 billion", "EXP for 90 → 100"]],
+  "intro": "Level 60 to 70 takes about as much EXP as everything from 1 to 60. Victoria Island's toughest monsters are rare and slow to respawn, so the best EXP past 60 still comes from level 55-58 monsters you can kill fast.",
+  "maps": [
+   [
+    "Sleepy Dungeon V",
+    [5130102],
+    "Dark Stone Golem (58)",
+    "~520k",
+    "~2.3 h",
+    "Everyone",
+    "Most monsters per map past 55. The Oct 15 patch thinned it out, so expect a bit less. Sleepy Dungeon III and IV are the overflow."
+   ],
+   [
+    "The Forest of Evil II",
+    [5300100, 4230101],
+    "Malady (55) + Zombie Lupin",
+    "~290k",
+    "~4.2 h",
+    "Warriors, bowmen, thieves, clerics",
+    "Best HP-per-EXP of any 50+ monster and zero weapon defense. Malady resists fire and ice, so skip it as F/P or I/L."
+   ],
+   [
+    "Kerning Subway, Line 2 Area 2-3",
+    [4230102],
+    "Wraith (48)",
+    "Top pick at 46-55",
+    "–",
+    "Magicians",
+    "No magic defense. Bring potions; it's 6 maps from town."
+   ],
+   ["Golem's Temple I-IV", [5130101], "Stone Golem (56)", "~200k", "~6 h", "Magicians", "No magic defense, resists poison."],
+   [
+    "Dangerous Valley II",
+    [6130100],
+    "Red Drake (60)",
+    "~200k",
+    "~6 h",
+    "I/L wizards, loot",
+    "Ice-weak. Watch its fireball. Drops Steely Throwing-Knives."
+   ],
+   ["Wild Kargo's Area", [6230100], "Wild Kargo (62) + Cold Eye", "~135k", "~9 h", "Loot runs", "Kargos respawn every 2 minutes. Slow EXP."],
+   [
+    "Sanctuary Entrance I-IV",
+    [7130100, 7130101],
+    "Tauromacis (70), Taurospear (75)",
+    "~110-125k",
+    "~17 h at 70",
+    "Parties, horns",
+    "Only 2-5 of each per map. The highest-level monsters in the game, but not an EXP map."
+   ]
+  ],
+  "mapsNote": "EXP/hr is NiaMeowDB's solo model at base rates, not a stopwatch. Use it to compare maps, then time your own runs with the EXP calculator.",
+  "hit": [
+   ["Wraith", 4230102, 48, 32, "Kerning Subway"],
+   ["Drake", 5130100, 50, 27, "Sleepywood"],
+   ["Malady", 5300100, 55, 33, "Forest of Evil"],
+   ["Stone Golem", 5130101, 56, 30, "Golem's Temple"],
+   ["Dark Stone Golem", 5130102, 58, 31, "Sleepy Dungeon"],
+   ["Red Drake", 6130100, 60, 35, "Dangerous Valley II"],
+   ["Wild Kargo", 6230100, 62, 36, "Wild Kargo's Area"],
+   ["Tauromacis", 7130100, 70, 41, "Sanctuary Entrance"],
+   ["Taurospear", 7130101, 75, 48, "Sanctuary Entrance"]
+  ],
+  "hitNote": "Uses NiaMeowDB's hit formula. Being below a monster's level makes it harder to hit; at or above its level, extra levels add damage, not accuracy. Check your ACC in the stat window.",
+  "quests": [
+   ["John's Present (3 quests)", "Lv 65", "25,900 EXP each. These are the Deep Forest of Patience jump quests; they needed level 45 in the test."],
+   ["Citizen of Honor arcs", "Lv 57, grade 10", "About 80,000 EXP and the town earrings. See citizenship."],
+   ["Looking for the Sage", "Lv 55", "Each job instructor has one. 9,843 EXP plus potions."],
+   ["Forgotten Hollow", "Lv 39-59, Nov 18", "New Lv 54-59 maps (Myewood, Rotten Mushroom, Sporewood) and the Rotten Mushmom."]
+  ],
+  "not": "Not in Classic yet: Excavation Site skeletons, Mixed Golems, Ice and Dark Drakes, and anything in Ossyria or Aqua Road. Some guides list them anyway.",
+  "src": [
+   "https://meowdb.com/msclassic/guides/best-grind-maps-every-level",
+   "https://meowdb.com/msclassic/maps/010005054",
+   "https://meowdb.com/msclassic/maps/010002026",
+   "https://meowdb.com/msclassic/maps/010004102",
+   "https://meowdb.com/msclassic/maps/010005091",
+   "https://meowdb.com/msclassic/maps/010005104",
+   "https://meowdb.com/msclassic/guides/exp-table-level-1-to-100",
+   "https://meowdb.com/msclassic/formulas",
+   "https://maplestory.quest/guides/training",
+   "https://maplestory-classic.com/quests"
+  ]
+ },
+ "deadlines": [
+  {
+   "what": "Founder's Package: claim everything from your mailbox",
+   "when": "Nov 30, 23:59 UTC",
+   "end": "2026-11-30T23:59:00Z",
+   "main": true,
+   "tip": "Leave Maple Island first or the mail won't show. Open each claimed box within 30 days."
+  },
+  {"what": "Frieren collection claims (bought before Oct 7)", "when": "Oct 23 to Nov 3", "end": "2026-11-03T23:59:00Z"},
+  {"what": "Founder's Fashion Crate and Mystery coupons leave the Cash Shop", "when": "Oct 28", "end": "2026-10-28T07:59:00Z"},
+  {"what": "Fall Store Permit and equip covers leave the Cash Shop", "when": "Nov 18", "end": "2026-11-18T17:59:00Z"}
+ ]
+}
