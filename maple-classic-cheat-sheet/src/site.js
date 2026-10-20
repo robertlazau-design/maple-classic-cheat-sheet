@@ -24,6 +24,48 @@
   var k = document.querySelector("[data-launch]");
   if (k && Date.now() >= Date.parse("2026-10-21T00:00:00-07:00")) k.textContent = "Classic World · live now";
 
+  // ---- Toasts: little game-style popups at the bottom of the screen
+  var toastEl = null, toastT = 0;
+  function toast(msg) {
+    if (!toastEl) { toastEl = document.createElement("div"); toastEl.className = "toast"; toastEl.setAttribute("role", "status"); document.body.appendChild(toastEl); }
+    toastEl.textContent = msg; toastEl.classList.add("on");
+    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove("on"); }, 2200);
+  }
+  function copy(text, msg) {
+    var done = function () { toast(msg || "Link copied! +1 EXP"); };
+    if (navigator.share && matchMedia("(pointer:coarse)").matches) {
+      navigator.share({ title: document.title, url: text }).catch(function () {});
+      return;
+    }
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function () { prompt("Copy this link:", text); });
+    else prompt("Copy this link:", text);
+  }
+
+  // ---- Copy-link buttons on section headings and secret cards
+  document.querySelectorAll("main h2[id], main article[id]").forEach(function (el) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "linkbtn"; b.setAttribute("aria-label", "Copy link to this section"); b.title = "Copy link";
+    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
+    b.addEventListener("click", function () { copy(location.origin + location.pathname + "#" + el.id); });
+    (el.tagName === "H2" ? el : (el.querySelector("h3") || el)).appendChild(b);
+  });
+
+  // ---- Return Scroll: back to the top once you've scrolled a bit
+  var rs = document.createElement("button");
+  rs.type = "button"; rs.className = "return-scroll"; rs.setAttribute("aria-label", "Back to top");
+  rs.innerHTML = '<span aria-hidden="true">📜</span><b>Return</b>';
+  document.body.appendChild(rs);
+  rs.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion:reduce)").matches ? "auto" : "smooth" }); toast("Used a Return Scroll. Whoosh!"); });
+  var onScroll = function () { rs.classList.toggle("on", window.scrollY > 900); };
+  window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
+
+  // ---- Poke the monsters on the home page: they hop
+  document.querySelectorAll(".cast img").forEach(function (img) {
+    img.style.pointerEvents = "auto"; img.style.cursor = "pointer";
+    img.addEventListener("click", function () { img.classList.remove("hop"); void img.offsetWidth; img.classList.add("hop"); });
+    img.addEventListener("animationend", function (ev) { if (ev.animationName === "hop") img.classList.remove("hop"); });
+  });
+
   var esc = function (t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
   var store = {
     get: function (k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } },
@@ -68,7 +110,7 @@
     sel = 0;
     hits.innerHTML = last.length ? last.map(function (it, i) {
       return '<li role="option" aria-selected="' + (i === 0) + '"><a href="' + esc(it.u) + '"><b>' + esc(it.t) + "</b><span>" + esc(it.k === "page" ? "Page" : it.k) + "</span></a></li>";
-    }).join("") : '<li class="muted">Nothing for that. Try a job, a monster or a level number.</li>';
+    }).join("") : '<li class="muted empty"><span aria-hidden="true">🐌</span>Even the snail looked everywhere. Try a job, a monster or a level number.</li>';
   }
   document.addEventListener("click", function (e) {
     if (e.target.closest("[data-search]")) { e.preventDefault(); openSearch(); }
@@ -93,7 +135,19 @@
   var out = document.getElementById("finder-out"), chips = document.getElementById("jobchips");
   var lvIn = document.getElementById("lv"), lvOut = document.getElementById("lvout");
   var saved = store.get("mccs-run") || {};
-  var state = { cls: saved.cls || null, job: saved.job || null, lv: Number(saved.lv) || 1 };
+  var qs = new URLSearchParams(location.search);
+  if (qs.get("job") && D.jobs[qs.get("job")]) saved = { cls: D.jobs[qs.get("job")].cls, job: qs.get("job"), lv: Number(qs.get("lv")) || 1 };
+  var state = { cls: saved.cls || null, job: saved.job || null, lv: Math.max(1, Math.min(100, Number(saved.lv) || 1)) };
+  var MILESTONES = { 10: "Time for your 1st job!", 30: "2nd job time. Go take the test!", 70: "Level 70. You've seen it all (for now).", 100: "LEVEL 100. Absolute legend." };
+  function levelUp(from, to) {
+    var hit = null;
+    Object.keys(MILESTONES).forEach(function (m) { m = Number(m); if (from < m && to >= m) hit = m; });
+    if (!hit) return;
+    var box = document.querySelector(".lvl"); if (!box) return;
+    var el = document.createElement("div"); el.className = "levelup"; el.setAttribute("role", "status");
+    el.innerHTML = "<b>LEVEL UP!</b><span>" + esc(MILESTONES[hit]) + "</span>";
+    box.appendChild(el); setTimeout(function () { el.remove(); }, 2600);
+  }
 
   function ranges(text) { var m = String(text).match(/lv\s?(\d+)\s*(?:[-–]\s*(\d+))?/i); return m ? [Number(m[1]), Number(m[2] || m[1])] : null; }
   function pick(list, lv) { return (list || []).filter(function (t) { var r = ranges(t); return r && lv >= r[0] && lv <= r[1]; }); }
@@ -126,6 +180,7 @@
     h += '<div class="box"><h3>✨ Your SP rn</h3><p>' + (sp.length ? sp.map(esc).join("<br>") : "Follow the skill order on your build page.") + "</p></div>";
     h += '<div class="box"><h3>⏭️ Next up</h3><p>' + esc(next) + "</p></div>";
     h += '<a class="btn btn-primary full" href="/jobs/' + state.job + '/">Full ' + esc(job.name) + " build →</a>";
+    h += '<button type="button" class="btn btn-ghost full share-run">🔗 Share my run</button>';
     out.innerHTML = h;
   }
   document.querySelector(".classes").addEventListener("click", function (e) {
@@ -136,9 +191,13 @@
     drawChips(); render();
   });
   chips.addEventListener("click", function (e) { var b = e.target.closest("[data-job]"); if (!b) return; state.job = b.dataset.job; drawChips(); render(); });
-  lvIn.addEventListener("input", function () { state.lv = Number(lvIn.value); render(); });
+  lvIn.addEventListener("input", function () { var was = state.lv; state.lv = Number(lvIn.value); render(); levelUp(was, state.lv); });
+  out.addEventListener("click", function (e) {
+    if (!e.target.closest(".share-run")) return;
+    copy(location.origin + "/?job=" + state.job + "&lv=" + state.lv + "#run", "Run link copied! Send it to your party.");
+  });
   document.querySelectorAll(".lv-btn").forEach(function (b) {
-    b.addEventListener("click", function () { state.lv = Math.max(1, Math.min(100, state.lv + Number(b.dataset.step))); render(); });
+    b.addEventListener("click", function () { var was = state.lv; state.lv = Math.max(1, Math.min(100, state.lv + Number(b.dataset.step))); render(); levelUp(was, state.lv); });
   });
   drawChips(); render();
 })();

@@ -356,3 +356,31 @@ abbr[title]{text-decoration:underline dotted;text-underline-offset:3px;cursor:he
   .toc a,.jump a,.filters button{min-height:44px}
   .tabbar a,.tabbar button{font-size:11px}
 }
+/* quality of life + a little whimsy */
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));translate:-50% 20px;opacity:0;z-index:60;background:var(--ink);color:var(--bg);font-weight:800;font-size:15px;padding:12px 18px;border-radius:999px;box-shadow:0 14px 30px -10px rgba(0,0,0,.5);pointer-events:none;transition:opacity .2s,translate .2s;max-width:calc(100vw - 32px);text-align:center}
+.toast.on{opacity:1;translate:-50% 0}
+@media (max-width:760px){.toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}}
+.linkbtn{display:inline-grid;place-items:center;width:30px;height:30px;margin-left:8px;vertical-align:middle;border:0;border-radius:50%;background:transparent;color:var(--muted);cursor:pointer;opacity:.55;transition:opacity .15s,background .15s}
+.linkbtn svg{width:17px;height:17px}
+h2:hover .linkbtn,h3:hover .linkbtn,.linkbtn:focus-visible{opacity:1}
+.linkbtn:hover{background:var(--pill);color:var(--maple-deep);opacity:1}
+@media (hover:none){.linkbtn{opacity:.8}}
+.return-scroll{position:fixed;right:16px;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:45;display:flex;flex-direction:column;align-items:center;gap:0;min-width:56px;min-height:56px;justify-content:center;border:0;border-radius:18px;background:var(--surface);color:var(--ink);box-shadow:0 12px 26px -10px rgba(30,15,5,.55);font:800 11px var(--font);cursor:pointer;opacity:0;translate:0 12px;pointer-events:none;transition:opacity .2s,translate .2s}
+.return-scroll span{font-size:22px;line-height:1.1}
+.return-scroll.on{opacity:1;translate:0 0;pointer-events:auto}
+.return-scroll:hover span{animation:wiggle .5s ease-in-out}
+@media (max-width:760px){.return-scroll{bottom:calc(92px + env(safe-area-inset-bottom,0px));right:12px}}
+.ads-on .return-scroll{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
+@keyframes wiggle{25%{rotate:-12deg}75%{rotate:12deg}}
+.cast img.hop{animation:hop .55s cubic-bezier(.3,1.6,.5,1)}
+@keyframes hop{0%,100%{translate:0 0}40%{translate:0 -38px}70%{translate:0 4px}}
+.lvl{position:relative}
+.levelup{position:absolute;left:50%;top:-18px;translate:-50% 0;z-index:5;display:flex;flex-direction:column;align-items:center;pointer-events:none;animation:lvup 2.6s ease-out forwards;text-align:center;width:max-content;max-width:90vw}
+.levelup b{font-size:34px;font-weight:800;letter-spacing:.02em;color:#ffd84a;-webkit-text-stroke:2px #8a4a00;paint-order:stroke fill;text-shadow:0 4px 0 #8a4a00,0 0 24px rgba(255,200,60,.8)}
+.levelup span{margin-top:4px;font-weight:800;font-size:14px;color:var(--ink);background:var(--maple-soft);padding:4px 12px;border-radius:999px}
+@keyframes lvup{0%{opacity:0;transform:translateY(16px) scale(.6)}12%{opacity:1;transform:translateY(-8px) scale(1.12)}22%{transform:translateY(-12px) scale(1)}80%{opacity:1;transform:translateY(-24px)}100%{opacity:0;transform:translateY(-40px)}}
+#hits li.empty{display:flex;gap:10px;align-items:center;padding:14px 12px}
+#hits li.empty span{font-size:26px;animation:crawl 3s ease-in-out infinite alternate}
+@keyframes crawl{to{translate:10px 0}}
+.share-run{margin-top:8px}
+@media (prefers-reduced-motion:reduce){.cast img.hop,.levelup,#hits li.empty span,.return-scroll:hover span{animation:none}.levelup{display:none}}
