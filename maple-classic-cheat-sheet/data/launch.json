@@ -72,7 +72,7 @@
      ["Sharpness Potion", "+3% crit for 15 min, 750 mesos. Grade 3."],
      ["Armor scroll|Overall stat scrolls", "STR or DEX overall scrolls (100%), grade 7."]
     ],
-    "neighbors": [[1010100, "Rina"], [1012106, "Mrs. Ming Ming"], [1012108, "Camila"], [1012111, "Bruce"], [1012101, "Maya"], [1012102, "Pia"], [1012110, "Anne"]],
+    "neighbors": [[1010100, "Rina"], [1012106, "Mrs. Ming Ming"], [1012108, "Camila"], [1012111, "Bruce"], [1012101, "Maya"], [1012102, "Pia"]],
     "vip": "Chief Stan and Athena Pierce",
     "home": "Yellow Mushroom House"
    },
