@@ -1,4 +1,4 @@
-// Maple Classic Cheat Sheet: ads switch, "your run" picker, search, secret filters.
+// Maple Classic Guide: ads switch, "your run" picker, search, secret filters.
 (function () {
   // ---- Ads: paste your AdSense publisher ID here once approved (e.g. "ca-pub-1234567890"). Empty = no ad space shown.
   var ADSENSE_CLIENT = "";
@@ -19,6 +19,10 @@
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     });
   }
+
+  // ---- Launch label flips to "live now" from Oct 21, 2026 (Pacific)
+  var k = document.querySelector("[data-launch]");
+  if (k && Date.now() >= Date.parse("2026-10-21T00:00:00-07:00")) k.textContent = "Classic World · live now";
 
   var esc = function (t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
   var store = {
