@@ -1,25 +1,5 @@
-// Maple Classic Guide: ads switch, "your run" picker, search, secret filters.
+// Maple Classic Guide: "your run" picker, search, secret filters, tools.
 (function () {
-  // ---- Ads: paste your AdSense publisher ID here once approved (e.g. "ca-pub-1234567890"). Empty = no ad space shown.
-  var ADSENSE_CLIENT = "";
-  if (ADSENSE_CLIENT) {
-    document.documentElement.classList.add("ads-on");
-    var s = document.createElement("script");
-    s.async = true; s.crossOrigin = "anonymous";
-    s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=" + ADSENSE_CLIENT;
-    document.head.appendChild(s);
-    document.querySelectorAll(".ad").forEach(function (slot) {
-      var ins = document.createElement("ins");
-      ins.className = "adsbygoogle"; ins.style.display = "block"; ins.style.width = "100%";
-      ins.setAttribute("data-ad-client", ADSENSE_CLIENT);
-      if (slot.dataset.slot) ins.setAttribute("data-ad-slot", slot.dataset.slot);
-      ins.setAttribute("data-ad-format", slot.classList.contains("ad-side") ? "vertical" : "auto");
-      ins.setAttribute("data-full-width-responsive", "true");
-      slot.appendChild(ins);
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    });
-  }
-
   // ---- Launch label flips to "live now" from Oct 21, 2026 (Pacific)
   var k = document.querySelector("[data-launch]");
   if (k && Date.now() >= Date.parse("2026-10-21T00:00:00-07:00")) k.textContent = "Classic World · live now";
