@@ -19,7 +19,7 @@ def load(n):
     with open(os.path.join(ROOT, "data", n)) as f:
         return json.load(f)
 
-JOBS = load("jobs.json"); TIERS = load("tiers.json"); EXP = load("exp.json"); UPDATES = load("updates.json"); LEV = load("leveling.json"); SEC = load("secrets.json"); IMG = load("images.json")
+JOBS = load("jobs.json"); TIERS = load("tiers.json"); EXP = load("exp.json"); UPDATES = load("updates.json"); CRAFT = load("crafting.json"); LEV = load("leveling.json"); SEC = load("secrets.json"); IMG = load("images.json")
 API = "https://maplestory.io/api/GMS/83"
 
 e = lambda s: html.escape(str(s if s is not None else ""), quote=True)
@@ -119,7 +119,7 @@ LEAVES = '<div class="leaves" aria-hidden="true">' + "".join(
 HOUSE = '<svg class="house" viewBox="0 0 120 110" aria-hidden="true"><path fill="currentColor" d="M60 4C28 4 6 24 6 46c0 6 4 9 10 9h88c6 0 10-3 10-9C114 24 92 4 60 4z"/><rect x="26" y="55" width="68" height="48" rx="10" fill="currentColor"/><rect x="50" y="70" width="20" height="33" rx="10" fill="#fff" opacity=".5"/></svg>'
 LEAF_SM = '<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 2l2.6 5.4 4.2-2-1 5.6 5.2-1.6-2.6 4.6 4.6 1.6-6 3.6 1.4 3.2-6.2-1.2.4 6.8h-5.2l.4-6.8-6.2 1.2 1.4-3.2-6-3.6 4.6-1.6L5 9.4l5.2 1.6-1-5.6 4.2 2z"/></svg>'
 
-NAV = [("/", "Home"), ("/leveling/", "Grind spots"), ("/jobs/", "Builds"), ("/tier-list/", "Tier list"), ("/tools/", "Tools"), ("/job-advancement/", "Job up"), ("/secrets/", "Secrets"), ("/classic-rules/", "Rules")]
+NAV = [("/", "Home"), ("/leveling/", "Grind spots"), ("/jobs/", "Builds"), ("/tier-list/", "Tier list"), ("/tools/", "Tools"), ("/crafting/", "Crafting"), ("/job-advancement/", "Job up"), ("/secrets/", "Secrets"), ("/classic-rules/", "Rules")]
 
 def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=""):
     canon = SITE + path
@@ -226,6 +226,7 @@ def build_home():
     cards = [("/leveling/", "🗺️ Grind spots", "Where to train at every level, 1 to 100.", "mob/1210103"),
              ("/jobs/", "⚔️ Builds", "AP + SP for all 10 jobs. Resets cost 7,000 NX, so don't wing it.", "npc/1012100"),
              ("/tier-list/", "🏆 Tier list", "Best class for grinding, bossing, parties or your first run.", "npc/1022000"),
+             ("/crafting/", "⚒️ Crafting", "What to keep for each profession, and where it drops. Stop vendoring Iron Ore.", "npc/1022003"),
              ("/tools/", "🧮 Tools", "EXP calculator and a scroll simulator. Gamble without losing mesos.", "npc/9010000"),
              ("/job-advancement/", "⬆️ Job up", "Who to talk to at 10 and 30, and how the marble test works.", "npc/1032001"),
              ("/secrets/", "🤫 Secrets", f'{len(SEC["secrets"])} hidden maps, jump quests and boss rooms.', "mob/6130101"),
@@ -384,7 +385,7 @@ def build_secrets():
                             crumbs=[("/", "Guide"), (None, "Secrets")]))
 
 def build_rules():
-    mech = "".join(f'<h2 id="m{i}">{e(m["topic"])}</h2><p>{conf(m.get("confidence"))}</p><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in m["facts"])}</ul>{srcs(m.get("source"))}' for i, m in enumerate(SEC["mechanics"]))
+    mech = "".join(f'<h2 id="m{i}">{e(m["topic"])}</h2><p>{conf(m.get("confidence"))}</p><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in m["facts"])}</ul>{srcs(m.get("source"))}' + ('<p class="callout">⚒️ Full breakdown, with what to keep for each profession: <a href="/crafting/">Crafting guide</a>.</p>' if "raft" in m["topic"] else "") for i, m in enumerate(SEC["mechanics"]))
     money = "".join(f'<div class="card"><h3>{e(m["method"])} {conf(m.get("confidence"))}</h3><p>{e(tidy(m["details"]))}</p></div>' for m in SEC["moneyMaking"])
     toc = "".join(f'<a href="#m{i}">{e(m["topic"])}</a>' for i, m in enumerate(SEC["mechanics"])) + '<a href="#money">Making mesos</a>'
     body = f'''<h1>MapleStory Classic Rules &amp; Mechanics</h1>
@@ -489,6 +490,60 @@ def build_tools():
                           "Free MapleStory Classic tools: EXP calculator (time to your next level and to 100, with an EXP/hour stopwatch) and a scroll success simulator for Lesser, Intermediate, Greater and Chaos scrolls.", body,
                           crumbs=[("/", "Guide"), (None, "Tools")]))
 
+def build_crafting():
+    C = CRAFT
+    def icon(name, cls="ic"):
+        it = C["items"].get(name, {})
+        if it.get("icon"):
+            return f'<img class="{cls}" src="{API}/item/{it["icon"]}/icon" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{{className:\'{cls} emo\',textContent:\'📦\'}}))">'
+        return f'<span class="{cls} emo" aria-hidden="true">{it.get("emoji", "📦")}</span>'
+    def mob(name):
+        i = C["mobs"].get(name)
+        return _img(f"{API}/mob/{i}/render/stand", name, "mobxs") if i else ""
+    def source(name):
+        it = C["items"].get(name, {})
+        if it.get("made"): return f'<span class="src-line">Made: {e(it["made"])}</span>'
+        if it.get("from"): return f'<span class="src-line"><span class="mobs">{"".join(mob(m) for m in it["from"][:3])}</span>From {e(", ".join(it["from"]))}</span>'
+        return ""
+    def keep_card(name, why):
+        return f'<li class="kp">{icon(name)}<div><b>{e(name)}</b><span>{e(why)}</span>{source(name)}</div></li>'
+    chips = "".join(f'<a href="#{p["id"]}">{p["emoji"]} {e(p["name"])}</a>' for p in C["professions"])
+    every = "".join(f'<li class="kp sm">{icon(n)}<div><b>{e(n)}</b>{source(n)}</div></li>' for n in C["everyone"])
+    lv = "".join(f'<tr><td data-th="Crafting level"><b>{l}</b></td><td data-th="EXP to next">{(f"{x:,}" if x else "max at launch")}</td><td data-th="Character level needed">{c}</td></tr>' for l, x, c in C["levels"])
+    profs = ""
+    for p in C["professions"]:
+        keep = "".join(keep_card(n, w) for n, w in p["keep"])
+        extra = (f'<p class="callout">{e(p["tip"])}</p>' if p.get("tip") else "") + \
+                (f'<p class="callout warn"><b>Don\'t sell your bases.</b> {e(p["bases"])}</p>' if p.get("bases") else "") + \
+                (f'<p class="muted">💰 {e(p["money"])}</p>' if p.get("money") else "")
+        profs += f'''<section class="prof" id="{p["id"]}" aria-labelledby="h-{p["id"]}">
+<h2 id="h-{p["id"]}">{p["emoji"]} {e(p["name"])}</h2>
+<p class="prof-meta"><span class="tag">Mentor: {e(p["mentor"])}, {e(p["town"])}</span></p>
+<p>{e(p["makes"])} <b>Best for:</b> {e(p["goodFor"])}.</p>
+<h3>Leveling {e(p["name"])}? Keep these</h3>
+<ul class="keep">{keep}</ul>{extra}</section>'''
+    faq = "".join(f'<details class="faq"><summary>{e(q)}</summary><p>{e(a)}</p></details>' for q, a in C["faq"])
+    body = f"""<h1>MapleStory Classic Crafting Guide: What to Keep for Every Profession</h1>
+<p class="lede">Six professions, 290 launch recipes, and one rule: stop vendoring the wrong drops. Pick your profession and see exactly which items to hold on to, and which monsters drop them.</p>
+<p class="stamp"><b>✓ Checked {CHECKED}</b><span>Launch recipes, crafting levels 1 to 8. {conf(C["meta"]["confidence"])}</span></p>
+<div class="toc">{chips}<a href="#basics">How it works</a><a href="#faq">FAQ</a></div>
+<h2 id="never">🎒 Never sell these (every crafter needs them)</h2>
+<p>These show up across the most recipes and sell fast on the Free Market, so they're never wasted bag space.</p>
+<ul class="keep cols">{every}</ul>
+<h2 id="basics">📜 How crafting works in Classic</h2>
+<ul>{"".join(f"<li>{e(b)}</li>" for b in C["basics"])}</ul>
+<table class="tbl grades"><thead><tr><th>Crafting level</th><th>EXP to next</th><th>Character level needed</th></tr></thead><tbody>{lv}</tbody></table>
+{profs}
+<h2 id="faq">FAQ</h2>{faq}
+<p class="muted" style="margin-top:16px">{e(C["meta"]["note"])} Item and monster art from maplestory.io (classic sprites; a few Classic-only items use a stand-in icon).</p>
+{srcs(C["meta"]["sources"])}"""
+    schema = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+        {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in C["faq"]]}
+    side = '<div class="card"><h3>Professions</h3>' + "".join(f'<p><a href="#{p["id"]}">{p["emoji"]} {e(p["name"])}</a></p>' for p in C["professions"]) + "</div>"
+    write("/crafting/", page("/crafting/", "MapleStory Classic Crafting Guide: Items to Keep for Each Profession",
+                             "MapleStory Classic crafting guide: what to keep for Smithing, Weaponcrafting, Tailoring, Woodcrafting, Leatherworking and Arcforge, where the materials drop, and crafting level requirements.", body,
+                             crumbs=[("/", "Guide"), (None, "Crafting")], schema=schema, side_extra=side))
+
 def build_updates():
     items = "".join(f'<article class="upd" id="u{e(u["date"])}"><p class="upd-d"><time datetime="{e(u["date"])}">{date.fromisoformat(u["date"]).strftime("%b %-d, %Y")}</time></p><h2>{e(u["title"])}</h2><ul>' + "".join(f"<li>{e(x)}</li>" for x in u["items"]) + "</ul></article>" for u in UPDATES["entries"])
     body = f"""<h1>What's new on Maple Classic Guide</h1>
@@ -527,9 +582,9 @@ def main():
         import base64
         with open(b64) as f, open(os.path.join(OUT, "og.png"), "wb") as g:
             g.write(base64.b64decode(f.read()))
-    build_home(); build_leveling(); build_jobs(); build_tiers(); build_tools(); build_updates(); build_adv(); build_secrets(); build_rules(); build_static()
+    build_home(); build_leveling(); build_jobs(); build_tiers(); build_tools(); build_crafting(); build_updates(); build_adv(); build_secrets(); build_rules(); build_static()
     idx = [{"t": "Home: pick your class and level", "u": "/", "k": "page"}, {"t": "Grind spots: leveling route 1–100", "u": "/leveling/", "k": "page"},
-           {"t": "Builds: all 10 jobs", "u": "/jobs/", "k": "page"}, {"t": "Tier list: best class for you", "u": "/tier-list/", "k": "page", "x": "best class ranking grinding bossing party beginner"}, {"t": "EXP calculator: time to next level", "u": "/tools/#exp", "k": "Tool", "x": "exp table hours level 100 calculator"}, {"t": "Scroll simulator", "u": "/tools/#scrolls", "k": "Tool", "x": "scroll chaos intermediate lesser greater success rate"}, {"t": "What's new", "u": "/updates/", "k": "page", "x": "changelog updates patch"}, {"t": "Job up: 1st and 2nd job advancement", "u": "/job-advancement/", "k": "page"},
+           {"t": "Builds: all 10 jobs", "u": "/jobs/", "k": "page"}, {"t": "Tier list: best class for you", "u": "/tier-list/", "k": "page", "x": "best class ranking grinding bossing party beginner"}, {"t": "EXP calculator: time to next level", "u": "/tools/#exp", "k": "Tool", "x": "exp table hours level 100 calculator"}, {"t": "Scroll simulator", "u": "/tools/#scrolls", "k": "Tool", "x": "scroll chaos intermediate lesser greater success rate"}, {"t": "What's new", "u": "/updates/", "k": "page", "x": "changelog updates patch"}, {"t": "Crafting: what to keep for each profession", "u": "/crafting/", "k": "page", "x": "crafting smithing weaponcrafting tailoring woodcrafting leatherworking arcforge ore screw leather keep sell"}, {"t": "Job up: 1st and 2nd job advancement", "u": "/job-advancement/", "k": "page"},
            {"t": "Secrets: hidden maps and jump quests", "u": "/secrets/", "k": "page"}, {"t": "Rules: scrolls, EXP, crafting, mesos", "u": "/classic-rules/", "k": "page"}]
     for c, j in ALLJOBS:
         idx.append({"t": f"{j['name']} build", "u": f"/jobs/{j['id']}/", "k": c["name"], "x": j["weapon"] + " " + c["name"]})
@@ -545,7 +600,7 @@ def main():
         idx.append({"t": q["name"], "u": "/leveling/#quests", "k": "Quest", "x": f"level {q['level']} {q['where']}"})
     with open(os.path.join(OUT, "search.json"), "w") as f:
         json.dump(idx, f, separators=(",", ":"))
-    paths = ["/", "/leveling/", "/jobs/", "/tier-list/", "/tools/", "/updates/", "/job-advancement/", "/secrets/", "/classic-rules/", "/about/", "/privacy/"] + [f"/jobs/{j['id']}/" for _, j in ALLJOBS]
+    paths = ["/", "/leveling/", "/jobs/", "/tier-list/", "/tools/", "/crafting/", "/updates/", "/job-advancement/", "/secrets/", "/classic-rules/", "/about/", "/privacy/"] + [f"/jobs/{j['id']}/" for _, j in ALLJOBS]
     with open(os.path.join(OUT, "sitemap.xml"), "w") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"  <url><loc>{SITE}{p}</loc><lastmod>{CHECKED_ISO}</lastmod></url>\n" for p in paths) + "</urlset>\n")
     with open(os.path.join(OUT, "robots.txt"), "w") as f:

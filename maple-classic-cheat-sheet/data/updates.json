@@ -2,6 +2,14 @@
  "entries": [
   {
    "date": "2026-10-20",
+   "title": "Crafting guide",
+   "items": [
+    "New Crafting page: what to keep for each of the six professions, with item icons and the monsters that drop each material.",
+    "\"Never sell these\" list, crafting level requirements and how Screws, ingots, cloth and leather are made."
+   ]
+  },
+  {
+   "date": "2026-10-20",
    "title": "Tools, feedback and a sprinkle of whimsy",
    "items": [
     "New Tools page: EXP calculator (how long until your next level, with a stopwatch to measure your EXP per hour) and a scroll simulator.",
