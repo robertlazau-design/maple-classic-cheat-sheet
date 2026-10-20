@@ -593,3 +593,16 @@ img.rotten{filter:hue-rotate(70deg) saturate(.75) brightness(.85)}
 @media (prefers-reduced-motion:reduce){.more-box{animation:none}}
 .more-box:focus{outline:none}
 @media (max-width:640px){.tbl.compact td img.sprite.sm{display:block;margin:0 0 3px}.tbl.compact td{font-size:13.5px}}
+/* news page + home banner */
+.newsbar{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;margin:0 0 18px;padding:12px 16px;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow);border:2px solid var(--maple);text-decoration:none;color:var(--ink)}
+.newsbar b{font-size:16px}.newsbar span:last-child{font-size:14px;color:var(--maple-deep);font-weight:800}
+.nb-dot{width:10px;height:10px;border-radius:50%;background:var(--maple);box-shadow:0 0 0 4px var(--maple-soft);flex:none;animation:nbpulse 1.6s ease-in-out infinite}
+@keyframes nbpulse{50%{box-shadow:0 0 0 7px transparent}}
+.evt-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.evt-emo{font-size:34px;line-height:1}
+.evt-live{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 10px;border-radius:999px}
+.evt-live:empty{display:none}
+.evt-live.on{background:var(--green-soft);color:var(--green)}.evt-live.soon{background:var(--gold-soft);color:var(--gold)}
+.evt-meta{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 4px!important}
+.upd h3{margin:2px 0 8px;font-size:20px}
+@media (prefers-reduced-motion:reduce){.nb-dot{animation:none}}
