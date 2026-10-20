@@ -310,3 +310,33 @@ body.noscroll{overflow:hidden}
 .site-f a.coffee,a.coffee{color:#2a1606;opacity:1}
 .site-f .coffee{margin-bottom:6px}
 abbr[title]{text-decoration:underline dotted;text-underline-offset:3px;cursor:help}
+/* tier list */
+.picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-top:12px}
+.pick{display:flex;flex-direction:column;gap:3px;padding:14px;border-radius:16px;background:var(--surface);border:2px solid var(--line);text-decoration:none;color:var(--body);font-weight:500}
+.pick:hover{border-color:var(--maple)}
+.pick .pl{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--maple-deep)}
+.pick b{font-size:20px;color:var(--ink)}
+.pick span:last-child{font-size:14.5px}
+.tiers{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.tier{display:grid;grid-template-columns:54px minmax(0,1fr);border-radius:14px;overflow:hidden;background:var(--surface);border:2px solid var(--line)}
+.tier .tl{display:grid;place-items:center;font-size:28px;font-weight:800;color:#24150a}
+.t-s .tl{background:#f5b84a}.t-a .tl{background:#9fd28f}.t-b .tl{background:#9cc3ec}
+.tier ul{list-style:none;margin:0;padding:8px 12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 14px}
+.tier li{display:flex;flex-direction:column;padding:4px 0}
+.tier li a{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--ink)}
+.tier li a b{font-size:16.5px}
+.tier li a img.sprite.sm{width:auto;height:30px;object-fit:contain}
+.tier li span{font-size:14px;color:var(--muted);font-weight:500}
+.grades .g{display:inline-block;min-width:28px;text-align:center;border-radius:8px;padding:2px 6px;font-weight:800;color:#24150a}
+.g-s{background:#f5b84a}.g-a{background:#9fd28f}.g-b{background:#9cc3ec}
+details.faq{border-bottom:1px solid var(--line);padding:10px 0}
+details.faq summary{font-weight:800;color:var(--ink);cursor:pointer}
+details.faq p{margin:8px 0 0}
+@media (max-width:640px){
+  .tbl.grades{display:table;width:100%;font-size:13px}.tbl.grades thead{display:table-header-group}.tbl.grades tbody{display:table-row-group}
+  .tbl.grades tr{display:table-row;padding:0}.tbl.grades td,.tbl.grades th{display:table-cell;width:auto;padding:7px 3px;text-align:center}
+  .tbl.grades td:first-child,.tbl.grades th:first-child{text-align:left;padding-left:8px}
+  .tbl.grades td::before{display:none}.tbl.grades td .muted{display:none}
+  .tbl.grades th{font-size:9.5px;letter-spacing:.02em}.grades .g{min-width:22px;padding:1px 4px}
+  .picks{grid-template-columns:1fr 1fr;gap:8px}.pick{padding:11px}.pick b{font-size:17px}.pick span:last-child{font-size:13px}.pick .pl{font-size:10.5px}
+}
