@@ -258,11 +258,88 @@
     var at = Date.parse(el.dataset.at), card = el.closest(".evt"), badge = card && card.querySelector(".evt-live");
     if (!badge || isNaN(at)) return;
     var days = Math.ceil((at - nowT) / 86400000);
-    if (nowT >= at) { badge.textContent = "Live now"; badge.className = "evt-live on"; }
+    var endT = el.dataset.end ? Date.parse(el.dataset.end) : NaN;
+    if (!isNaN(endT) && nowT >= endT) { badge.textContent = "Ended"; badge.className = "evt-live off"; }
+    else if (nowT >= at) { badge.textContent = "Live now"; badge.className = "evt-live on"; }
     else { badge.textContent = days <= 1 ? "Tomorrow" : "In " + days + " days"; badge.className = "evt-live soon"; }
   });
   var lb = document.querySelector("[data-launch-news]");
   if (lb && nowT >= Date.parse("2026-10-21T18:00:00Z")) lb.textContent = "Classic World is live: events and patch notes";
+
+  // ---- Deadline countdowns (home): hide anything past its date
+  document.querySelectorAll("[data-left]").forEach(function (el) {
+    var end = Date.parse(el.dataset.left), host = el.closest("[data-dl]");
+    if (isNaN(end)) return;
+    var ms = end - nowT;
+    if (ms <= 0) { if (host) host.hidden = true; return; }
+    var d = Math.floor(ms / 86400000);
+    el.textContent = d < 1 ? "Last day!" : d === 1 ? "1 day left" : d + " days left";
+    if (d < 3) el.classList.add("urgent");
+  });
+  var dlb = document.querySelector(".dlbar");
+  if (dlb && !dlb.querySelector("[data-dl]:not([hidden])")) dlb.hidden = true;
+
+  // ---- Citizenship grade planner (/citizenship/): saved on this device only
+  var gsel = document.getElementById("gsel"), gdEl = document.getElementById("gdata");
+  if (gsel && gdEl) {
+    var gd = JSON.parse(gdEl.textContent), gout = document.getElementById("gout");
+    var drawG = function () {
+      var g = Number(gsel.value), n = gd[g];
+      document.querySelectorAll("tr[data-g]").forEach(function (tr) { var x = Number(tr.dataset.g); tr.classList.toggle("have", x <= g); tr.classList.toggle("next", x === g + 1); });
+      if (g === 0) gout.innerHTML = "<b>Next:</b> sign up at level 12 with Arthur (Henesys) or Roxy (Kerning).";
+      else if (!n) gout.innerHTML = "<b>Citizen of Honor!</b> You maxed it. Enjoy those earrings.";
+      else gout.innerHTML = "<b>Next: grade " + n[0] + ", " + esc(n[1]) + ".</b> Level " + n[2] + " and " + n[3].toLocaleString("en-US") + " points, about " + n[7] + " days. Unlocks: " + esc(n[6]) + ".";
+    };
+    var sg = store.get("mccs-cit");
+    if (sg != null) gsel.value = String(sg);
+    gsel.addEventListener("change", function () { store.set("mccs-cit", Number(gsel.value)); drawG(); if (Number(gsel.value) === 2) toast("Grade 2! Go buy that house 🏠"); });
+    drawG();
+  }
+
+  // ---- The Journey Begins gift tracker (/events/)
+  var jbEl = document.querySelector("[data-jb]");
+  if (jbEl) {
+    var got = store.get("mccs-jb") || [], jbBtns = jbEl.querySelectorAll(".jb-g button"), jbOut = document.getElementById("jb-out");
+    var drawJb = function () {
+      jbBtns.forEach(function (b, i) { b.setAttribute("aria-pressed", String(got.indexOf(i) > -1)); });
+      jbOut.textContent = got.length + " of 14 claimed" + (got.length === 14 ? " 🎉" : "");
+    };
+    jbBtns.forEach(function (b, i) {
+      b.addEventListener("click", function () {
+        var k = got.indexOf(i);
+        if (k > -1) got.splice(k, 1); else { got.push(i); toast(got.length === 14 ? "All 14 gifts! Nice." : "Gift claimed! +1 EXP"); }
+        store.set("mccs-jb", got); drawJb();
+      });
+    });
+    drawJb();
+  }
+
+  // ---- Hit chance checker (/leveling/#hit), NiaMeowDB's hit formula
+  var hc = document.getElementById("hitchk");
+  if (hc) {
+    var hl = document.getElementById("hc-lv"), ha = document.getElementById("hc-acc"), sv = store.get("mccs-acc");
+    if (sv) { hl.value = sv.lv; ha.value = sv.acc; }
+    var phit = function (acc, plv, mlv, eva) {
+      var L = Math.max(0, mlv - plv), A = acc * 100 / (10 * L + 255);
+      if (A <= 0) return 0;
+      var f = 0.15 + 0.20 / (1 + Math.exp((A - eva) / 12)), q = eva / A;
+      if (q <= 1 - f) return 1; if (q >= 1 + f) return 0;
+      return (1 + f - q) / (2 * f);
+    };
+    var drawH = function () {
+      var lv = Math.max(1, Math.min(100, Number(hl.value) || 1)), acc = Math.max(0, Number(ha.value) || 0);
+      store.set("mccs-acc", { lv: lv, acc: acc });
+      hc.querySelectorAll("tr[data-lv]").forEach(function (tr) {
+        var mlv = Number(tr.dataset.lv), av = Number(tr.dataset.av), pct = Math.floor(phit(acc, lv, mlv, av) * 100), need = 0;
+        for (var a = 1; a < 800; a++) { if (phit(a, lv, mlv, av) >= 1) { need = a; break; } }
+        var c = tr.querySelector(".hc-out");
+        c.className = "hc-out " + (pct >= 100 ? "ok" : pct >= 70 ? "meh" : "bad");
+        c.innerHTML = "<b>" + pct + "%</b><small>" + (pct >= 100 ? "never miss" : "need " + need + " ACC") + "</small>";
+      });
+    };
+    [hl, ha].forEach(function (x) { x.addEventListener("input", drawH); });
+    drawH();
+  }
 
   // ---- Boss respawn timers (/bosses/): saved on this device only
   var timers = store.get("mccs-boss") || {};
