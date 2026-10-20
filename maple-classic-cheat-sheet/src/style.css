@@ -592,3 +592,4 @@ img.rotten{filter:hue-rotate(70deg) saturate(.75) brightness(.85)}
 .more-grid a[aria-current=page]{background:var(--maple-soft);outline:2px solid var(--maple)}
 @media (prefers-reduced-motion:reduce){.more-box{animation:none}}
 .more-box:focus{outline:none}
+@media (max-width:640px){.tbl.compact td img.sprite.sm{display:block;margin:0 0 3px}.tbl.compact td{font-size:13.5px}}
