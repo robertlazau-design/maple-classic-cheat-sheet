@@ -266,6 +266,12 @@
   var lb = document.querySelector("[data-launch-news]");
   if (lb && nowT >= Date.parse("2026-10-21T18:00:00Z")) lb.textContent = "Classic World is live: events and patch notes";
 
+  // ---- Top bar dropdowns: one open at a time, close on outside click or Escape
+  var dds = document.querySelectorAll(".nav .dd");
+  dds.forEach(function (d) { d.addEventListener("toggle", function () { if (d.open) dds.forEach(function (o) { if (o !== d) o.open = false; }); }); });
+  document.addEventListener("click", function (e) { if (!e.target.closest(".nav .dd")) dds.forEach(function (d) { d.open = false; }); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") dds.forEach(function (d) { if (d.open) { d.open = false; d.querySelector("summary").focus(); } }); });
+
   // ---- Deadline countdowns (home): hide anything past its date
   document.querySelectorAll("[data-left]").forEach(function (el) {
     var end = Date.parse(el.dataset.left), host = el.closest("[data-dl]");
