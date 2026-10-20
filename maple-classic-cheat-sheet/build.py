@@ -23,12 +23,38 @@ API = "https://maplestory.io/api/GMS/83"
 
 e = lambda s: html.escape(str(s if s is not None else ""), quote=True)
 
+SHORTHAND = {"MG": "Magic Guard", "IMR": "Improved MP Recovery", "MMI": "Max MP Increase", "MA": "Magic Armor", "EB": "Energy Bolt",
+             "PB": "Poison Breath", "PS": "Power Strike", "SB": "Slash Blast", "IHR": "Improved HP Recovery", "MHI": "Max HP Increase",
+             "PKB": "Power Knockback", "FA": "Final Attack"}
+GLOSSARY = {"STR": "Strength", "DEX": "Dexterity", "INT": "Intelligence", "LUK": "Luck", "AP": "Ability Points: 5 per level, put into stats",
+            "SP": "Skill Points, put into skills", "HP": "Health", "MP": "Mana", "ACC": "Accuracy", "ATK": "Attack",
+            "WDEF": "Weapon Defense", "EHP": "Effective HP (how much damage you can take)", "NX": "Nexon cash currency", "EXP": "Experience",
+            "AoE": "Hits several monsters at once", "Lv": "Level", "PQ": "Party quest", "KPQ": "Kerning City Party Quest", "FM": "Free Market"}
+_GLOSS_RE = re.compile(r"\b(" + "|".join(sorted(GLOSSARY, key=len, reverse=True)) + r")(?=\b|\d)")
+
+def gloss(html_text):
+    """Wrap game shorthand in <abbr> so a tap or hover explains it. Skips scripts and tag attributes."""
+    parts = re.split(r"(<script.*?</script>|<[^>]+>)", html_text, flags=re.S)
+    seen = set()
+    for i, part in enumerate(parts):
+        if not part or part.startswith("<"):
+            continue
+        def sub(m):
+            k = m.group(1)
+            if k in seen: return k
+            seen.add(k)
+            return f'<abbr title="{GLOSSARY[k]}">{k}</abbr>'
+        parts[i] = _GLOSS_RE.sub(sub, part)
+    return "".join(parts)
+
 def tidy(s):
     """Small copy fixes on research text before it reaches readers."""
     s = str(s)
     s = s.replace(" Don't promise readers a route to 100.", "")
     s = re.sub(r"\(inference(, verify)?\)", "(our estimate)", s)
     s = s.replace("(MeowDB)", "").replace("  ", " ")
+    for short, full in SHORTHAND.items():
+        s = re.sub(r"\b" + short + r"\b", full, s)
     return s.strip()
 
 def conf(c):
@@ -36,16 +62,27 @@ def conf(c):
     label = {"high": "Confirmed", "medium": "Likely", "low": "Unconfirmed"}.get(c, c)
     return f'<span class="chip c-{e(c)}" title="How sure we are">{label}</span>'
 
+SOURCE_NAMES = {"meowdb.com": "NiaMeowDB", "metaroad.gg": "Metaroad", "mapleclassic.wiki": "Classic Wiki", "maplestorywiki.net": "MapleStory Wiki",
+                "maplestory.quest": "maplestory.quest", "maplestoryguide.wiki": "maplestoryguide.wiki"}
+
 def srcs(s):
     if not s: return ""
     items = s if isinstance(s, list) else [x.strip() for x in str(s).split(";")]
-    links = []
+    groups = {}
     for u in items:
         u = u.strip()
         if not u.startswith("http"): continue
         host = re.sub(r"^https?://(www\.)?", "", u).split("/")[0]
-        links.append(f'<a href="{e(u)}" rel="nofollow noopener" target="_blank">{e(host)}</a>')
-    return f'<p class="src">Source: {", ".join(links)}</p>' if links else ""
+        groups.setdefault(SOURCE_NAMES.get(host, host), []).append(u)
+    if not groups: return ""
+    out = []
+    for name, urls in groups.items():
+        if len(urls) == 1:
+            out.append(f'<a href="{e(urls[0])}" rel="nofollow noopener" target="_blank">{e(name)}</a>')
+        else:
+            nums = " · ".join(f'<a href="{e(u)}" rel="nofollow noopener" target="_blank">{i + 1}</a>' for i, u in enumerate(urls))
+            out.append(f"{e(name)} ({nums})")
+    return f'<p class="src">Source{"s" if sum(map(len, groups.values())) > 1 else ""}: {", ".join(out)}</p>'
 
 def _img(src, alt, cls):
     return f'<img class="{cls}" src="{src}" alt="{e(alt)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">'
@@ -112,6 +149,7 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="/style.css">
+<script defer src="/_vercel/insights/script.js"></script>
 {ldtxt}
 </head>
 <body>
@@ -125,7 +163,7 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 {hero}
 <div class="wrap"><div class="ad ad-top" data-slot=""></div>
 <div class="layout{" has-side" if side_extra else ""}">
-<main id="main">{bc}{body}</main>
+<main id="main">{bc}{gloss(body)}</main>
 <aside class="side" aria-label="Sidebar"><div class="sticky">{side_extra}<div class="ad ad-side" data-slot=""></div></div></aside>
 </div></div>
 <footer class="site-f"><div class="wrap">
@@ -193,7 +231,7 @@ def build_home():
             ("npc", 1022000, "npc", 2, 58, 1.9, 0), ("npc", 1032001, "npc", 27, 50, 1.6, .6), ("npc", 1012100, "npc", 49, 58, 1.9, 1.1), ("npc", 1072003, "npc", 72, 56, 2.0, 1.6)]
     castimg = "".join(f'<img src="{API}/{kind}/{i}/render/stand" alt="" loading="eager" referrerpolicy="no-referrer" onerror="this.remove()" style="left:{left}%;top:{top}%;--k:{k};--d:{d}s">' for _, i, kind, left, top, k, d in cast)
     hero = f'''<section class="hero"><div class="wrap">
-<div class="hero-copy">{HOUSE}<p class="kicker">Classic World · launches Oct 21</p><h1>MapleStory Classic<br>Guide</h1>
+<div class="hero-copy">{HOUSE}<p class="kicker" data-launch>Classic World · launches Oct 21</p><h1>MapleStory Classic<br>Guide</h1>
 <p class="sub">Pick your class. Get your build, your grind spot and the secrets. That's it.</p>
 <div class="btns"><a class="btn btn-primary" href="#run">Start here {LEAF_SM}</a><button class="btn btn-ghost" type="button" data-search>Search anything</button></div>
 {stamp()}</div>
