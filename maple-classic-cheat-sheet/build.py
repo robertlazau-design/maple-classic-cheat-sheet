@@ -87,9 +87,12 @@ def srcs(s):
 
 def _img(src, alt, cls):
     return f'<img class="{cls}" src="{src}" alt="{e(alt)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">'
+FLYERS = {2300100, 5300100}  # Stirge, Malady: no "stand" pose, only "fly"
+def mob_src(i):
+    return f"{API}/mob/{i}/render/{'fly' if i in FLYERS else 'stand'}"
 def mob_img(name, cls="sprite"):
     i = IMG["mobs"].get(name)
-    return _img(f"{API}/mob/{i}/render/stand", name, cls) if i else ""
+    return _img(mob_src(i), name, cls) if i else ""
 def npc_img(i, name, cls="sprite"):
     return _img(f"{API}/npc/{i}/render/stand", name, cls)
 def map_img(i, name):
@@ -499,11 +502,11 @@ def build_crafting():
         return f'<span class="{cls} emo" aria-hidden="true">{it.get("emoji", "📦")}</span>'
     def mob(name):
         i = C["mobs"].get(name)
-        return _img(f"{API}/mob/{i}/render/stand", name, "mobxs") if i else ""
+        return _img(mob_src(i), name, "mobxs") if i else ""
     def source(name):
         it = C["items"].get(name, {})
         if it.get("made"): return f'<span class="src-line">Made: {e(it["made"])}</span>'
-        if it.get("from"): return f'<span class="src-line"><span class="mobs">{"".join(mob(m) for m in it["from"][:3])}</span>From {e(", ".join(it["from"]))}</span>'
+        if it.get("from"): return f'<span class="src-line"><span class="mobs">{"".join(mob(m) for m in it["from"])}</span>From {e(", ".join(it["from"]))}</span>'
         return ""
     def keep_card(name, why):
         return f'<li class="kp">{icon(name)}<div><b>{e(name)}</b><span>{e(why)}</span>{source(name)}</div></li>'
