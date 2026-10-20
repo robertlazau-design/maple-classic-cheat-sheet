@@ -13,12 +13,13 @@ COFFEE = "https://buymeacoffee.com/goldenboypro"  # your Buy Me a Coffee link, e
 CHECKED = "Oct 19, 2026"
 CHECKED_ISO = "2026-10-19"
 DATA_NOTE = "Founder's Access data"
+WEB3FORMS_KEY = os.environ.get("WEB3FORMS_KEY", "").strip()  # set in Vercel > Settings > Environment Variables; empty = feedback opens an email instead
 
 def load(n):
     with open(os.path.join(ROOT, "data", n)) as f:
         return json.load(f)
 
-JOBS = load("jobs.json"); TIERS = load("tiers.json"); LEV = load("leveling.json"); SEC = load("secrets.json"); IMG = load("images.json")
+JOBS = load("jobs.json"); TIERS = load("tiers.json"); EXP = load("exp.json"); UPDATES = load("updates.json"); LEV = load("leveling.json"); SEC = load("secrets.json"); IMG = load("images.json")
 API = "https://maplestory.io/api/GMS/83"
 
 e = lambda s: html.escape(str(s if s is not None else ""), quote=True)
@@ -118,7 +119,7 @@ LEAVES = '<div class="leaves" aria-hidden="true">' + "".join(
 HOUSE = '<svg class="house" viewBox="0 0 120 110" aria-hidden="true"><path fill="currentColor" d="M60 4C28 4 6 24 6 46c0 6 4 9 10 9h88c6 0 10-3 10-9C114 24 92 4 60 4z"/><rect x="26" y="55" width="68" height="48" rx="10" fill="currentColor"/><rect x="50" y="70" width="20" height="33" rx="10" fill="#fff" opacity=".5"/></svg>'
 LEAF_SM = '<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 2l2.6 5.4 4.2-2-1 5.6 5.2-1.6-2.6 4.6 4.6 1.6-6 3.6 1.4 3.2-6.2-1.2.4 6.8h-5.2l.4-6.8-6.2 1.2 1.4-3.2-6-3.6 4.6-1.6L5 9.4l5.2 1.6-1-5.6 4.2 2z"/></svg>'
 
-NAV = [("/", "Home"), ("/leveling/", "Grind spots"), ("/jobs/", "Builds"), ("/tier-list/", "Tier list"), ("/job-advancement/", "Job up"), ("/secrets/", "Secrets"), ("/classic-rules/", "Rules")]
+NAV = [("/", "Home"), ("/leveling/", "Grind spots"), ("/jobs/", "Builds"), ("/tier-list/", "Tier list"), ("/tools/", "Tools"), ("/job-advancement/", "Job up"), ("/secrets/", "Secrets"), ("/classic-rules/", "Rules")]
 
 def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=""):
     canon = SITE + path
@@ -163,12 +164,12 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 {hero}
 <div class="wrap"><div class="ad ad-top" data-slot=""></div>
 <div class="layout{" has-side" if side_extra else ""}">
-<main id="main">{bc}{gloss(body)}</main>
+<main id="main">{bc}{gloss(body)}{feedback(path)}</main>
 <aside class="side" aria-label="Sidebar"><div class="sticky">{side_extra}<div class="ad ad-side" data-slot=""></div></div></aside>
 </div></div>
 <footer class="site-f"><div class="wrap">
 <a class="brand" href="/">{LEAF}<span>Maple Classic <span>Guide</span></span></a>
-<nav aria-label="Footer">{"".join(f'<a href="{h}">{t}</a>' for h, t in NAV)}<a href="/about/">About &amp; sources</a><a href="/privacy/">Privacy</a></nav>
+<nav aria-label="Footer">{"".join(f'<a href="{h}">{t}</a>' for h, t in NAV)}<a href="/updates/">What's new</a><a href="/about/">About &amp; sources</a><a href="/privacy/">Privacy</a></nav>
 {coffee_btn()}<p>Unofficial fan site. Not affiliated with or endorsed by NEXON. MapleStory © NEXON. Data checked {CHECKED} ({DATA_NOTE}); we re-check after every patch. <a href="mailto:robertlazau@gmail.com?subject=Maple%20Classic%20Guide%20fix">Spotted a mistake? Tell us</a>.</p>
 <p>Game sprites and minimaps © Nexon, loaded from <a href="https://maplestory.io" rel="nofollow noopener">maplestory.io</a>. Built by <a href="https://www.robertlazau.com">Golden Boy Productions</a>.</p>
 </div></footer>
@@ -220,6 +221,7 @@ def build_home():
     cards = [("/leveling/", "🗺️ Grind spots", "Where to train at every level, 1 to 100.", "mob/1210103"),
              ("/jobs/", "⚔️ Builds", "AP + SP for all 10 jobs. Resets cost 7,000 NX, so don't wing it.", "npc/1012100"),
              ("/tier-list/", "🏆 Tier list", "Best class for grinding, bossing, parties or your first run.", "npc/1022000"),
+             ("/tools/", "🧮 Tools", "EXP calculator and a scroll simulator. Gamble without losing mesos.", "npc/9010000"),
              ("/job-advancement/", "⬆️ Job up", "Who to talk to at 10 and 30, and how the marble test works.", "npc/1032001"),
              ("/secrets/", "🤫 Secrets", f'{len(SEC["secrets"])} hidden maps, jump quests and boss rooms.', "mob/6130101"),
              ("/classic-rules/", "📜 Rules", "Scroll odds, the EXP wall, crafting and making mesos.", "mob/1110100")]
@@ -435,6 +437,65 @@ def build_tiers():
                               "MapleStory Classic tier list for all 10 jobs: best class for solo grinding, bossing, party play and beginners, with quick picks and FAQ.", body,
                               crumbs=[("/", "Guide"), (None, "Tier list")], schema=schema, side_extra=side))
 
+def feedback(path):
+    if path in ("/404", "/privacy/"): return ""
+    return f"""<section class="fb" data-fb-key="{e(WEB3FORMS_KEY)}" aria-labelledby="fbh">
+<p id="fbh" class="fb-q">Was this page right?</p>
+<div class="fb-btns"><button type="button" class="fb-b" data-fb="up">👍 Yep</button><button type="button" class="fb-b" data-fb="down">👎 Something's off</button></div>
+<form class="fb-form" hidden><label for="fbm">What did you see in game?</label>
+<textarea id="fbm" name="message" rows="3" maxlength="1500" required placeholder="e.g. Ant Tunnel I beats Ant Tunnel II at level 25, I get about 40k EXP an hour there"></textarea>
+<input type="checkbox" name="botcheck" class="fb-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+<div class="fb-row"><button type="submit" class="btn btn-primary">Send fix</button><span class="fb-note">Goes straight to us. No account needed.</span></div></form>
+</section>"""
+
+def build_tools():
+    expdata = json.dumps({"toNext": EXP["toNext"]})
+    body = f"""<h1>MapleStory Classic Tools: EXP Calculator &amp; Scroll Simulator</h1>
+<p class="lede">How long until your next level, and what happens if you slap a Chaos scroll on your weapon. Saved on your device, nothing to sign up for.</p>
+<div class="toc"><a href="#exp">⏱ EXP calculator</a><a href="#scrolls">✨ Scroll simulator</a></div>
+<h2 id="exp">⏱ EXP calculator</h2>
+<p>Classic uses the old-school EXP curve up to level 89, then every level from 90 costs 2.1× the last. Level 99 to 100 alone is about 9.5 billion EXP.</p>
+<div class="tool" id="expcalc">
+<div class="tool-grid">
+<label>Your level<input type="number" id="xc-lv" min="1" max="99" value="1" inputmode="numeric"></label>
+<label>EXP bar %<input type="number" id="xc-pct" min="0" max="99.99" step="0.01" value="0" inputmode="decimal"></label>
+<label>Goal level<input type="number" id="xc-goal" min="2" max="100" value="10" inputmode="numeric"></label>
+<label>EXP per hour<input type="number" id="xc-rate" min="0" step="1000" placeholder="e.g. 40000" inputmode="numeric"></label>
+</div>
+<div class="tool-row"><button type="button" class="btn btn-ghost" id="xc-start">⏱ Measure my EXP/hour</button><span class="muted" id="xc-timer" aria-live="polite"></span></div>
+<div class="tool-out" id="xc-out" aria-live="polite"></div>
+<script type="application/json" id="exp-data">{expdata}</script>
+</div>
+<p class="muted" style="margin-top:8px">How to measure: tap the button, grind for 10 minutes or more, update your level and EXP %, then tap it again.</p>
+<div class="ad ad-in" data-slot=""></div>
+<h2 id="scrolls">✨ Scroll simulator</h2>
+<p>Classic's scrolls come in four grades. Every attempt uses a slot, pass or fail, and only Chaos scrolls can destroy the item (half of failed Chaos attempts). Try your luck here before you spend real mesos.</p>
+<div class="tool" id="scrollsim">
+<div class="tool-grid">
+<label>Scroll<select id="ss-grade">
+<option value="lesser">Lesser: 100%, +1</option>
+<option value="inter" selected>Intermediate: 60%, +2</option>
+<option value="greater">Greater: 10%, +3</option>
+<option value="chaos">Chaos: 10%, +4, can boom</option></select></label>
+<label>Upgrade slots<input type="number" id="ss-slots" min="1" max="10" value="7" inputmode="numeric"></label>
+</div>
+<div class="item" id="ss-item" aria-live="polite"></div>
+<div class="tool-row"><button type="button" class="btn btn-primary" id="ss-one">Use 1 scroll</button><button type="button" class="btn btn-ghost" id="ss-all">Use all slots</button><button type="button" class="btn btn-ghost" id="ss-reset">New item</button></div>
+<ol class="ss-log" id="ss-log"></ol>
+</div>
+<p class="muted" style="margin-top:8px">Average gain per slot: Lesser +1.0, Intermediate +1.2, Greater +0.3, Chaos +0.4, with a 45% chance to boom on each Chaos attempt. Intermediate is the best value. Chaos stat gain varies by scroll family; we use +4.</p>
+<h2>More on scrolls and EXP</h2><p>The full rules (scroll families, resets, death penalty) are on <a href="/classic-rules/">Classic rules</a>.</p>{srcs(EXP["source"])}"""
+    write("/tools/", page("/tools/", "MapleStory Classic EXP Calculator & Scroll Simulator",
+                          "Free MapleStory Classic tools: EXP calculator (time to your next level and to 100, with an EXP/hour stopwatch) and a scroll success simulator for Lesser, Intermediate, Greater and Chaos scrolls.", body,
+                          crumbs=[("/", "Guide"), (None, "Tools")]))
+
+def build_updates():
+    items = "".join(f'<article class="upd" id="u{e(u["date"])}"><p class="upd-d"><time datetime="{e(u["date"])}">{date.fromisoformat(u["date"]).strftime("%b %-d, %Y")}</time></p><h2>{e(u["title"])}</h2><ul>' + "".join(f"<li>{e(x)}</li>" for x in u["items"]) + "</ul></article>" for u in UPDATES["entries"])
+    body = f"""<h1>What's new on Maple Classic Guide</h1>
+<p class="lede">Every fix and addition, newest first. Spotted something wrong? Use "Was this page right?" at the bottom of any page.</p>{items}"""
+    write("/updates/", page("/updates/", "What's New | Maple Classic Guide", "Changelog for the Maple Classic Guide: new pages, tools and data fixes after every MapleStory Classic patch.", body,
+                            crumbs=[("/", "Guide"), (None, "What's new")]))
+
 def build_static():
     about = f'''<h1>About this guide</h1>
 <p class="lede">A fan-made quick reference for MapleStory Classic World, built to stay open on your phone while you play.</p>
@@ -466,9 +527,9 @@ def main():
         import base64
         with open(b64) as f, open(os.path.join(OUT, "og.png"), "wb") as g:
             g.write(base64.b64decode(f.read()))
-    build_home(); build_leveling(); build_jobs(); build_tiers(); build_adv(); build_secrets(); build_rules(); build_static()
+    build_home(); build_leveling(); build_jobs(); build_tiers(); build_tools(); build_updates(); build_adv(); build_secrets(); build_rules(); build_static()
     idx = [{"t": "Home: pick your class and level", "u": "/", "k": "page"}, {"t": "Grind spots: leveling route 1–100", "u": "/leveling/", "k": "page"},
-           {"t": "Builds: all 10 jobs", "u": "/jobs/", "k": "page"}, {"t": "Tier list: best class for you", "u": "/tier-list/", "k": "page", "x": "best class ranking grinding bossing party beginner"}, {"t": "Job up: 1st and 2nd job advancement", "u": "/job-advancement/", "k": "page"},
+           {"t": "Builds: all 10 jobs", "u": "/jobs/", "k": "page"}, {"t": "Tier list: best class for you", "u": "/tier-list/", "k": "page", "x": "best class ranking grinding bossing party beginner"}, {"t": "EXP calculator: time to next level", "u": "/tools/#exp", "k": "Tool", "x": "exp table hours level 100 calculator"}, {"t": "Scroll simulator", "u": "/tools/#scrolls", "k": "Tool", "x": "scroll chaos intermediate lesser greater success rate"}, {"t": "What's new", "u": "/updates/", "k": "page", "x": "changelog updates patch"}, {"t": "Job up: 1st and 2nd job advancement", "u": "/job-advancement/", "k": "page"},
            {"t": "Secrets: hidden maps and jump quests", "u": "/secrets/", "k": "page"}, {"t": "Rules: scrolls, EXP, crafting, mesos", "u": "/classic-rules/", "k": "page"}]
     for c, j in ALLJOBS:
         idx.append({"t": f"{j['name']} build", "u": f"/jobs/{j['id']}/", "k": c["name"], "x": j["weapon"] + " " + c["name"]})
@@ -484,7 +545,7 @@ def main():
         idx.append({"t": q["name"], "u": "/leveling/#quests", "k": "Quest", "x": f"level {q['level']} {q['where']}"})
     with open(os.path.join(OUT, "search.json"), "w") as f:
         json.dump(idx, f, separators=(",", ":"))
-    paths = ["/", "/leveling/", "/jobs/", "/tier-list/", "/job-advancement/", "/secrets/", "/classic-rules/", "/about/", "/privacy/"] + [f"/jobs/{j['id']}/" for _, j in ALLJOBS]
+    paths = ["/", "/leveling/", "/jobs/", "/tier-list/", "/tools/", "/updates/", "/job-advancement/", "/secrets/", "/classic-rules/", "/about/", "/privacy/"] + [f"/jobs/{j['id']}/" for _, j in ALLJOBS]
     with open(os.path.join(OUT, "sitemap.xml"), "w") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"  <url><loc>{SITE}{p}</loc><lastmod>{CHECKED_ISO}</lastmod></url>\n" for p in paths) + "</urlset>\n")
     with open(os.path.join(OUT, "robots.txt"), "w") as f:
