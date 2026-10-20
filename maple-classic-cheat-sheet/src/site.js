@@ -233,6 +233,19 @@
     fresh();
   }
 
+  // ---- "More" menu on the phone tab bar
+  var moreBtn = document.querySelector("[data-more]"), sheet = document.getElementById("more-sheet");
+  if (moreBtn && sheet) {
+    var setMore = function (open) {
+      sheet.hidden = !open; moreBtn.setAttribute("aria-expanded", String(open));
+      document.documentElement.style.overflow = open ? "hidden" : "";
+      if (open) sheet.querySelector(".more-box").focus({ preventScroll: true }); else moreBtn.focus({ preventScroll: true });
+    };
+    moreBtn.addEventListener("click", function () { setMore(sheet.hidden); });
+    sheet.addEventListener("click", function (e) { if (e.target === sheet || e.target.closest("[data-more-close]")) setMore(false); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !sheet.hidden) setMore(false); });
+  }
+
   // ---- Boss respawn timers (/bosses/): saved on this device only
   var timers = store.get("mccs-boss") || {};
   var tEls = document.querySelectorAll(".timer[data-boss]");
