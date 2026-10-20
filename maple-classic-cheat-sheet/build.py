@@ -18,7 +18,7 @@ def load(n):
     with open(os.path.join(ROOT, "data", n)) as f:
         return json.load(f)
 
-JOBS = load("jobs.json"); LEV = load("leveling.json"); SEC = load("secrets.json"); IMG = load("images.json")
+JOBS = load("jobs.json"); TIERS = load("tiers.json"); LEV = load("leveling.json"); SEC = load("secrets.json"); IMG = load("images.json")
 API = "https://maplestory.io/api/GMS/83"
 
 e = lambda s: html.escape(str(s if s is not None else ""), quote=True)
@@ -118,7 +118,7 @@ LEAVES = '<div class="leaves" aria-hidden="true">' + "".join(
 HOUSE = '<svg class="house" viewBox="0 0 120 110" aria-hidden="true"><path fill="currentColor" d="M60 4C28 4 6 24 6 46c0 6 4 9 10 9h88c6 0 10-3 10-9C114 24 92 4 60 4z"/><rect x="26" y="55" width="68" height="48" rx="10" fill="currentColor"/><rect x="50" y="70" width="20" height="33" rx="10" fill="#fff" opacity=".5"/></svg>'
 LEAF_SM = '<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 2l2.6 5.4 4.2-2-1 5.6 5.2-1.6-2.6 4.6 4.6 1.6-6 3.6 1.4 3.2-6.2-1.2.4 6.8h-5.2l.4-6.8-6.2 1.2 1.4-3.2-6-3.6 4.6-1.6L5 9.4l5.2 1.6-1-5.6 4.2 2z"/></svg>'
 
-NAV = [("/", "Home"), ("/leveling/", "Grind spots"), ("/jobs/", "Builds"), ("/job-advancement/", "Job up"), ("/secrets/", "Secrets"), ("/classic-rules/", "Rules")]
+NAV = [("/", "Home"), ("/leveling/", "Grind spots"), ("/jobs/", "Builds"), ("/tier-list/", "Tier list"), ("/job-advancement/", "Job up"), ("/secrets/", "Secrets"), ("/classic-rules/", "Rules")]
 
 def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=""):
     canon = SITE + path
@@ -219,6 +219,7 @@ def build_home():
              "api": API}
     cards = [("/leveling/", "🗺️ Grind spots", "Where to train at every level, 1 to 100.", "mob/1210103"),
              ("/jobs/", "⚔️ Builds", "AP + SP for all 10 jobs. Resets cost 7,000 NX, so don't wing it.", "npc/1012100"),
+             ("/tier-list/", "🏆 Tier list", "Best class for grinding, bossing, parties or your first run.", "npc/1022000"),
              ("/job-advancement/", "⬆️ Job up", "Who to talk to at 10 and 30, and how the marble test works.", "npc/1032001"),
              ("/secrets/", "🤫 Secrets", f'{len(SEC["secrets"])} hidden maps, jump quests and boss rooms.', "mob/6130101"),
              ("/classic-rules/", "📜 Rules", "Scroll odds, the EXP wall, crafting and making mesos.", "mob/1110100")]
@@ -292,7 +293,7 @@ def build_jobs():
 <p><b>1st job:</b> level {e(fj["level"])} with {e(fj["npc"])} in {e(fj["town"])}. {e(tidy(fj["notes"]))}</p>
 <div class="grid">{jobs}</div>'''
     body = f'''<h1>MapleStory Classic Job Builds</h1>
-<p class="lede">AP and SP plans for every 2nd job. You place every point by hand in Classic, and a reset costs 7,000 NX, so plan before you click.</p>
+<p class="lede">AP and SP plans for every 2nd job. You place every point by hand in Classic, and a reset costs 7,000 NX, so plan before you click. Still choosing? See the <a href="/tier-list/">tier list</a>.</p>
 {stamp()}<div class="toc">{"".join(f'<a href="#{e(c["id"])}">{e(c["name"])}</a>' for c in JOBS["classes"])}</div>{blocks}
 <div class="ad ad-in" data-slot=""></div>
 <h2>What changed for jobs in Classic</h2><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in JOBS["classicChanges"])}</ul>'''
@@ -328,7 +329,8 @@ def build_jobs():
 <h2 id="adv">Job advancement</h2><div class="pics">{map_img(IMG["testMap"][c["id"]], "2nd job test map")}<div class="sprites">{npc_img(IMG["classNpc"][c["id"]][0], IMG["classNpc"][c["id"]][1])}</div></div><p><b>1st job:</b> level {e(c["firstJob"]["level"])}, {e(c["firstJob"]["npc"])} in {e(c["firstJob"]["town"])}.</p>
 <p><b>2nd job:</b> level {e(adv["level"])}, {e(adv["npc"])} in {e(adv["town"])}. {e(tidy(adv["test"]))}</p>
 <h2 id="pros">Pros &amp; cons</h2><div class="pc"><div class="card"><h3>Pros</h3><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in j["pros"])}</ul></div><div class="card"><h3>Cons</h3><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in j["cons"])}</ul></div></div>
-<p style="margin-top:20px">Other {e(c["name"])} jobs: {" · ".join(f'<a href="/jobs/{e(x["id"])}/">{e(x["name"])}</a>' for x in c["jobs"] if x["id"] != j["id"])}</p>
+<p style="margin-top:20px">How does {e(j["name"])} rank? See the <a href="/tier-list/">MapleStory Classic tier list</a>.</p>
+<p>Other {e(c["name"])} jobs: {" · ".join(f'<a href="/jobs/{e(x["id"])}/">{e(x["name"])}</a>' for x in c["jobs"] if x["id"] != j["id"])}</p>
 {srcs(j.get("sources"))}'''
         write(f"/jobs/{j['id']}/", page(f"/jobs/{j['id']}/", f"{j['name']} Build Guide: MapleStory Classic AP & SP",
                                         f"MapleStory Classic {j['name']} build: AP stat plan by level, SP skill order for 1st and 2nd job, job advancement and pros/cons.", body,
@@ -392,6 +394,47 @@ def build_rules():
                                   "MapleStory Classic rules explained: scroll success rates, AP/SP reset cost, EXP table and the 90+ wall, crafting professions, boss timers and money making.", body,
                                   crumbs=[("/", "Guide"), (None, "Classic rules")]))
 
+def build_tiers():
+    jobs = {j["id"]: (c, j) for c, j in ALLJOBS}
+    def jname(jid): return jobs[jid][1]["name"]
+    def face(jid):
+        c = jobs[jid][0]; n = IMG["classNpc"][c["id"]]
+        return npc_img(n[0], c["name"], "sprite sm")
+    picks = "".join(f'<a class="pick" href="/jobs/{e(p["job"])}/"><span class="pl">{e(p["label"])}</span><b>{e(jname(p["job"]))}</b><span>{e(p["why"])}</span></a>' for p in TIERS["picks"])
+    toc = "".join(f'<a href="#{e(l["id"])}">{l["emoji"]} {e(l["title"])}</a>' for l in TIERS["lists"]) + '<a href="#grades">All grades</a><a href="#faq">FAQ</a>'
+    lists = ""
+    for l in TIERS["lists"]:
+        rows = ""
+        for t in ["S", "A", "B"]:
+            items = "".join(f'<li><a href="/jobs/{e(jid)}/">{face(jid)}<b>{e(jname(jid))}</b></a><span>{e(why)}</span></li>' for jid, why in l["tiers"][t])
+            rows += f'<div class="tier t-{t.lower()}"><div class="tl" aria-label="{t} tier">{t}</div><ul>{items}</ul></div>'
+        lists += f'<h2 id="{e(l["id"])}">{l["emoji"]} {e(l["title"])}</h2><p>{e(l["intro"])}</p><div class="tiers">{rows}</div>'
+    cols = TIERS["grades"]["cols"]
+    grows = "".join(f'<tr><td data-th="Job"><a href="/jobs/{e(jid)}/"><b>{e(jname(jid))}</b></a> <span class="muted">{e(jobs[jid][0]["name"])}</span></td>' +
+                    "".join(f'<td data-th="{e(cols[i])}"><span class="g g-{g.lower()}">{g}</span></td>' for i, g in enumerate(gs)) + "</tr>"
+                    for jid, gs in TIERS["grades"]["rows"].items())
+    faq = "".join(f'<details class="faq"><summary>{e(q)}</summary><p>{e(a)}</p></details>' for q, a in TIERS["faq"])
+    body = f"""<h1>MapleStory Classic Tier List: Best Class for How You Play</h1>
+<p class="lede">There's no single best class in Classic. So we ranked all 10 jobs four ways: solo grinding, bossing, party play and how forgiving they are for new players.</p>
+<p class="stamp"><b>✓ Checked {CHECKED}</b><span>Level 70, 1st + 2nd job, launch build. {conf(TIERS["meta"]["confidence"])} We re-rank after launch.</span></p>
+<h2 id="picks">Quick picks</h2><div class="picks">{picks}</div>
+<div class="toc">{toc}</div>
+<div class="ad ad-in" data-slot=""></div>
+{lists}
+<h2 id="grades">All grades at a glance</h2>
+<table class="tbl grades"><thead><tr><th>Job</th>{"".join(f"<th>{e(c)}</th>" for c in cols)}</tr></thead><tbody>{grows}</tbody></table>
+<p class="muted" style="margin-top:8px">S = top third, A = middle, B = bottom third of the 10 jobs for that column. Mobility counts Teleport and Haste.</p>
+<div class="ad ad-in" data-slot=""></div>
+<h2>How we ranked them</h2><p>{e(TIERS["meta"]["basis"])} Gear, scrolls, party makeup and the maps you pick change real results, and 3rd job (planned for 2027) will shake this up. Picked a job? Grab its <a href="/jobs/">AP and SP build</a> next.</p>
+{srcs(TIERS["meta"]["sources"])}
+<h2 id="faq">FAQ</h2>{faq}"""
+    schema = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+        {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in TIERS["faq"]]}
+    side = '<div class="card"><h3>Job builds</h3>' + "".join(f'<p><a href="/jobs/{e(j["id"])}/">{e(j["name"])}</a></p>' for _, j in ALLJOBS) + "</div>"
+    write("/tier-list/", page("/tier-list/", "MapleStory Classic Tier List (2026): Best Class to Pick",
+                              "MapleStory Classic tier list for all 10 jobs: best class for solo grinding, bossing, party play and beginners, with quick picks and FAQ.", body,
+                              crumbs=[("/", "Guide"), (None, "Tier list")], schema=schema, side_extra=side))
+
 def build_static():
     about = f'''<h1>About this guide</h1>
 <p class="lede">A fan-made quick reference for MapleStory Classic World, built to stay open on your phone while you play.</p>
@@ -423,9 +466,9 @@ def main():
         import base64
         with open(b64) as f, open(os.path.join(OUT, "og.png"), "wb") as g:
             g.write(base64.b64decode(f.read()))
-    build_home(); build_leveling(); build_jobs(); build_adv(); build_secrets(); build_rules(); build_static()
+    build_home(); build_leveling(); build_jobs(); build_tiers(); build_adv(); build_secrets(); build_rules(); build_static()
     idx = [{"t": "Home: pick your class and level", "u": "/", "k": "page"}, {"t": "Grind spots: leveling route 1–100", "u": "/leveling/", "k": "page"},
-           {"t": "Builds: all 10 jobs", "u": "/jobs/", "k": "page"}, {"t": "Job up: 1st and 2nd job advancement", "u": "/job-advancement/", "k": "page"},
+           {"t": "Builds: all 10 jobs", "u": "/jobs/", "k": "page"}, {"t": "Tier list: best class for you", "u": "/tier-list/", "k": "page", "x": "best class ranking grinding bossing party beginner"}, {"t": "Job up: 1st and 2nd job advancement", "u": "/job-advancement/", "k": "page"},
            {"t": "Secrets: hidden maps and jump quests", "u": "/secrets/", "k": "page"}, {"t": "Rules: scrolls, EXP, crafting, mesos", "u": "/classic-rules/", "k": "page"}]
     for c, j in ALLJOBS:
         idx.append({"t": f"{j['name']} build", "u": f"/jobs/{j['id']}/", "k": c["name"], "x": j["weapon"] + " " + c["name"]})
@@ -441,7 +484,7 @@ def main():
         idx.append({"t": q["name"], "u": "/leveling/#quests", "k": "Quest", "x": f"level {q['level']} {q['where']}"})
     with open(os.path.join(OUT, "search.json"), "w") as f:
         json.dump(idx, f, separators=(",", ":"))
-    paths = ["/", "/leveling/", "/jobs/", "/job-advancement/", "/secrets/", "/classic-rules/", "/about/", "/privacy/"] + [f"/jobs/{j['id']}/" for _, j in ALLJOBS]
+    paths = ["/", "/leveling/", "/jobs/", "/tier-list/", "/job-advancement/", "/secrets/", "/classic-rules/", "/about/", "/privacy/"] + [f"/jobs/{j['id']}/" for _, j in ALLJOBS]
     with open(os.path.join(OUT, "sitemap.xml"), "w") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"  <url><loc>{SITE}{p}</loc><lastmod>{CHECKED_ISO}</lastmod></url>\n" for p in paths) + "</urlset>\n")
     with open(os.path.join(OUT, "robots.txt"), "w") as f:
