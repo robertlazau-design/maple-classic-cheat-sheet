@@ -10,7 +10,8 @@
   --font:"Nunito",ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:light;
 }
-@media (prefers-color-scheme:dark){:root{
+/* Brown (dark) is the site's standard look; the cream values above stay as the base so a light theme can return later. */
+@media all{:root{
   --frame:#120a05;--bg:#22160e;--surface:#2b1d13;--raised:#36261a;--line:#4a3424;
   --ink:#fbeee0;--body:#ead8c6;--muted:#b89c85;
   --maple:#f59a2e;--maple-ink:#1e0f04;--maple-deep:#f7b061;--maple-soft:#4a2d16;--leaf-tint:#5a3a24;
@@ -36,7 +37,7 @@ a:hover{text-decoration-thickness:2px}
 .brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-size:21px;font-weight:800;white-space:nowrap;letter-spacing:-.01em}
 .brand svg{width:30px;height:30px;flex:none}
 .brand span span{font-weight:500;color:var(--body)}
-.nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin-left:auto;padding:6px 0}
+.nav{display:flex;gap:4px;margin-left:auto;padding:6px 0}
 .nav::-webkit-scrollbar{display:none}
 .nav a{flex:none;text-decoration:none;color:var(--ink);font-weight:600;font-size:15.5px;padding:7px 14px;border-radius:10px}
 .nav a:hover{background:var(--raised)}
@@ -46,7 +47,7 @@ a:hover{text-decoration-thickness:2px}
 /* drifting maple leaves */
 .leaves{position:absolute;pointer-events:none;inset:0;overflow:hidden;z-index:0}
 .leaves i{position:absolute;width:var(--s,46px);height:var(--s,46px);opacity:.38;transform:rotate(var(--rot,0deg));background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23e9b99a' d='M16 2l2.6 5.4 4.2-2-1 5.6 5.2-1.6-2.6 4.6 4.6 1.6-6 3.6 1.4 3.2-6.2-1.2.4 6.8h-5.2l.4-6.8-6.2 1.2 1.4-3.2-6-3.6 4.6-1.6L5 9.4l5.2 1.6-1-5.6 4.2 2z'/%3E%3C/svg%3E")}
-@media (prefers-color-scheme:dark){.leaves i{opacity:.16}}
+@media all{.leaves i{opacity:.16}}
 @media (max-width:899px){.leaves i{opacity:.22}.leaves i:nth-child(n+6){display:none}}
 @media (min-width:900px){.hero .lede{line-height:2}}
 
@@ -65,7 +66,7 @@ a:hover{text-decoration-thickness:2px}
 @media (min-width:900px){.hero{padding:56px 0 32px}.hero .wrap{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)}}
 .hero-copy{position:relative}
 .hero-copy .house{position:absolute;left:52%;top:-70px;width:200px;opacity:.07;z-index:-1;color:var(--maple-deep)}
-@media (prefers-color-scheme:dark){.hero-copy .house{opacity:.12}}
+@media all{.hero-copy .house{opacity:.12}}
 .hero h1{font-size:clamp(36px,6.4vw,62px);line-height:1.06;font-weight:800;letter-spacing:-.02em;color:var(--ink);margin:0}
 .hero .sub{font-size:clamp(20px,2.6vw,27px);line-height:1.35;color:var(--body);margin:18px 0 0;font-weight:500;max-width:30ch}
 .hero .lede{font-size:16px;line-height:1.75;color:var(--body);max-width:58ch;margin:16px 0 0}
@@ -189,7 +190,7 @@ summary:hover::after{background-color:var(--maple-soft)}
 details[open]>:not(summary){margin-left:16px;margin-right:16px}
 details[open]>:last-child:not(summary){margin-bottom:16px}
 details[open]>p:first-of-type,details[open]>ul:first-of-type{margin-top:0}
-@media (prefers-color-scheme:dark){summary::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%23f7b061' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}}
+@media all{summary::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%23f7b061' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}}
 
 /* game images */
 .pics{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin:4px 0}
@@ -655,3 +656,23 @@ img.rotten{filter:hue-rotate(70deg) saturate(.75) brightness(.85)}
 .dl-list .dl-what{grid-column:1/-1}
 @media (min-width:640px){.dl-list li{grid-template-columns:130px minmax(0,1fr) auto}.dl-list .dl-what{grid-column:2;grid-row:1}.dl-list .dl-left{grid-column:3}}
 @media (max-width:480px){.dl-main{flex-wrap:wrap;align-items:flex-start;row-gap:8px}.dl-main div{flex-basis:calc(100% - 52px)}.dl-main .dl-left{margin-left:48px}.jb-g{gap:4px}.jb-g button{font-size:14px;min-height:40px;padding:0}}
+/* top bar dropdowns */
+.nav .dd,.nav .dd[open]{position:relative;background:none;border:0;border-radius:10px;margin:0;box-shadow:none}
+.nav .dd[open]>.dd-menu{margin:0}
+.nav .dd>summary{min-height:0;padding:7px 12px 7px 14px;border-radius:10px;font-weight:700;font-size:15.5px;color:var(--ink);gap:6px;justify-content:flex-start}
+.nav .dd>summary::after{width:16px;height:16px;background-color:transparent;background-size:14px}
+.nav .dd>summary:hover,.nav .dd[open]>summary{background:var(--raised)}
+.nav .dd[data-here]>summary{background:var(--pill)}
+.dd-menu{position:absolute;top:calc(100% + 8px);right:0;z-index:20;min-width:270px;display:grid;gap:2px;padding:8px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 40px -16px rgba(0,0,0,.7);animation:ddin .14s ease-out}
+.nav .dd:first-child .dd-menu{right:auto;left:0}
+@keyframes ddin{from{opacity:0;transform:translateY(-4px)}}
+.dd-menu a{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:12px;text-decoration:none;color:var(--ink);font-weight:700}
+.dd-menu a:hover,.dd-menu a:focus-visible{background:var(--raised)}
+.dd-menu a[aria-current=page]{background:var(--maple-soft)}
+.dd-e{font-size:22px;line-height:1;width:28px;text-align:center;flex:none}
+.dd-menu b{display:block;font-size:15px;line-height:1.25}
+.dd-menu small{display:block;font-size:12.5px;font-weight:600;color:var(--muted);line-height:1.35}
+.more-sheet .more-grid{grid-template-columns:repeat(auto-fit,minmax(80px,1fr))}
+.more-sec{margin:12px 2px 6px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.more-h+.more-sec{margin-top:0}
+@media (prefers-reduced-motion:reduce){.dd-menu{animation:none}}
