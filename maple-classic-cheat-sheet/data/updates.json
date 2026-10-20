@@ -1,0 +1,24 @@
+{
+ "entries": [
+  {
+   "date": "2026-10-20",
+   "title": "Tools, feedback and a sprinkle of whimsy",
+   "items": [
+    "New Tools page: EXP calculator (how long until your next level, with a stopwatch to measure your EXP per hour) and a scroll simulator.",
+    "Every page now asks \"Was this right?\" Tell us what you saw in game and we'll fix it.",
+    "New tier list: the best class for solo grinding, bossing, party play and new players.",
+    "Return Scroll button, copy-link buttons, shareable \"Your run\" links and a LEVEL UP! at levels 10, 30, 70 and 100.",
+    "Phone tab bar gets a Tiers tab; dropdowns and buttons now match across the site."
+   ]
+  },
+  {
+   "date": "2026-10-19",
+   "title": "The guide goes live",
+   "items": [
+    "Builds for all 10 jobs, the 1 to 100 leveling route, job advancement, secrets and Classic rules.",
+    "\"Your run\": pick your class, job and level and get your grind spot, AP and SP.",
+    "Site-wide search (press / on desktop)."
+   ]
+  }
+ ]
+}
