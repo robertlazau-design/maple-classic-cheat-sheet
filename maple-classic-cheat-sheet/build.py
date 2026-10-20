@@ -124,6 +124,9 @@ LEAF_SM = '<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor"
 
 NAV = [("/", "Home"), ("/leveling/", "Grind spots"), ("/jobs/", "Builds"), ("/tier-list/", "Tier list"), ("/bosses/", "Bosses"), ("/party-quest/", "KPQ"), ("/quests/", "Quests"), ("/money-making/", "Mesos"), ("/crafting/", "Crafting"), ("/tools/", "Tools"), ("/job-advancement/", "Job up"), ("/secrets/", "Secrets"), ("/classic-rules/", "Rules")]
 
+MORE_EMOJI = {"/leveling/": "🗺️", "/jobs/": "⚔️", "/tier-list/": "🏆", "/bosses/": "👑", "/party-quest/": "🎟️", "/quests/": "📜", "/money-making/": "💰",
+              "/crafting/": "⚒️", "/tools/": "🧮", "/job-advancement/": "⬆️", "/secrets/": "🤫", "/classic-rules/": "📏"}
+
 def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=""):
     canon = SITE + path
     nav = "".join(f'<a href="{h}"{" aria-current=page" if h == path else ""}>{t}</a>' for h, t in NAV)
@@ -141,6 +144,10 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
             ("/secrets/", "M12 3l2 5.5 5.5 2-5.5 2L12 18l-2-5.5-5.5-2 5.5-2zM19 15.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z", "Secrets")]
     cur = "/jobs/" if path.startswith("/jobs/") else path
     tabbar = "".join(f'<a href="{h}"{" aria-current=page" if h == cur else ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{d}"/></svg>{t}</a>' for h, d, t in tabs)
+    in_more = cur not in [h for h, _, _ in tabs]
+    tabbar += f'<button type="button" class="tb-more" data-more aria-expanded="false" aria-controls="more-sheet"{" aria-current=page" if in_more else ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z"/></svg>More</button>'
+    more = "".join(f'<a href="{h}"{" aria-current=page" if h == cur else ""}><span aria-hidden="true">{MORE_EMOJI.get(h, "🍁")}</span>{t}</a>' for h, t in NAV if h != "/") + '<a href="/updates/"><span aria-hidden="true">✨</span>What\'s new</a>'
+
     ldtxt = "".join(f'<script type="application/ld+json">{json.dumps(x)}</script>' for x in ld)
     return f"""<!doctype html>
 <html lang="en">
@@ -183,6 +190,7 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 </div></footer>
 </div>
 <nav class="tabbar" aria-label="Quick nav">{tabbar}</nav>
+<div class="more-sheet" id="more-sheet" hidden><div class="more-box" tabindex="-1" role="dialog" aria-modal="true" aria-label="All guides"><p class="more-h"><b>All guides</b><button type="button" class="search-x" data-more-close aria-label="Close menu">Close</button></p><nav class="more-grid">{more}</nav></div></div>
 <div class="search" id="search" hidden><div class="search-box" role="dialog" aria-modal="true" aria-label="Search">
 <input id="q" type="search" placeholder="Try: assassin, mushmom, level 35, scrolls" autocomplete="off" aria-label="Search the guide"><button type="button" class="search-x" data-close aria-label="Close search">Esc</button>
 <ul id="hits" role="listbox"></ul></div></div>
@@ -586,14 +594,14 @@ def guide_stamp(extra=""):
 def build_bosses():
     B = G["bosses"]
     ladder = "".join(f'<a href="#{b["id"]}" class="rung">{boss_sprite(b, "bs")}<b>{e(b["name"])}</b><span>Lv {b["lv"]}</span></a>' for b in B)
-    rows = "".join(f'<tr><td data-th="Boss"><a href="#{b["id"]}"><b>{e(b["name"])}</b></a></td><td data-th="Level">{b["lv"]}</td><td data-th="HP">{b["hp"]:,}</td><td data-th="EXP">{b["exp"]:,}</td><td data-th="Respawn">{e(b["respawn"])}</td></tr>' for b in B)
+    rows = "".join(f'<tr><td data-th="Boss"><a href="#{b["id"]}"><b>{e(b["name"])}</b></a></td><td data-th="Level">{b["lv"]}</td><td data-th="HP">{b["hp"]:,}</td><td data-th="EXP">{b["exp"]:,}</td><td data-th="Respawn">{e(b.get("short", b["respawn"]))}</td></tr>' for b in B)
     cards = ""
     for b in B:
         el = "".join(f'<span class="el good">Weak: {e(x)}</span>' for x in b["weak"]) + "".join(f'<span class="el bad">Resists: {e(x)}</span>' for x in b["strong"])
         traits = "".join(f'<span class="tag">{e(t)}</span>' for t in b["traits"])
         drops = "".join(rw(d) for d in b["drops"])
         timer = f'<div class="timer" data-boss="{b["id"]}" data-min="{60 if b["timer"] == 75 else b["timer"]}" data-max="{90 if b["timer"] == 75 else b["timer"]}"><button type="button" class="btn btn-ghost sm" data-kill>⏱ I just killed it</button><span class="timer-out" aria-live="polite"></span></div>' if b["timer"] else (f'<p><a class="btn btn-ghost sm" href="{b["link"]}">Read the KPQ guide →</a></p>' if b.get("link") else "")
-        stats = f'<div class="bstats"><div><b>{b["hp"]:,}</b><span>HP</span></div><div><b>{b["exp"]:,}</b><span>EXP</span></div><div><b>{e(b["mesos"] or "–")}</b><span>Mesos per kill</span></div></div>'
+        stats = f'<div class="bstats"><div><b>{b["hp"]:,}</b><span>HP</span></div><div><b>{b["exp"]:,}</b><span>EXP</span></div><div><b>{e(b["mesos"] or "–")}</b><span>Mesos/kill</span></div></div>'
         maybe = f'<p class="muted" style="margin-top:6px">{e(b["maybe"])}</p>' if b.get("maybe") else ""
         cards += f'''<article class="boss{" future" if b.get("future") else ""}" id="{b["id"]}">
 <div class="boss-art"><span class="lvb">Lv {b["lv"]}</span>{boss_sprite(b, "big")}</div>
@@ -608,7 +616,7 @@ def build_bosses():
 {guide_stamp("Launch data, Founder's Access drops. ")}
 <div class="ladder" role="list" aria-label="Bosses by level">{ladder}</div>
 <p class="callout" style="margin-top:14px">⏱ <b>Respawn timers:</b> tap "I just killed it" on any boss and we'll count down to its next spawn window. It's saved on this device only.</p>
-<h2 id="glance">At a glance</h2><table class="tbl"><thead><tr><th>Boss</th><th>Level</th><th>HP</th><th>EXP</th><th>Respawn</th></tr></thead><tbody>{rows}</tbody></table>
+<h2 id="glance">At a glance</h2><table class="tbl compact"><thead><tr><th>Boss</th><th>Level</th><th>HP</th><th>EXP</th><th>Respawn</th></tr></thead><tbody>{rows}</tbody></table>
 <div class="bosses">{cards}</div>
 <h2 id="faq">FAQ</h2>{faq_html(G["bossFaq"])}"""
     side = '<div class="card"><h3>Bosses</h3>' + "".join(f'<p><a href="#{b["id"]}">{e(b["name"])}</a> <span class="muted">Lv {b["lv"]}</span></p>' for b in B) + '<p><a href="/party-quest/">KPQ guide →</a></p></div>'
@@ -629,7 +637,7 @@ def build_kpq():
         tip = f'<p class="callout">💡 {e(s["tip"])}</p>' if s.get("tip") else ""
         stages += f'<li class="stage" id="stage-{s["n"]}"><span class="sn">{s["n"]}</span><div><h3>{e(s["title"])}</h3>{f"<div class=sprites>{sprites}</div>" if sprites else ""}<p>{e(s["text"])}</p>{combo}{tip}</div></li>'
     cloto = "".join(f'<tr><td data-th="Cloto asks">{e(q)}</td><td data-th="Coupons"><span class="rw">{gicon("Coupon")}<b>{n}</b></span></td></tr>' for q, n in K["cloto"])
-    mobs = "".join(f'<tr><td data-th="Monster">{_img(mob_src(i), n, "sprite sm")}<b>{e(n)}</b></td><td data-th="Level">{lv}</td><td data-th="HP">{hp:,}</td><td data-th="EXP">{x:,}</td><td data-th="Where">{e(w)}</td></tr>' for n, i, lv, hp, x, w in K["mobs"])
+    mobs = "".join(f'<tr><td data-th="Monster">{_img(mob_src(i), n, "sprite sm")}<b>{e(n)}</b></td><td data-th="Level">{lv}</td><td class="hide-sm" data-th="HP">{hp:,}</td><td data-th="EXP">{x:,}</td><td data-th="Where">{e(w)}</td></tr>' for n, i, lv, hp, x, w in K["mobs"])
     box = "".join(rw(x) for x in K["box"])
     other = "".join(f'<div class="card"><h3>{e(n)} {conf(c)}</h3><p class="meta">{e(lv)}</p><p>{e(t)}</p></div>' for n, lv, t, c, _ in K["other"])
     npcs = "".join(f'<figure class="npcfig">{npc_img(i, n)}<figcaption>{e(n)}</figcaption></figure>' for i, n in [(9020000, "Lakelis"), (9020001, "Cloto"), (9020002, "Nella")])
@@ -640,8 +648,8 @@ def build_kpq():
 <div class="toc"><a href="#start">Start</a><a href="#stages">Stages</a><a href="#cloto">Coupon answers</a><a href="#rewards">Rewards</a><a href="#etiquette">Party tips</a><a href="#other">Other PQs</a><a href="#faq">FAQ</a></div>
 <h2 id="start">How to start</h2><div class="npcs">{npcs}</div><p>{e(K["start"])}</p>
 <h2 id="stages">Stage by stage</h2><ol class="stages">{stages}</ol>
-<h2 id="cloto">Cloto's coupon answers</h2><table class="tbl"><thead><tr><th>Cloto asks</th><th>Coupons</th></tr></thead><tbody>{cloto}</tbody></table><p class="muted" style="margin-top:8px">{e(K["clotoNote"])}</p>
-<h2 id="monsters">Monsters inside KPQ</h2><p>KPQ uses its own weaker copies: stage 1's Ligators are level 21, not the level 31 ones in the swamp.</p><table class="tbl"><thead><tr><th>Monster</th><th>Level</th><th>HP</th><th>EXP</th><th>Where</th></tr></thead><tbody>{mobs}</tbody></table>
+<h2 id="cloto">Cloto's coupon answers</h2><table class="tbl compact"><thead><tr><th>Cloto asks</th><th>Coupons</th></tr></thead><tbody>{cloto}</tbody></table><p class="muted" style="margin-top:8px">{e(K["clotoNote"])}</p>
+<h2 id="monsters">Monsters inside KPQ</h2><p>KPQ uses its own weaker copies: stage 1's Ligators are level 21, not the level 31 ones in the swamp.</p><table class="tbl compact"><thead><tr><th>Monster</th><th>Lv</th><th class="hide-sm">HP</th><th>EXP</th><th>Where</th></tr></thead><tbody>{mobs}</tbody></table>
 <h2 id="rewards">Rewards</h2><p>EXP as you clear each stage, a shot at Squishy Shoes from King Slime, and a Companion's Magic Box for every member at the end.</p>
 <div class="kp shoes">{gicon("Squishy Shoes")}<div><b>Squishy Shoes</b><span>{e(K["shoes"])}</span></div></div>
 <h3>What players pull from the Companion's Magic Box</h3><div class="rws">{box}</div>
@@ -712,7 +720,7 @@ def build_money():
     Mo = G["money"]
     bid = {b["id"]: b for b in G["bosses"]}
     stages = "".join(f'<div class="card mstage"><span class="lvpill">{e(s["lv"])}</span><h3>{e(s["title"])}</h3><ul>{"".join(f"<li>{e(x)}</li>" for x in s["items"])}</ul></div>' for s in Mo["stages"])
-    market = "".join(f'<tr><td data-th="Item"><span class="rw">{gicon(n)}<b>{e(n)}</b></span></td><td data-th="Sold for"><b>{p:,}</b> mesos</td><td data-th="Note">{e(note)}</td></tr>' for n, p, note in Mo["market"])
+    market = "".join(f'<tr><td data-th="Item"><span class="rw">{gicon(n)}<span><b>{e(n)}</b>{("<small class=show-sm>" + e(note) + "</small>") if note else ""}</span></span></td><td data-th="Sold for"><b>{p:,}</b></td><td class="hide-sm" data-th="Note">{e(note)}</td></tr>' for n, p, note in Mo["market"])
     trends = "".join(f'<div class="trend {d}"><b>{e(v)}</b><span>{e(n)}</span></div>' for n, v, d in Mo["trends"])
     mobid = {"Orange Mushroom": 1210102, "Stump": 130100, "Red Snail": 130101, "Slime": 210100}
     vendor = "".join(f'<tr><td data-th="Drop"><span class="rw">{gicon(n)}<b>{e(n)}</b></span></td><td data-th="Dropped by">{_img(mob_src(mobid[m]), m, "sprite sm")}{e(m)}</td><td data-th="NPC pays"><b>{p:,}</b></td></tr>' for n, m, p in Mo["vendor"])
@@ -726,14 +734,14 @@ def build_money():
 {guide_stamp("Free Market data from launch week. ")}
 <div class="toc"><a href="#stages">By level</a><a href="#market">Prices</a><a href="#trends">Trends</a><a href="#vendor">Vendor list</a><a href="#quests">Meso quests</a><a href="#bosses">Bosses</a><a href="#crafting">Crafting</a><a href="#merch">Merching</a><a href="#faq">FAQ</a></div>
 <h2 id="stages">Making mesos by level</h2><div class="grid">{stages}</div>
-<h2 id="market">What sells on the Free Market</h2><table class="tbl"><thead><tr><th>Item</th><th>Sold for</th><th>Note</th></tr></thead><tbody>{market}</tbody></table>
+<h2 id="market">What sells on the Free Market</h2><table class="tbl compact"><thead><tr><th>Item</th><th>Mesos</th><th class="hide-sm">Note</th></tr></thead><tbody>{market}</tbody></table>
 <p class="muted" style="margin-top:8px">{e(Mo["marketNote"])}</p>
 <h2 id="trends">Where prices are heading</h2><div class="trends">{trends}</div><p class="callout" style="margin-top:12px">{e(Mo["trendTip"])}</p>
 <h2 id="vendor">Early drops worth vendoring</h2><p>Many drops sell back to NPCs for very little in Classic, but these early weapons pay well. Keep one you can use, then sell the duplicates.</p>
-<table class="tbl"><thead><tr><th>Drop</th><th>Dropped by</th><th>NPC pays</th></tr></thead><tbody>{vendor}</tbody></table>
-<h2 id="quests">Quests that pay the most mesos</h2><table class="tbl"><thead><tr><th>Quest</th><th>Level</th><th>Mesos</th></tr></thead><tbody>{quests}</tbody></table>
+<table class="tbl compact"><thead><tr><th>Drop</th><th>Dropped by</th><th>NPC pays</th></tr></thead><tbody>{vendor}</tbody></table>
+<h2 id="quests">Quests that pay the most mesos</h2><table class="tbl compact"><thead><tr><th>Quest</th><th>Level</th><th>Mesos</th></tr></thead><tbody>{quests}</tbody></table>
 <h2 id="bosses">Bosses worth farming</h2><div class="grid">{bosses}</div>
-<h2 id="crafting">Crafting for profit</h2><table class="tbl"><thead><tr><th>Craft</th><th>Profession</th><th>Profit per craft</th></tr></thead><tbody>{crafts}</tbody></table>
+<h2 id="crafting">Crafting for profit</h2><table class="tbl compact"><thead><tr><th>Craft</th><th>Profession</th><th>Profit per craft</th></tr></thead><tbody>{crafts}</tbody></table>
 <p class="muted" style="margin-top:8px">Based on NPC sell-back and closed-test numbers. Check Free Market prices before you craft in bulk. See the <a href="/crafting/">crafting guide</a> for what to keep.</p>
 <h2 id="merch">Merching basics</h2><ul>{"".join(f"<li>{e(x)}</li>" for x in Mo["merch"])}</ul>
 <div class="callout warn"><b>Don't:</b><ul style="margin:6px 0 0">{"".join(f"<li>{e(x)}</li>" for x in Mo["dont"])}</ul></div>
