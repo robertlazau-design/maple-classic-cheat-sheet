@@ -130,7 +130,7 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
         ld.append({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
             {"@type": "ListItem", "position": i + 1, "name": t, **({"item": SITE + h} if h else {})} for i, (h, t) in enumerate(crumbs)]})
     if schema: ld.append(schema)
-    tabs = [("/", "🏠", "Home"), ("/leveling/", "🗺️", "Grind"), ("/jobs/", "⚔️", "Builds"), ("/secrets/", "🤫", "Secrets")]
+    tabs = [("/", "🏠", "Home"), ("/leveling/", "🗺️", "Grind"), ("/jobs/", "⚔️", "Builds"), ("/tier-list/", "🏆", "Tiers"), ("/secrets/", "🤫", "Secrets")]
     tabbar = "".join(f'<a href="{h}"{" aria-current=page" if h == path else ""}><span aria-hidden="true">{ic}</span>{t}</a>' for h, ic, t in tabs) + '<button type="button" data-search><span aria-hidden="true">🔍</span>Search</button>'
     ldtxt = "".join(f'<script type="application/ld+json">{json.dumps(x)}</script>' for x in ld)
     return f"""<!doctype html>
