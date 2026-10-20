@@ -23,6 +23,7 @@ Robert's standing ask is "fun, clear, and easy to understand and read."
 - No hype. Never use "honestly", "genuinely" or "straightforward".
 - Rewrite sources in our own words, and only quote tiny clue fragments.
 - Keep the "Unofficial fan site, not affiliated with Nexon" footer.
+- **The brown (dark) theme is the standard look**, whatever the visitor's system setting. In style.css the dark variables sit in `@media all{}` blocks over the cream base values. Robert prefers it, so don't switch back to following `prefers-color-scheme`.
 
 ## Rules from Robert (always)
 
@@ -61,7 +62,8 @@ Robert's standing ask is "fun, clear, and easy to understand and read."
 
 **Adding a page:** write a builder and call it in `main()`. Add it to:
 
-- `NAV` and `MORE_EMOJI` (desktop nav and the mobile "More" sheet)
+- `NAV` (footer links) and `MORE_EMOJI`
+- one group in `NAV_GROUPS`, which drives the five top-bar dropdowns (News, Leveling, Classes, Mesos, More) and the grouped mobile "More" sheet. Robert asked for fewer top-bar options, so don't add new top-level items; put pages in a group.
 - the home `cards`
 - the search index (`idx`)
 - the sitemap `paths`
