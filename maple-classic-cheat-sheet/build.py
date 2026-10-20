@@ -167,10 +167,10 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 <button class="search-btn" type="button" data-search aria-label="Search the guide"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span>Search</span><kbd>/</kbd></button>
 </div></header>
 {hero}
-<div class="wrap"><div class="ad ad-top" data-slot=""></div>
+<div class="wrap">
 <div class="layout{" has-side" if side_extra else ""}">
-<main id="main">{bc}{gloss(body)}{feedback(path)}</main>
-<aside class="side" aria-label="Sidebar"><div class="sticky">{side_extra}<div class="ad ad-side" data-slot=""></div></div></aside>
+<main id="main">{bc}{gloss(body)}{tipjar(path)}{feedback(path)}</main>
+<aside class="side" aria-label="Sidebar"><div class="sticky">{side_extra}</div></aside>
 </div></div>
 <footer class="site-f"><div class="wrap">
 <a class="brand" href="/">{LEAF}<span>Maple Classic <span>Guide</span></span></a>
@@ -255,9 +255,8 @@ def build_home():
 <input id="lv" type="range" min="1" max="100" value="1" aria-label="Level"></div>
 <div class="result" id="finder-out" aria-live="polite"></div>
 <script type="application/json" id="finder-data">{json.dumps(fdata).replace("</", "<\\/")}</script></section>
-<div class="ad ad-in" data-slot=""></div>
 <h2>Don't be that guy</h2><ol class="musts">{"".join(f"<li>{e(m)}</li>" for m in musts)}</ol>
-{f'<div class="tipjar"><div><b>This guide is free and stays free.</b><span>If it saved you a reset scroll, a coffee keeps it updated every patch.</span></div>{coffee_btn(True)}</div>' if COFFEE else ""}
+{f'<div class="tipjar"><div><b>No ads. Powered by players.</b><span>This guide runs on donations. If it saved you a reset scroll, a coffee keeps it updated every patch.</span></div>{coffee_btn(True)}</div>' if COFFEE else ""}
 <h2>Everything else</h2><div class="grid tiles">{"".join(f'<a class="card" href="{h}"><div class="icon">{_img(f"{API}/{ic}/render/stand", "", "")}</div><h3>{t}</h3><p>{d}</p></a>' for h, t, d, ic in cards)}</div>
 <div class="facts" style="margin-top:28px"><div><b>Lv 100</b><span>Level cap</span></div><div><b>1st + 2nd job</b><span>3rd job planned for 2027</span></div><div><b>Victoria Island</b><span>Plus Maple Island; no Ossyria yet</span></div><div><b>7,000 NX</b><span>Per AP or SP reset</span></div></div>
 <details style="margin-top:20px"><summary>What's different in Classic (60-second version)</summary><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in JOBS["classicChanges"][:8])}</ul></details>'''
@@ -278,7 +277,6 @@ def build_leveling():
 <div class="toc"><a href="#route">Route</a><a href="#class">By class</a><a href="#pq">Party quests</a><a href="#quests">Quests</a><a href="#bosses">Bosses</a><a href="#tips">Tips</a><a href="#map">What's in the game</a></div>
 <p class="callout warn" style="margin-top:16px"><b>Heads up:</b> Classic launches with Maple Island and Victoria Island only. Monsters top out around level 75, and every level from 90 to 99 costs about twice the one before. Reaching 100 is a long-haul goal at launch.</p>
 <h2 id="route">Leveling route</h2><div class="jump" role="group" aria-label="Jump to level">{"".join(f'<a href="#lv-{r["from"]}-{r["to"]}">{r["from"]}–{r["to"]}</a>' for r in route if not (r["from"] == 39 and r["to"] == 60))}</div><ol class="route">{"".join(route_li(r) for r in route)}</ol>
-<div class="ad ad-in" data-slot=""></div>
 <h2 id="class">Where each class should train</h2>{notes}
 <h2 id="pq">Party quests</h2><div class="grid">{pqs}</div>
 <h2 id="quests">Quests worth your time</h2><table class="tbl"><thead><tr><th>Quest</th><th>Level</th><th>Where</th><th>Why</th></tr></thead><tbody>{quests}</tbody></table>
@@ -302,7 +300,6 @@ def build_jobs():
     body = f'''<h1>MapleStory Classic Job Builds</h1>
 <p class="lede">AP and SP plans for every 2nd job. You place every point by hand in Classic, and a reset costs 7,000 NX, so plan before you click. Still choosing? See the <a href="/tier-list/">tier list</a>.</p>
 {stamp()}<div class="toc">{"".join(f'<a href="#{e(c["id"])}">{e(c["name"])}</a>' for c in JOBS["classes"])}</div>{blocks}
-<div class="ad ad-in" data-slot=""></div>
 <h2>What changed for jobs in Classic</h2><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in JOBS["classicChanges"])}</ul>'''
     write("/jobs/", page("/jobs/", "MapleStory Classic Job Builds: AP & SP for All 10 Jobs",
                          "Every MapleStory Classic 2nd job compared: Fighter, Page, Spearman, F/P, I/L, Cleric, Hunter, Crossbowman, Assassin and Bandit, with AP/SP builds.", body,
@@ -330,7 +327,6 @@ def build_jobs():
 <div class="toc"><a href="#ap">AP build</a><a href="#sp">SP build</a><a href="#adv">Job advancement</a><a href="#pros">Pros &amp; cons</a></div>
 <h2 id="ap">AP build</h2><p class="callout">{e(tidy(j["ap"]["summary"]))}</p>
 <ol class="steps" style="margin-top:12px">{steps(j["ap"]["steps"])}</ol>
-<div class="ad ad-in" data-slot=""></div>
 <h2 id="sp">SP build</h2><h3>1st job (levels 10–29)</h3><ol class="steps" style="margin-top:8px">{steps(j["sp"]["firstJob"])}</ol>
 <h3 style="margin-top:20px">2nd job (level 30+)</h3><ol class="steps" style="margin-top:8px">{steps(j["sp"]["secondJob"])}</ol>
 <h2 id="adv">Job advancement</h2><div class="pics">{map_img(IMG["testMap"][c["id"]], "2nd job test map")}<div class="sprites">{npc_img(IMG["classNpc"][c["id"]][0], IMG["classNpc"][c["id"]][1])}</div></div><p><b>1st job:</b> level {e(c["firstJob"]["level"])}, {e(c["firstJob"]["npc"])} in {e(c["firstJob"]["town"])}.</p>
@@ -352,7 +348,6 @@ def build_adv():
 {stamp()}
 <h2>1st job (level 10)</h2><table class="tbl"><thead><tr><th>Class</th><th>Level</th><th>NPC</th><th>Where</th><th>Stat req</th></tr></thead><tbody>{first}</tbody></table>
 <p style="margin-top:12px">Tip: ride the taxi to your job town while you're still a Beginner. Beginners get 90% off taxis.</p>
-<div class="ad ad-in" data-slot=""></div>
 <h2>2nd job (level 30)</h2><p>Every class works the same way: your job NPC gives you a letter, the Job Instructor sends you into a test map, you collect 30 Dark Marbles, trade them for The Proof of a Hero and bring it back to choose your path.</p>
 <table class="tbl"><thead><tr><th>Job</th><th>Who</th><th>The test</th></tr></thead><tbody>{second}</tbody></table>
 <h2>3rd job</h2><p>Not in Classic at launch. Nexon has said a 3rd job test server is planned for early 2027, alongside the Ossyria rework.</p>'''
@@ -383,7 +378,7 @@ def build_secrets():
 <p class="callout warn" style="margin-top:12px"><b>Don't miss:</b> Maple Island is one-way. Finish its quests (including Pio's boxes for the Green Relaxer chair) before you take the boat.</p>
 <div class="filters" data-filters role="group" aria-label="Filter by type">{btns}</div>
 <div class="grid">{cards}</div>
-<div class="ad ad-in" data-slot=""></div>'''
+'''
     write("/secrets/", page("/secrets/", "MapleStory Classic Hidden Maps, Jump Quests & Secrets",
                             f"{len(SEC['secrets'])} MapleStory Classic secrets: hidden streets, Forest of Patience and Shumi jump quests, Mushmom and Jr. Balrog rooms, and missable Maple Island rewards.", body,
                             crumbs=[("/", "Guide"), (None, "Secrets")]))
@@ -395,7 +390,6 @@ def build_rules():
     body = f'''<h1>MapleStory Classic Rules &amp; Mechanics</h1>
 <p class="lede">What's different in Classic: scroll odds, resets, death penalty, the EXP curve, crafting, bosses, the Cash Shop and the economy.</p>
 {stamp()}<div class="toc">{toc}</div>{mech}
-<div class="ad ad-in" data-slot=""></div>
 <h2 id="money">Making mesos</h2><div class="grid">{money}</div>'''
     write("/classic-rules/", page("/classic-rules/", "MapleStory Classic Mechanics: Scrolls, EXP, Crafting & Mesos",
                                   "MapleStory Classic rules explained: scroll success rates, AP/SP reset cost, EXP table and the 90+ wall, crafting professions, boss timers and money making.", body,
@@ -426,12 +420,10 @@ def build_tiers():
 <p class="stamp"><b>✓ Checked {CHECKED}</b><span>Level 70, 1st + 2nd job, launch build. {conf(TIERS["meta"]["confidence"])} We re-rank after launch.</span></p>
 <h2 id="picks">Quick picks</h2><div class="picks">{picks}</div>
 <div class="toc">{toc}</div>
-<div class="ad ad-in" data-slot=""></div>
 {lists}
 <h2 id="grades">All grades at a glance</h2>
 <table class="tbl grades"><thead><tr><th>Job</th>{"".join(f"<th>{e(c)}</th>" for c in cols)}</tr></thead><tbody>{grows}</tbody></table>
 <p class="muted" style="margin-top:8px">S = top third, A = middle, B = bottom third of the 10 jobs for that column. Mobility counts Teleport and Haste.</p>
-<div class="ad ad-in" data-slot=""></div>
 <h2>How we ranked them</h2><p>{e(TIERS["meta"]["basis"])} Gear, scrolls, party makeup and the maps you pick change real results, and 3rd job (planned for 2027) will shake this up. Picked a job? Grab its <a href="/jobs/">AP and SP build</a> next.</p>
 {srcs(TIERS["meta"]["sources"])}
 <h2 id="faq">FAQ</h2>{faq}"""
@@ -441,6 +433,10 @@ def build_tiers():
     write("/tier-list/", page("/tier-list/", "MapleStory Classic Tier List (2026): Best Class to Pick",
                               "MapleStory Classic tier list for all 10 jobs: best class for solo grinding, bossing, party play and beginners, with quick picks and FAQ.", body,
                               crumbs=[("/", "Guide"), (None, "Tier list")], schema=schema, side_extra=side))
+
+def tipjar(path):
+    if not COFFEE or path in ("/", "/404", "/privacy/", "/about/"): return ""
+    return f'<div class="tipjar slim"><div><b>No ads, ever. Powered by players.</b><span>If this page helped, a coffee keeps the guide free and updated.</span></div>{coffee_btn()}</div>'
 
 def feedback(path):
     if path in ("/404", "/privacy/"): return ""
@@ -472,7 +468,6 @@ def build_tools():
 <script type="application/json" id="exp-data">{expdata}</script>
 </div>
 <p class="muted" style="margin-top:8px">How to measure: tap the button, grind for 10 minutes or more, update your level and EXP %, then tap it again.</p>
-<div class="ad ad-in" data-slot=""></div>
 <h2 id="scrolls">✨ Scroll simulator</h2>
 <p>Classic's scrolls come in four grades. Every attempt uses a slot, pass or fail, and only Chaos scrolls can destroy the item (half of failed Chaos attempts). Try your luck here before you spend real mesos.</p>
 <div class="tool" id="scrollsim">
@@ -508,16 +503,16 @@ def build_static():
 <h2>Huge thanks</h2><p>Most Classic numbers on this site trace back to the community's own research, above all <a href="https://meowdb.com/msclassic" rel="noopener">NiaMeowDB</a>. If you want the full database (every item, map and drop), go there. We link the exact source on each entry.</p>
 <h2>How this site is made</h2><p>We gather Classic facts from the sources above, rewrite them as short answers, and tag how sure we are. AI tools helped us research and draft it, which is why every entry carries a confidence tag and a source link. We're checking routes and builds in game after launch and fix anything players report. No meso sellers, boosting or account services, ever.</p>
 <h2>How sure are we?</h2><p>{conf("high")} several Classic sources agree. {conf("medium")} one Classic source, or partly our estimate. {conf("low")} unverified, or content that isn't live yet.</p>
-{f'<h2>Support the guide</h2><p>No paywalls, ever. If you want to help keep it updated, {coffee_btn()}</p>' if COFFEE else ""}
+{f'<h2>Support the guide</h2><p>No ads, no paywalls, no sign-ups, ever. The guide runs entirely on player donations. If it helped you, {coffee_btn()}</p>' if COFFEE else ""}
 <h2>Found a mistake?</h2><p>Classic is new and numbers change with patches. Email <a href="mailto:robertlazau@gmail.com?subject=Maple%20Classic%20Guide%20fix">robertlazau@gmail.com</a> with what you saw in game and we'll fix it.</p>
 <h2>Not affiliated with Nexon</h2><p>This is an unofficial fan site. MapleStory and related names are trademarks of Nexon Korea Corporation and Nexon America Inc.</p>'''
     write("/about/", page("/about/", "About & Sources | Maple Classic Guide", "Where the Maple Classic Guide gets its data, how we rate confidence, and how to report a fix.", about, crumbs=[("/", "Guide"), (None, "About")]))
     priv = f'''<h1>Privacy policy</h1><p>Last updated {CHECKED}.</p>
 <p>This site doesn't ask for accounts or personal information. Your last job and level in the "Your run" picker are saved only in your own browser.</p>
 <h2>Analytics</h2><p>We use Vercel Web Analytics to count page views. It doesn't use cookies or track you across sites.</p>
-<h2>Advertising</h2><p>We show ads from Google AdSense. Google and its partners use cookies to serve ads based on your visits to this and other websites. You can opt out of personalized advertising at <a href="https://www.google.com/settings/ads" rel="nofollow noopener">Google Ads Settings</a>, and learn more at <a href="https://policies.google.com/technologies/ads" rel="nofollow noopener">How Google uses information from sites that use its services</a>. Visitors in the EEA, UK and Switzerland are asked for consent before personalized ads are shown.</p>
+<h2>No ads</h2><p>This site runs no ads and no ad trackers. It's kept alive by player donations through <a href="https://buymeacoffee.com/goldenboypro" rel="noopener">Buy Me a Coffee</a>, which has its own privacy policy if you choose to donate.</p>
 <h2>Contact</h2><p><a href="mailto:robertlazau@gmail.com">robertlazau@gmail.com</a></p>'''
-    write("/privacy/", page("/privacy/", "Privacy Policy | Maple Classic Guide", "Privacy policy for the Maple Classic Guide, including analytics and Google AdSense cookies.", priv, crumbs=[("/", "Guide"), (None, "Privacy")]))
+    write("/privacy/", page("/privacy/", "Privacy Policy | Maple Classic Guide", "Privacy policy for the Maple Classic Guide: no accounts, no ads, cookie-free analytics.", priv, crumbs=[("/", "Guide"), (None, "Privacy")]))
     nf = page("/404", "Page not found | Maple Classic Guide", "Page not found.", '<h1>Lost in the Ant Tunnel?</h1><p class="lede">That page doesn\'t exist. Use a Return Scroll:</p><p><a href="/">Back to the guide →</a></p>')
     with open(os.path.join(OUT, "404.html"), "w") as f: f.write(nf.replace(f'<link rel="canonical" href="{SITE}/404">', '<meta name="robots" content="noindex">'))
 
