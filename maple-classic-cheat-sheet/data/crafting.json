@@ -1,7 +1,7 @@
 {
   "meta": {
     "confidence": "medium",
-    "note": "Recipes and EXP from NiaMeowDB's crafting database (348 recipes, launch build). Drop sources are community-reported on NiaMeowDB, so treat them as good places to look, not exact rates.",
+    "note": "Recipes and EXP from NiaMeowDB's crafting database (290 recipes usable at launch). Drop sources are community-reported on NiaMeowDB, so treat them as good places to look, not exact rates.",
     "sources": ["https://meowdb.com/msclassic/crafting", "https://meowdb.com/msclassic/crafting/exp-table", "https://meowdb.com/msclassic/item-db/safe-to-sell", "https://meowdb.com/msclassic/guides/crafting-efficiency-guide"]
   },
   "items": {
@@ -95,10 +95,10 @@
      "bases": "",
      "money": "Every Leatherworking recipe loses mesos at NPC prices. Gloves still sell well because they only come from drops, quests and crafting."},
     {"id": "arcforge", "name": "Arcforge", "emoji": "✨", "mentor": "Chrishrama", "town": "Sleepywood",
-     "makes": "Cut gems from ore, Lesser scrolls (hat, top, bottom, shoes, shield, cape, earring), Magician wands and staffs, and the Fairy Wand.",
+     "makes": "Cut gems from ore, Lesser scrolls for hats, tops, bottoms, shields, shoes and capes (defense), Magician wands and staffs, and the Fairy Wand. Cape stat and glove scrolls need Arcforge Lv 9-10, so they're locked until the cap rises.",
      "goodFor": "Magicians (wands and staffs), and anyone who wants to make their own scrolls",
      "keep": [["Fragment of Magic", "10 per scroll. About 180 across the scroll recipes."], ["Leather", "3 Leather = 1 Processed Parchment, one per scroll."], ["Topaz Ore", "HP scrolls, Wizard Wand, Fairy Wand."], ["Emerald Ore", "MP scrolls and the Emerald Staff."], ["Garnet Ore", "Accuracy scrolls."], ["Diamond Ore", "DEF scrolls and the Fairy Wand (cut at level 6)."], ["Black Crystal Ore", "Earring stat scrolls (level 8). Cut Black Crystal also makes about +800 mesos."], ["Sapphire Ore", "Cape Magic DEF scroll, Sapphire Staff, Fairy Wand."], ["Aquamarine Ore", "Shoes Jump scroll, Mithril Wand."], ["Mithril Ore", "Ice Wand, Mithril Wand, Wizard Wand."], ["Silver Ore", "Sapphire, Emerald and Wizard Staffs."], ["Blue Mushroom Cap", "30 for the Metal Wand."], ["Piece of Ice", "One for the Ice Wand."], ["Fairy Wing", "One for the Fairy Wand."]],
-     "tip": "Arcforge is the gem cutter: ore → gem costs 200 to 1,200 mesos per gem, and every other profession needs gems. Scrolls are pricey (10k-20k mesos each) but give big EXP.",
+     "tip": "Arcforge is the gem cutter: ore → gem costs 200 to 1,200 mesos per gem, and every other profession needs gems. Each Lesser scroll costs a 10,000-meso fee plus 10 Fragment of Magic, so they're EXP crafts first.",
      "bases": "",
      "money": "Cutting Black Crystal (level 6) is profit-positive at about +800 per craft."}
   ],
