@@ -56,7 +56,13 @@
   rs.innerHTML = '<span aria-hidden="true">📜</span><b>Return</b>';
   document.body.appendChild(rs);
   rs.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion:reduce)").matches ? "auto" : "smooth" }); toast("Used a Return Scroll. Whoosh!"); });
-  var onScroll = function () { rs.classList.toggle("on", window.scrollY > 900); };
+  var lastY = window.scrollY;
+  var onScroll = function () {
+    var y = window.scrollY;
+    rs.classList.toggle("on", y > 900);
+    // tuck the phone tab bar away while scrolling down, bring it back on any scroll up
+    if (Math.abs(y - lastY) > 6) { document.body.classList.toggle("tb-hidden", y > lastY && y > 240 && window.innerHeight + y < document.documentElement.scrollHeight - 40); lastY = y; }
+  };
   window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
   // ---- Poke the monsters on the home page: they hop
