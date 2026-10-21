@@ -456,7 +456,9 @@
     var next = lv < 10 ? "Hit level 10, then talk to " + c.npc + " in " + c.town + " for 1st job. No stat requirement."
       : lv < 30 ? "2nd job at level 30. " + job.adv.test
       : "You're set until 3rd job drops (planned for 2027). Cap is level 100.";
-    var ap = pick(job.ap, lv), sp = lv < 10 ? ["Beginner: 3 points each into Three Snails, Recovery and Nimble Feet."] : pick(lv < 30 ? job.sp1 : job.sp2, lv);
+    var ap = pick(job.ap, lv);
+    if (lv < 10 && c.start) ap.unshift("New character: " + c.start[0] + " STR / " + c.start[1] + " DEX / " + c.start[2] + " INT / " + c.start[3] + " LUK.");
+    var sp = lv < 10 ? ["Beginner: 3 points each into Three Snails, Recovery and Nimble Feet."] : pick(lv < 30 ? job.sp1 : job.sp2, lv);
     var h = "";
     h += '<div class="box grind"><h3>🗺️ Grind here rn</h3>' + (spots.length ? spots.map(function (r) {
       return '<div class="spot"><div class="spr">' + r.sprites.map(sprite).join("") + '</div><div><b>' + esc(r.map) + '</b><span>' + esc(r.monsters) + " · lv " + esc(r.monsterLevel) + '</span><a href="/leveling/#lv-' + r.from + "-" + r.to + '">Details →</a></div></div>';
