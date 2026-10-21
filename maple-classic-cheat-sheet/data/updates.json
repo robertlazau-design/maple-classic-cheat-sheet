@@ -2,6 +2,14 @@
  "entries": [
   {
    "date": "2026-10-21",
+   "title": "New character stats",
+   "items": [
+    "Builds: a new \"New character? Your first 9 points\" section with the starting stat spread for every class, what to do with your points until level 10, and your Beginner skill points.",
+    "Home: \"Your run\" now shows your starting stats when you're under level 10."
+   ]
+  },
+  {
+   "date": "2026-10-21",
    "title": "Grand Launch patch notes",
    "items": [
     "News: the Grand Launch (v1.0.0) notes, plus new cards for the Excavation Site and Stumpy, and the GM events.",
