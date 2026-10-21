@@ -313,8 +313,10 @@ def build_leveling():
     body = f'''<h1>MapleStory Classic Leveling Guide 1–100</h1>
 <p class="lede">The fastest route through Maple Island and Victoria Island, level by level, with where each class should train.</p>
 {stamp()}
-<div class="toc"><a href="#route">Route</a><a href="#class">By class</a><a href="#pq">Party quests</a><a href="#quests">Quests</a><a href="#bosses">Bosses</a><a href="#endgame">60+</a><a href="#tips">Tips</a><a href="#map">What's in the game</a></div>
+<div class="toc"><a href="#quick">1–30 quick route</a><a href="#route">Route</a><a href="#class">By class</a><a href="#pq">Party quests</a><a href="#quests">Quests</a><a href="#bosses">Bosses</a><a href="#endgame">60+</a><a href="#tips">Tips</a><a href="#map">What's in the game</a></div>
 <p class="callout warn" style="margin-top:16px"><b>Heads up:</b> Classic launches with Maple Island and Victoria Island only. Monsters top out around level 75, and every level from 90 to 99 costs about twice the one before. Reaching 100 is a long-haul goal at launch.</p>
+<h2 id="quick">Quick route: level 1 to 30 ⚡</h2><ol class="musts">{"".join(f'<li><b>Lv {r["from"]}–{r["to"]}:</b> {e(tidy(r["map"]))} <a href="#lv-{r["from"]}-{r["to"]}">Details</a></li>' for r in route if r["to"] <= 30 and "Nov 18" not in r["map"])}</ol>
+<p class="muted" style="margin-top:8px">Most players are in this range right now. From 21, mix in <a href="/party-quest/">KPQ</a> runs; they're some of the best EXP before 30.</p>
 <h2 id="route">Leveling route</h2><div class="jump" role="group" aria-label="Jump to level">{"".join(f'<a href="#lv-{r["from"]}-{r["to"]}">{r["from"]}–{r["to"]}</a>' for r in route if not (r["from"] == 39 and r["to"] == 60))}</div><ol class="route">{"".join(route_li(r) for r in route)}</ol>
 <p class="callout" style="margin-top:12px">📈 Past 55? <a href="#endgame">Level 60 and beyond</a> has the best maps, a hit-chance checker and the EXP math.</p>
 <h2 id="class">Where each class should train</h2>{notes}
@@ -328,6 +330,13 @@ def build_leveling():
                              "Where to train in MapleStory Classic at every level: Maple Island to Victoria Island, Kerning PQ, bosses, quests and class-specific spots.", body,
                              crumbs=[("/", "Guide"), (None, "Leveling")],
                              schema={"@context": "https://schema.org", "@type": "Article", "headline": "MapleStory Classic Leveling Guide 1–100", "dateModified": CHECKED_ISO}))
+
+def mage_pick_html():
+    MP = JOBS["magicianPick"]
+    names = {j["id"]: j["name"] for c, j in ALLJOBS}
+    rows = "".join(f'<tr><td data-th="Job"><a href="/jobs/{e(r["job"])}/"><b>{e(names[r["job"]])}</b></a><span class="show-sm" style="margin-top:4px">{e(r["pick"])}</span></td><td data-th="Solo"><span class="g g-{r["solo"].lower()}">{e(r["solo"])}</span></td><td data-th="Bossing"><span class="g g-{r["boss"].lower()}">{e(r["boss"])}</span></td><td data-th="Party"><span class="g g-{r["party"].lower()}">{e(r["party"])}</span></td><td data-th="1st character"><span class="g g-{r["first"].lower()}">{e(r["first"])}</span></td><td data-th="Pick it if" class="hide-sm">{e(r["pick"])}</td></tr>' for r in MP["rows"])
+    return f'''<h3 id="which-magician" style="margin-top:18px">Which Magician? F/P vs I/L vs Cleric 🔮</h3><p class="muted">{e(MP["intro"])} <a href="/tier-list/">Full tier list →</a></p>
+<table class="tbl compact grades"><thead><tr><th>Job</th><th>Solo</th><th>Bossing</th><th>Party</th><th>1st character</th><th class="hide-sm">Pick it if</th></tr></thead><tbody>{rows}</tbody></table>'''
 
 def build_jobs():
     CR = JOBS["creation"]
@@ -349,7 +358,7 @@ def build_jobs():
         cn = IMG["classNpc"][c["id"]]
         blocks += f'''<h2 id="{e(c["id"])}">{e(c["name"])}</h2><div class="npc-row">{npc_img(cn[0], cn[1])}<span>{e(cn[1])}, {e(fj["town"])}</span></div>
 <p><b>1st job:</b> level {e(fj["level"])} with {e(fj["npc"])} in {e(fj["town"])}. {e(tidy(fj["notes"]))}</p>
-<div class="grid">{jobs}</div>'''
+<div class="grid">{jobs}</div>{mage_pick_html() if c["id"] == "magician" else ""}'''
     body = f'''<h1>MapleStory Classic Job Builds</h1>
 <p class="lede">Where your first 9 points go when you make a character, then AP and SP plans for every 2nd job. You place every point by hand in Classic, and a reset costs 7,000 NX, so plan before you click. Still choosing? See the <a href="/tier-list/">tier list</a>.</p>
 {stamp()}<div class="toc"><a href="#start">New character</a>{"".join(f'<a href="#{e(c["id"])}">{e(c["name"])}</a>' for c in JOBS["classes"])}</div>{start_html}{blocks}
@@ -373,17 +382,19 @@ def build_jobs():
 <p class="stamp"><span class="tag">{e(c["name"])}</span><span class="tag">{e(j["weapon"])}</span>{conf(j.get("confidence"))}<span>Checked {CHECKED}</span></p>
 <section class="tldr" aria-label="TL;DR"><h2>TL;DR</h2><dl>
 <div><dt>Stats</dt><dd>{e(tidy(j["ap"]["summary"]))}</dd></div>
-<div><dt>Skills first</dt><dd>{e(" · ".join([tidy(x) for x in j["sp"]["secondJob"] if re.match(r"^lv", x, re.I)][:2]))}</dd></div>
+<div><dt>Skills first</dt><dd>{e(" · ".join([tidy(x) for x in j["sp"]["secondJob"] if re.match(r"^lv", x, re.I) and not re.match(r"^lv\s?7[01]", x, re.I)][:2] or ["; ".join(tidy(j["sp"]["secondJob"][0]).split("; ")[:3])]))}</dd></div>
 <div><dt>Job up</dt><dd>Level {e(adv["level"])}, {e(adv["npc"])} in {e(adv["town"])}</dd></div>
 <div><dt>Good at</dt><dd>{e(tidy(j["pros"][0]))}</dd></div>
 <div><dt>Watch out</dt><dd>{e(tidy(j["cons"][0]))}</dd></div></dl></section>
-<div class="toc"><a href="#ap">AP build</a><a href="#sp">SP build</a><a href="#adv">Job advancement</a><a href="#pros">Pros &amp; cons</a></div>
+<div class="toc">{'<a href="#how-to-level">How to level</a>' if j.get("leveling") else ""}<a href="#ap">AP build</a><a href="#sp">SP build</a><a href="#adv">Job advancement</a><a href="#pros">Pros &amp; cons</a>{'<a href="#which-magician">Which Magician?</a>' if c["id"] == "magician" else ""}</div>
+{f'<h2 id="how-to-level">How to level a {e(j["name"])} 📈</h2><ol class="musts">{"".join(f"<li>{e(x)}</li>" for x in j["leveling"])}</ol>' if j.get("leveling") else ""}
 <h2 id="ap">AP build</h2><p class="callout">{e(tidy(j["ap"]["summary"]))}</p>
 <ol class="steps" style="margin-top:12px">{steps(j["ap"]["steps"])}</ol>
 <h2 id="sp">SP build</h2><h3>1st job (levels 10–29)</h3><ol class="steps" style="margin-top:8px">{steps(j["sp"]["firstJob"])}</ol>
 <h3 style="margin-top:20px">2nd job (level 30+)</h3><ol class="steps" style="margin-top:8px">{steps(j["sp"]["secondJob"])}</ol>
 <h2 id="adv">Job advancement</h2><div class="pics">{map_img(IMG["testMap"][c["id"]], "2nd job test map")}<div class="sprites">{npc_img(IMG["classNpc"][c["id"]][0], IMG["classNpc"][c["id"]][1])}</div></div><p><b>1st job:</b> level {e(c["firstJob"]["level"])}, {e(c["firstJob"]["npc"])} in {e(c["firstJob"]["town"])}.</p>
 <p><b>2nd job:</b> level {e(adv["level"])}, {e(adv["npc"])} in {e(adv["town"])}. {e(tidy(adv["test"]))}</p>
+{mage_pick_html() if c["id"] == "magician" else ""}
 <h2 id="pros">Pros &amp; cons</h2><div class="pc"><div class="card"><h3>Pros</h3><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in j["pros"])}</ul></div><div class="card"><h3>Cons</h3><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in j["cons"])}</ul></div></div>
 <p style="margin-top:20px">How does {e(j["name"])} rank? See the <a href="/tier-list/">MapleStory Classic tier list</a>.</p>
 <p>Other {e(c["name"])} jobs: {" · ".join(f'<a href="/jobs/{e(x["id"])}/">{e(x["name"])}</a>' for x in c["jobs"] if x["id"] != j["id"])}</p>
@@ -399,9 +410,11 @@ def build_adv():
     body = f'''<h1>MapleStory Classic Job Advancement</h1>
 <p class="lede">1st job at level 10 with no stat requirement, 2nd job at level 30 after a short Dark Marble test. Here's who to see and where.</p>
 {stamp()}
+<h2 id="quick">The 30-second version</h2><ol class="musts">{"".join(f'<li><b>{e(c["name"])}:</b> level {e(c["firstJob"]["level"])}, talk to {e(c["firstJob"]["npc"])} in {e(c["firstJob"]["town"])}. Come back to them at 30 for 2nd job.</li>' for c in JOBS["classes"])}<li><b>2nd job test:</b> collect 30 Dark Marbles in the test map, trade them for The Proof of a Hero, then pick your path. <a href="#second">Details</a></li></ol>
+<p class="callout" style="margin-top:12px">💡 Still a Beginner? Taxis are 90% off until you job up, so ride to your job town. New character? See <a href="/jobs/#start">where your first 9 points go</a>.</p>
 <h2>1st job (level 10)</h2><table class="tbl"><thead><tr><th>Class</th><th>Level</th><th>NPC</th><th>Where</th><th>Stat req</th></tr></thead><tbody>{first}</tbody></table>
 <p style="margin-top:12px">Tip: ride the taxi to your job town while you're still a Beginner. Beginners get 90% off taxis.</p>
-<h2>2nd job (level 30)</h2><p>Every class works the same way: your job NPC gives you a letter, the Job Instructor sends you into a test map, you collect 30 Dark Marbles, trade them for The Proof of a Hero and bring it back to choose your path.</p>
+<h2 id="second">2nd job (level 30)</h2><p>Every class works the same way: your job NPC gives you a letter, the Job Instructor sends you into a test map, you collect 30 Dark Marbles, trade them for The Proof of a Hero and bring it back to choose your path.</p>
 <table class="tbl"><thead><tr><th>Job</th><th>Who</th><th>The test</th></tr></thead><tbody>{second}</tbody></table>
 <h2>3rd job</h2><p>Not in Classic at launch. Nexon has said a 3rd job test server is planned for early 2027, alongside the Ossyria rework.</p>'''
     write("/job-advancement/", page("/job-advancement/", "MapleStory Classic Job Advancement: 1st & 2nd Job Guide",
@@ -1048,7 +1061,10 @@ def main():
     idx += [{"t": "News: launch day, events and patch notes", "u": "/news/", "k": "page", "x": "patch notes events launch halloween guild housing deadline maintenance"}]
     for ev in G["news"]["events"]:
         idx.append({"t": ev["name"] + " (" + ev["when"] + ")", "u": f"/news/#e-{qslug(ev['name'])}", "k": "Event", "x": ev["text"][:80]})
-    idx += [{"t": "New character: where to put your first stat points", "u": "/jobs/#start", "k": "Builds", "x": "character creation starting stats ap ability points 9 free points dice beginner skill points three snails recovery nimble feet"},
+    idx += [{"t": "Which Magician? F/P vs I/L vs Cleric", "u": "/jobs/#which-magician", "k": "Builds", "x": "magician mage wizard cleric fire poison ice lightning which job best pick"},
+            {"t": "How to level a Cleric", "u": "/jobs/cleric/#how-to-level", "k": "Builds", "x": "cleric leveling undead heal holy arrow training spot"},
+            {"t": "Quick leveling route 1 to 30", "u": "/leveling/#quick", "k": "Leveling", "x": "where to level 1 10 20 30 fast route beginner"},
+            {"t": "New character: where to put your first stat points", "u": "/jobs/#start", "k": "Builds", "x": "character creation starting stats ap ability points 9 free points dice beginner skill points three snails recovery nimble feet"},
             {"t": "Bosses: respawn timers and drops", "u": "/bosses/", "k": "page", "x": "boss timer respawn drops"},
             {"t": "KPQ: Kerning City Party Quest guide", "u": "/party-quest/", "k": "page", "x": "kpq party quest cloto coupons king slime squishy shoes combos"},
             {"t": "Quests: best quests by level", "u": "/quests/", "k": "page", "x": "quest exp rewards citizenship"},
