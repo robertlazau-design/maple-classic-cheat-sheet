@@ -199,15 +199,15 @@
     ["Grade 2", "In Henesys or Kerning"],
     ["Lv 17", "Plus 1,500 points"],
     ["≈ 8 days", "Of dailies + donations"],
-    ["Price: TBA", "Nexon hasn't said yet"]
+    ["Price: TBA", "Paid in mesos"]
    ],
    "homes": [
     ["henesys", "🍄 Yellow Mushroom House", "Behind a gold door in Henesys. Plays the Henesys music."],
     ["kerning", "🌃 Backalley Semi-Basement", "Behind a gold door in Kerning City. Plays the Kerning music."]
    ],
    "npcs": [
-    ["Estate agent (buy a house)", "Tommy, Town Hall", "Jack, Civic Center"],
-    ["Housing registrar", "Bianca", "Scarlett"],
+    ["Buy your house (mesos)", "Bianca", "Scarlett"],
+    ["Estate agent", "Tommy, Town Hall", "Jack, Civic Center"],
     ["Furniture shop", "Oak", "Weston"]
    ],
    "place": [
@@ -217,11 +217,12 @@
     ["🎯", "A training dummy", "A straw dummy you can hit as much as you like. We don't know yet if it shows damage."]
    ],
    "extra": [
+    "One home per account at a time, in Henesys or Kerning City. Every character on the account shares it.",
     "Return Scroll to My Home warps you home. It has a 60-minute cooldown.",
     "You can visit friends' homes. The client also has lock and password options and lets pets roam free.",
     "Nexon says housing will grow with citizenship and crafting. Guild houses come later."
    ],
-   "unknown": "Not known yet: the house price, how you get furniture, chest size and where to buy the Return Scroll to My Home. We'll fill these in once the game is live."
+   "unknown": "Still not published: the house price, how you get furniture, chest size and where to buy the Return Scroll to My Home. We'll add each one as soon as players confirm it."
   },
   "gotchas": [
    "Switching towns costs 50,000 to 100,000 mesos (reports differ). Your old town's progress waits for you if you come back.",
@@ -243,9 +244,9 @@
    ],
    [
     "How do I get a house in MapleStory Classic?",
-    "Become a citizen of Henesys or Kerning City and reach citizenship grade 2: level 17 plus 1,500 points, about 8 days of daily greetings and a weekly donation. Then talk to the estate agent in your town."
+    "Become a citizen of Henesys or Kerning City and reach citizenship grade 2: level 17 plus 1,500 points, about 8 days of daily greetings and a weekly donation. Then buy your home from Bianca in Henesys or Scarlett in Kerning City."
    ],
-   ["How much does a house cost?", "Nexon hasn't published a price. We'll add it once housing is live on Oct 21."],
+   ["How much does a house cost?", "Nexon's launch notes say you pay in mesos but don't give the price. We'll add it once players confirm it."],
    [
     "How much does it cost to change citizenship?",
     "Between 50,000 and 100,000 mesos; sources disagree and it may depend on your grade. Your progress in the old town is kept if you return."
@@ -263,7 +264,8 @@
    "https://meowdb.com/msclassic/furnitures",
    "https://metaroad.gg/maplestory-classic/news/maplestory-fest-2026-classic-world-roadmap",
    "https://henesys.gg/quests/donating-to-kerning-city",
-   "https://maplestory-classic.com/news/classic-world-090-client-72-citizenship-quests-halloween"
+   "https://maplestory-classic.com/news/classic-world-090-client-72-citizenship-quests-halloween",
+   "https://metaroad.gg/maplestory-classic/news/maplestory-classic-world-grand-launch-release-notes"
   ]
  },
  "events": {
@@ -273,8 +275,8 @@
     "name": "Mark of the Beta",
     "emoji": "🗺️",
     "at": "2026-10-21T18:00:00Z",
-    "end": "",
-    "when": "Oct 21 into November",
+    "end": "2026-11-18T23:59:00Z",
+    "when": "Oct 21 to Nov 18",
     "lv": "Lv 25+",
     "npc": 1012109,
     "blurb": "A 7-step treasure hunt across Victoria Island. Finish it for a hat with +1 to every stat.",
@@ -285,23 +287,23 @@
     "name": "The Journey Begins",
     "emoji": "🎁",
     "at": "2026-10-21T18:00:00Z",
-    "end": "2026-11-19T00:00:00Z",
-    "when": "Oct 21 to about Nov 18",
+    "end": "2026-11-18T23:59:00Z",
+    "when": "Oct 21 to Nov 18",
     "lv": "Lv 10+",
     "npc": 9010000,
-    "blurb": "Bring 30 Maple Leaves to the Maple Administrator each day. 14 gifts in all, including a pet.",
+    "blurb": "Bring 30 Maple Leaves to the Maple Administrator once a day. 14 gifts in all, from potions to a Snail pet.",
     "conf": "medium"
    },
    {
     "id": "halloween",
     "name": "Malady's Halloween",
     "emoji": "🎃",
-    "at": "2026-10-28T15:00:00Z",
-    "end": "2026-11-19T00:00:00Z",
-    "when": "Oct 28 to about Nov 18",
+    "at": "2026-10-28T00:00:00Z",
+    "end": "2026-11-18T23:59:00Z",
+    "when": "Oct 27, 5 PM PDT to Nov 18",
     "lv": "Lv 10+",
     "npc": 9201028,
-    "blurb": "A witch has lost her candy. Collect 100 Halloween Candies, then go trick-or-treating for her.",
+    "blurb": "A witch has lost her candy. Bring her 100 Halloween Candies for the Pumpkin Basket sword. Orange Slimes invade four towns, too.",
     "conf": "medium"
    }
   ],
@@ -360,22 +362,22 @@
    ],
    "reward": "Mark of the Beta: a hat with +1 STR, DEX, INT and LUK, 15 weapon defense and 7 upgrade slots. Untradeable. That's a great free hat to scroll.",
    "note": "Steps come from the game files (via NiaMeowDB and henesys.gg). The EXP and meso rewards aren't in the files. If you finish step 6, tell us where the scraps were!",
-   "rings": "Played a closed test? Accounts that finished both test events (A Strange and Familiar Wood, and Beyond the Unknown) can claim the Classic Beginnings Label Ring and Chat Ring at launch. Nexon hasn't said how yet."
+   "rings": "Played a closed test? Nexon mails the Classic Beginnings Label Ring and Chat Ring to accounts that finished a closed-test event quest (A Strange and Familiar Wood, or Beyond the Unknown). One test gets you one of each; both tests get you two of each. Check your mailbox off Maple Island."
   },
   "journey": {
    "how": [
     "Be level 10 or higher.",
     "Collect 30 Maple Leaves. Any level 10+ monster can drop them, so just play.",
     "Bring them to the Maple Administrator: far left of Henesys, or the new one in Kerning City.",
-    "Get that day's gift. Come back tomorrow for the next one."
+    "Get that day's gift. It's one claim a day per account, so your alts don't get extra."
    ],
-   "facts": [["14 gifts", "One claim a day"], ["5 PM PDT", "Daily reset (00:00 UTC)"], ["≈ Nov 18", "Likely end date"], ["Lv 15", "To use event megaphones"]],
-   "gifts": "Nexon's launch slide showed a Snail pet that picks up mesos and items, potions, megaphones and other consumables, plus something to open a shop with. The day-by-day list isn't public yet.",
-   "note": "It counts claims, not calendar days, so a missed day just pushes your last gift back. The event pet in the files lasts until Nov 19, which is why we think the event ends around Nov 18. Megaphones from events after launch need level 15."
+   "facts": [["14 gifts", "One claim a day"], ["5 PM PDT", "Daily reset (00:00 UTC)"], ["Nov 18", "Last day (23:59 UTC)"], ["Lv 15", "To use event megaphones"]],
+   "gifts": "Nexon's Grand Launch notes list what all 14 gifts add up to: 30 Red Potions, 70 Blue Potions, 40 Cakes, 30 Pet Food, 6 Safety Charms, 6 Megaphones, 5 Return Scrolls (Nearest Town), 3 Atmospheric Effect Boxes, 2 Regular Store Permits, 2 Item Megaphones and the Snail pet. Which gift lands on which day isn't public yet.",
+   "note": "It counts claims, not calendar days. The event runs 29 days and you need 14 claims, so you can miss a few days and still get everything. It ends Nov 18 at 23:59 UTC. Megaphones from events after launch need level 15."
   },
   "halloween": {
    "steps": [
-    {"title": "Find Malady", "do": "She's on the left side of Kerning City from Oct 28. Accept [Event] Halloween Candies.", "npc": 9201028},
+    {"title": "Find Malady", "do": "She's on the left side of Kerning City from Oct 27 at 5 PM PDT (Oct 28, 00:00 UTC). Accept [Event] Halloween Candies.", "npc": 9201028},
     {
      "title": "Collect 100 Halloween Candies",
      "do": "Any level 10+ monster can drop them. The quest names Ribbon Pigs, Dark Stumps, Octopuses and Green Mushrooms. Accept the quest first; the candy may only drop while it's active.",
@@ -388,20 +390,21 @@
     },
     {
      "title": "Back to Malady",
-     "do": "Turn in [Event] Trick or Treat! for her reward. Got extra candy? Trade it in at the Maple Administrator in Henesys.",
+     "do": "Turn in [Event] Trick or Treat! Nexon's notes name the Pumpkin Basket sword as the reward for 100 candies. Got extra candy? Trade it in at the Maple Administrator in Henesys.",
      "npc": null
     }
    ],
-   "facts": [["Oct 28", "Starts"], ["100", "Candies to collect"], ["Lv 10+", "To join"], ["≈ Nov 18", "Ends (game files)"]],
+   "facts": [["Oct 27", "Starts 5 PM PDT"], ["100", "Candies to collect"], ["Lv 10+", "To join"], ["Nov 18", "Ends 23:59 UTC"]],
    "maybe": ["Halloween Candies", "Red Malady's Candy", "Blue Malady's Candy", "Green Malady's Candy", "Pumpkin Basket", "Pumpkin Hat", "Witch Hat"],
-   "maybeNote": "In the game files but not confirmed as rewards: Malady's Candy (Red heals 600 HP, Blue 450 MP, Green 300 of each), the Pumpkin Basket (a one-handed sword with 24 attack, +1 all stats and +8 speed) and a Halloween Broomstick Chair. Pumpkin and witch outfits are probably for a Halloween fashion crate in the Cash Shop.",
+   "maybeNote": "Confirmed by Nexon's notes: the Pumpkin Basket (a one-handed sword with +27 attack, +3 speed, attack speed 3 and 7 upgrade slots) and Malady's Candy from the Slime Attack's Orange Slimes (Red heals 600 HP, Blue 450 MP, Green 300 of each). Not confirmed: the Halloween Broomstick Chair. The pumpkin and witch outfits are probably for a Cash Shop crate.",
    "tips": [
+    "During the Slime Attack, Orange Slimes show up in four towns and drop Halloween Candies too.",
     "Candy stacks to 100, can't be traded and is time-limited. Don't plan to sell it.",
     "Farm the busiest level 10+ map you can clear fast. Kill speed beats monster level here.",
     "The \"dark tunnel\" child might be in the Kerning subway. That's our guess until someone confirms it.",
     "It doesn't look repeatable, so it's probably one run per character."
    ],
-   "note": "Quest text comes from the game files. Nexon hasn't posted the rewards, the candy drop rate or the exchange list yet. We'll update this on Oct 28."
+   "note": "Nexon's notes confirm the dates, the Pumpkin Basket and the Slime Attack. The candy drop rate, the kids' maps and the exchange list come once it's live. We'll update this on Oct 28."
   },
   "faq": [
    [
@@ -411,10 +414,10 @@
    ["What does Mark of the Beta give?", "A hat with +1 to all stats, 15 weapon defense and 7 slots. It's untradeable."],
    [
     "When is the MapleStory Classic Halloween event?",
-    "From Oct 28, 2026. The game files run it to about Nov 18. Talk to Malady on the left side of Kerning City."
+    "From Oct 27 at 5 PM PDT (Oct 28, 00:00 UTC) to Nov 18. Talk to Malady on the left side of Kerning City."
    ],
    ["Where do Halloween Candies drop?", "From any level 10+ monster while you have the quest. Accept it from Malady first."],
-   ["What is The Journey Begins?", "A daily launch gift from Oct 21. Bring 30 Maple Leaves to the Maple Administrator for one of 14 gifts."]
+   ["What is The Journey Begins?", "A daily launch gift from Oct 21 to Nov 18. Bring 30 Maple Leaves to the Maple Administrator once a day (per account) for 14 gifts, including a Snail pet."]
   ],
   "src": [
    "https://meowdb.com/msclassic/quest-tracker/600004",
@@ -428,6 +431,8 @@
    "https://meowdb.com/msclassic/quest-tracker/500010",
    "https://meowdb.com/msclassic/quest-tracker/500011",
    "https://henesys.gg/quests/event-maladys-halloween",
+   "https://metaroad.gg/maplestory-classic/news/maplestory-classic-world-grand-launch-release-notes",
+   "https://meowdb.com/msclassic/news/grand-launch-release-notes",
    "https://meowdb.com/msclassic/item-db/3127"
   ]
  },
@@ -606,7 +611,7 @@
    ["Looking for the Sage", "Lv 55", "Each job instructor has one. 9,843 EXP plus potions."],
    ["Forgotten Hollow", "Lv 39-59, Nov 18", "New Lv 54-59 maps (Myewood, Rotten Mushroom, Sporewood) and the Rotten Mushmom."]
   ],
-  "not": "Not in Classic yet: Excavation Site skeletons, Mixed Golems, Ice and Dark Drakes, and anything in Ossyria or Aqua Road. Some guides list them anyway.",
+  "not": "Not in Classic yet: Mixed Golems, Ice and Dark Drakes, and anything in Ossyria or Aqua Road. Some guides list them anyway. New at Grand Launch: the Excavation Site skeletons and masks in Perion (levels not published yet).",
   "src": [
    "https://meowdb.com/msclassic/guides/best-grind-maps-every-level",
    "https://meowdb.com/msclassic/maps/010005054",
@@ -630,6 +635,7 @@
   },
   {"what": "Frieren collection claims (bought before Oct 7)", "when": "Oct 23 to Nov 3", "end": "2026-11-03T23:59:00Z"},
   {"what": "Founder's Fashion Crate and Mystery coupons leave the Cash Shop", "when": "Oct 28", "end": "2026-10-28T07:59:00Z"},
-  {"what": "Fall Store Permit and equip covers leave the Cash Shop", "when": "Nov 18", "end": "2026-11-18T17:59:00Z"}
+  {"what": "Fall Store Permit and equip covers leave the Cash Shop", "when": "Nov 18", "end": "2026-11-18T17:59:00Z"},
+  {"what": "Launch events end: The Journey Begins, Mark of the Beta and Halloween", "when": "Nov 18, 23:59 UTC", "end": "2026-11-18T23:59:00Z"}
  ]
 }
