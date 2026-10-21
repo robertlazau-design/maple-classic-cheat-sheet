@@ -35,11 +35,13 @@
 | Oct 16 | Megaphones need Lv15 from Oct 21 18:00 UTC. Ones owned or bought before launch keep Lv10 | official |
 | Oct 17 | MapleStory Fest roadmap (housing, events, Forgotten Hollow, guilds, 3rd-job test) | official |
 | Oct 20, 23:59 UTC | Founder's First Step check-in ends | official |
-| **Oct 21** | Maintenance 6:00–~11:00 AM PDT (13–18 UTC), client v1.0.0. **Grand Launch 11:00 AM PDT / 18:00 UTC**, free. FA characters carry over. Housing, Mark of the Beta and The Journey Begins start | official |
+| Oct 20 | Grand Launch release notes posted (Nexon notice 46506; read via Metaroad and NiaMeowDB recaps) | official via recap |
+| **Oct 21** | Maintenance 6:00–~11:00 AM PDT (13–18 UTC), client v1.0.0. **Grand Launch 11:00 AM PDT / 18:00 UTC**, free. FA characters carry over. Housing, Mark of the Beta and The Journey Begins start. Stumpy + Excavation Site added. KPQ Ch 3–12 | official |
+| Oct 22, Nov 6, Dec 19 (00:00–02:00 UTC) | GM events: Physical Fitness Challenge, Coconut Harvest, Up and Up | official via recap |
 | Oct 23 – Nov 3, 23:59 UTC | Frieren Signature Style Collection claims (bought before Oct 7) | single, citing Nexon |
-| Oct 28 | Halloween ("Malady's Halloween"). Client window Oct 28 00:00 → Nov 19 00:00, no timezone | official date; single end |
+| Oct 28, 00:00 UTC (Oct 27, 5 PM PDT) | Halloween (Halloween Candies + Slime Attack) to Nov 18 23:59 UTC | official via recap (multi) |
 | Oct 28, 07:59 UTC | Founder's Mystery Fashion Crate (3,500 NX; 11 for 35,000) and Mystery Hair (5,500) / Face (3,500) coupons leave the Cash Shop | official via recap |
-| ~Nov 18 | The Journey Begins likely ends (event Snail pet expires Nov 19) | single + inference |
+| Nov 18, 23:59 UTC | The Journey Begins, The Marks We Leave Behind, To Classic Beginners and both Halloween events end | official via recap |
 | Nov 18 | Forgotten Hollow (mobs Lv39–59, Rotten Mushmom Lv60), Moon Bunny's Rice Cake PQ (Lv11+), more citizenship story (Maya, Chief Stan). Fall Store Permit and 10-day equip covers leave at 17:59 UTC | official |
 | Nov 30, 23:59 UTC | Founder's Package claim deadline | official |
 | Dec 9 | Guilds (made in Lith Harbor; guild houses later), Forgotten Hollow PQ (Lv41+), Happyville + Christmas | official |
@@ -58,7 +60,8 @@
 
 **What's in the game**
 - Launch content is Maple Island and Victoria Island only. No Ossyria, Aqua Road, Ludibrium or Leafre.
-- Five bosses: Mano, Mushmom, Shade, Zombie Mushmom, Jr. Balrog. King Slime is KPQ-only, and Rotten Mushmom arrives Nov 18. Stumpy, Faust, Dyle, King Clang and Crimson Balrog aren't reachable.
+- Six bosses since Grand Launch: Mano, **Stumpy** (new; level, HP and spawn not published), Mushmom, Shade, Zombie Mushmom, Jr. Balrog. King Slime is KPQ-only, and Rotten Mushmom arrives Nov 18. Faust, Dyle, King Clang and Crimson Balrog aren't reachable.
+- **Excavation Site** (Perion, new at Grand Launch): Ghost Stump, Wooden Mask, Rocky Mask, Skeledog, Mummydog, Skeleton Soldier, Officer Skeleton, Commander Skeleton. Levels not published. [official via recap, multi]
 - Crafting from Lv10. Citizenship from Lv12, Henesys or Kerning.
 
 **Chat and megaphones**
@@ -165,7 +168,7 @@
   - Sanctuary Entrance: ~110–124k/hr, about 17–19 h per level at 70.
 - maplestory.quest lists "no 61–80 maps" because of how it ranks maps: a map must get ≥50% of its EXP from mobs within ±2 levels. The mobs do exist.
 - **Not in Classic:**
-  - Excavation Site skeletons, Mixed Golem, Ice/Dark Drake, and anything in Ossyria or Aqua Road.
+  - Mixed Golem, Ice/Dark Drake, and anything in Ossyria or Aqua Road. (The Excavation Site skeletons arrived at Grand Launch.)
   - Crimson Balrog is in the data but spawns on the Orbis ship, which doesn't exist yet.
   - U4N puts Forgotten Hollow mobs in Sanctuary. That's wrong.
 - **Forgotten Hollow (Nov 18):**
@@ -194,7 +197,7 @@
 ## 7. KPQ [multi]
 
 - **Party:** Lv21+ with no upper cap (observed). Exactly 4 players, 30 minutes.
-- **Channels:** 3–7 only.
+- **Channels:** 3–12 (Grand Launch notes; was 3–7).
 - **Rules:** multiple parties per channel, and death doesn't end the run. It does end if the party drops to 2.
 - **King Slime:** Lv32, 16,820 HP, 2,400 EXP. Splits into 11 Slimes.
 - **Cloto's answers** include 10, 15, 20, 21, 25, 30 and 35.
@@ -251,7 +254,8 @@
 - Players lost citizenship to misclicks on the confirm window.
 
 **Housing (Oct 21)**
-- Requires grade 2 in Henesys or Kerning. [official]
+- Requires grade 2 (Visitor) in Henesys or Kerning. [official]
+- Bought with mesos from Bianca (Henesys) or Scarlett (Kerning). One home per account at a time, shared by every character. [official via recap, multi]
 - Homes: Yellow Mushroom House (Henesys) and Backalley Semi-Basement (Kerning), each behind a gold door.
 - NPCs: estate agent Tommy / Jack, registrar Bianca / Scarlett, furniture Oak / Weston.
 - **61 placeable pieces:** 52 furniture (13 interactive), 2 storage chests, 6 crafting stations and 1 straw training dummy.
@@ -261,7 +265,7 @@
 ## 9. Events
 
 **Mark of the Beta**
-- Lv25, from Oct 21, ends "in November". Starts with **Jay** in the middle of Henesys. Order:
+- Lv25, Oct 21 to Nov 18 23:59 UTC ("The Marks We Leave Behind"). Starts with **Jay** in the middle of Henesys. Order:
   1. The Marks We Leave Behind (Jay gives the Adventurer's Journal)
   2. First Mark: the crack in the rocks at Pig Beach
   3. Second: monsters in Someone Else's House
@@ -270,17 +274,18 @@
   6. Fifth: 4 scraps; **location unconfirmed**
   7. Final: the hidden portal at the end of Ant Tunnel Park
 - Reward: the Mark of the Beta hat (+1 all stats, 15 W.DEF, 7 slots, untradeable). EXP and mesos unknown.
-- Closed-test players who finished both test events can claim the Classic Beginnings Label and Chat Ring; how is unknown.
+- To Classic Beginners: closed-test players get the Classic Beginnings Label and Chat Rings **by mail**. One test (COT1 or COT2) gives one of each; both give two of each. [official via recap]
 - meowdb's "Mark of the Beta by Oct 23" banner is a promo for their own website, not the game.
 
 **The Journey Begins / Inkwell's Gift**
 - Lv10+ daily. Bring 30 Maple Leaves (any Lv10+ mob drops them) to the Maple Administrator in Henesys (far left) or Kerning.
-- 14 gifts; it counts claims, not days. Resets at 00:00 UTC.
-- The slide showed a Snail pet, potions, megaphones (Lv15 versions) and something shop-related. The per-day list is unknown.
-- Likely ends ~Nov 18.
+- 14 gifts; it counts claims, not days. Once a day **per account**. Resets at 00:00 UTC. Window Oct 21 18:00 UTC to Nov 18 23:59 UTC (29 days).
+- Totals across all 14 [official via recap, single]: 30 Red Potion, 70 Blue Potion, 40 Cake, 30 Pet Food, 6 Safety Charm, 6 Megaphone, 5 Return Scroll (Nearest Town), 3 Atmospheric Effect Box, 2 Regular Store Permit, 2 Item Megaphone, Snail pet. Per-day order unknown.
 
 **Malady's Halloween**
-- Lv10+, from Oct 28. Malady is on the left side of Kerning (GMS sprite: Witch Malady NPC 9201028).
+- Lv10+, Oct 28 00:00 UTC (Oct 27, 5 PM PDT) to Nov 18 23:59 UTC. Malady is on the left side of Kerning (GMS sprite: Witch Malady NPC 9201028).
+- Reward for 100 candies: **Pumpkin Basket** (1H sword, +27 W.ATT, +3 Speed, attack speed 3, 7 slots). [official via recap; NiaMeowDB calls it a hidden mission]
+- **Slime Attack:** Orange Slimes in four towns drop Halloween Candies plus Red (600 HP), Blue (450 MP) and Green (300/300) Malady's Candy. Which towns: unknown.
   1. [Event] Halloween Candies: bring 100 from Lv10+ mobs. The text names Ribbon Pig, Dark Stump, Octopus and Green Mushroom.
   2. [Event] Trick or Treat!: deliver 3 pouches (the child in the dark tunnel, on the open field, up on the high ground).
   3. Return to Malady.
@@ -288,7 +293,7 @@
 - The candy item: untradeable, time-limited, stacks to 100, and may only drop with the quest active.
 - Not repeatable as far as we know.
 - In the client but unconfirmed as rewards: Red/Blue/Green Malady's Candy, Pumpkin Basket (sword), Halloween Broomstick Chair, and a Halloween fashion crate.
-- **Unknown:** the reward, the exchange list, the drop rate, and the kids' maps.
+- **Unknown:** the exchange list, the drop rate, the kids' maps and the Slime Attack towns.
 
 **Earlier events**
 - Founder's First Step (Oct 6–20): a check-in counter. Day 1 gave a 5,000 Leaf Points coupon, megaphones and more.
@@ -313,7 +318,9 @@
 - Hired Merchants aren't sold (meowdb says "not in game yet"; they're in the client).
 
 **Trading**
-- Trade tax and trade limits are **unknown/unpublished**.
+- New accounts are trade-locked until 24 h after any character on the account reaches Lv15. [official via recap, multi]
+- Trade tax is **unknown/unpublished**.
+- Lie Detector Test: sold at the Citizen General Store, account-bound, 7 days. [official via recap]
 - Many Cash items are "tradeable once". Equipping a Cash item makes it untradeable.
 - Coming: a 48 h trade/gift lock on Cash items after an account's first NX purchase. [official via Discord]
 
@@ -355,7 +362,8 @@
 
 ## 12. Re-check after Grand Launch notes (Oct 21) and after events
 
-- [ ] v1.0.0 patch notes → `guides.json` news.patches + updates.json
+- [x] v1.0.0 patch notes → `guides.json` news.patches + updates.json (Oct 21)
+- [ ] Stumpy level/HP/spawn/drops and Excavation Site monster levels
 - [ ] House price, furniture sources, chest size, Return Scroll to My Home vendor
 - [ ] Each day's gift for The Journey Begins, and its end date
 - [ ] Mark of the Beta: Fifth Mark location, EXP and meso rewards, how to claim the Classic Beginnings rings
