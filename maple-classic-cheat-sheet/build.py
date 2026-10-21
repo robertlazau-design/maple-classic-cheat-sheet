@@ -247,7 +247,7 @@ def build_home():
     fdata = {"route": [{"from": r["from"], "to": r["to"], "map": tidy(r["map"]), "monsters": r.get("monsters", ""), "monsterLevel": r.get("monsterLevel", ""), "confidence": r.get("confidence", "medium"),
                         "sprites": [IMG["mobs"][m] for m in mobs_in(r.get("monsters", ""), 2)]} for r in route],
              "classes": [{"id": c["id"], "name": c["name"], "npc": c["firstJob"]["npc"], "town": c["firstJob"]["town"], "sprite": IMG["classNpc"][c["id"]][0],
-                          "jobs": [j["id"] for j in c["jobs"]]} for c in JOBS["classes"]],
+                          "jobs": [j["id"] for j in c["jobs"]], "start": JOBS["creation"]["classes"][c["id"]]["stats"]} for c in JOBS["classes"]],
              "jobs": {j["id"]: {"name": j["name"], "cls": c["id"], "weapon": j["weapon"], "play": tidy(j["playstyle"]), "adv": {"test": tidy(j["advancement"]["test"])},
                                  "apSummary": tidy(j["ap"]["summary"]), "ap": [tidy(x) for x in j["ap"]["steps"]], "sp1": [tidy(x) for x in j["sp"]["firstJob"]], "sp2": [tidy(x) for x in j["sp"]["secondJob"]]} for c, j in ALLJOBS},
              "api": API}
@@ -330,6 +330,18 @@ def build_leveling():
                              schema={"@context": "https://schema.org", "@type": "Article", "headline": "MapleStory Classic Leveling Guide 1–100", "dateModified": CHECKED_ISO}))
 
 def build_jobs():
+    CR = JOBS["creation"]
+    start = ""
+    for c in JOBS["classes"]:
+        st = CR["classes"][c["id"]]
+        cn = IMG["classNpc"][c["id"]]
+        tiles = "".join(f'<div{" class=hot" if n == st["main"] else ""}><b>{v}</b><span>{n}</span></div>' for n, v in zip(["STR", "DEX", "INT", "LUK"], st["stats"]))
+        start += f'<article class="card start-card"><div class="start-top">{npc_img(cn[0], cn[1], "sprite sm")}<h3>{e(c["name"])}</h3></div><div class="facts stats" aria-label="{e(c["name"])} starting stats">{tiles}</div><p>{e(st["then"])}</p><p class="muted">Job up at level {e(c["firstJob"]["level"])} with {e(c["firstJob"]["npc"])} in {e(c["firstJob"]["town"])}.</p></article>'
+    start_html = f'''<h2 id="start">New character? Your first 9 points 🎲</h2>
+<p>{e(CR["intro"])}</p>
+<div class="start-grid">{start}</div>
+<p class="callout" style="margin-top:14px">🐌 {e(CR["beginner"])}</p>
+<ul>{"".join(f"<li>{e(x)}</li>" for x in CR["tips"])}</ul>'''
     blocks = ""
     for c in JOBS["classes"]:
         fj = c["firstJob"]
@@ -339,11 +351,11 @@ def build_jobs():
 <p><b>1st job:</b> level {e(fj["level"])} with {e(fj["npc"])} in {e(fj["town"])}. {e(tidy(fj["notes"]))}</p>
 <div class="grid">{jobs}</div>'''
     body = f'''<h1>MapleStory Classic Job Builds</h1>
-<p class="lede">AP and SP plans for every 2nd job. You place every point by hand in Classic, and a reset costs 7,000 NX, so plan before you click. Still choosing? See the <a href="/tier-list/">tier list</a>.</p>
-{stamp()}<div class="toc">{"".join(f'<a href="#{e(c["id"])}">{e(c["name"])}</a>' for c in JOBS["classes"])}</div>{blocks}
+<p class="lede">Where your first 9 points go when you make a character, then AP and SP plans for every 2nd job. You place every point by hand in Classic, and a reset costs 7,000 NX, so plan before you click. Still choosing? See the <a href="/tier-list/">tier list</a>.</p>
+{stamp()}<div class="toc"><a href="#start">New character</a>{"".join(f'<a href="#{e(c["id"])}">{e(c["name"])}</a>' for c in JOBS["classes"])}</div>{start_html}{blocks}
 <h2>What changed for jobs in Classic</h2><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in JOBS["classicChanges"])}</ul>'''
     write("/jobs/", page("/jobs/", "MapleStory Classic Job Builds: AP & SP for All 10 Jobs",
-                         "Every MapleStory Classic 2nd job compared: Fighter, Page, Spearman, F/P, I/L, Cleric, Hunter, Crossbowman, Assassin and Bandit, with AP/SP builds.", body,
+                         "MapleStory Classic character creation stats for every class, plus AP/SP builds for Fighter, Page, Spearman, F/P, I/L, Cleric, Hunter, Crossbowman, Assassin and Bandit.", body,
                          crumbs=[("/", "Guide"), (None, "Job builds")]))
     for c, j in ALLJOBS:
         def steps(lst):
@@ -1036,7 +1048,8 @@ def main():
     idx += [{"t": "News: launch day, events and patch notes", "u": "/news/", "k": "page", "x": "patch notes events launch halloween guild housing deadline maintenance"}]
     for ev in G["news"]["events"]:
         idx.append({"t": ev["name"] + " (" + ev["when"] + ")", "u": f"/news/#e-{qslug(ev['name'])}", "k": "Event", "x": ev["text"][:80]})
-    idx += [{"t": "Bosses: respawn timers and drops", "u": "/bosses/", "k": "page", "x": "boss timer respawn drops"},
+    idx += [{"t": "New character: where to put your first stat points", "u": "/jobs/#start", "k": "Builds", "x": "character creation starting stats ap ability points 9 free points dice beginner skill points three snails recovery nimble feet"},
+            {"t": "Bosses: respawn timers and drops", "u": "/bosses/", "k": "page", "x": "boss timer respawn drops"},
             {"t": "KPQ: Kerning City Party Quest guide", "u": "/party-quest/", "k": "page", "x": "kpq party quest cloto coupons king slime squishy shoes combos"},
             {"t": "Quests: best quests by level", "u": "/quests/", "k": "page", "x": "quest exp rewards citizenship"},
             {"t": "Money making: how to make mesos", "u": "/money-making/", "k": "page", "x": "mesos money free market prices merch farm sell"},
