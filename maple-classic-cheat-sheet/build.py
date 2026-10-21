@@ -10,9 +10,9 @@ OUT = os.path.join(ROOT, "public")
 SITE = "https://www.mapleclassicguide.com"
 NAME = "Maple Classic Guide"
 COFFEE = "https://buymeacoffee.com/goldenboypro"  # your Buy Me a Coffee link, e.g. "https://buymeacoffee.com/yourname". Empty = hidden.
-CHECKED = "Oct 20, 2026"
-CHECKED_ISO = "2026-10-20"
-DATA_NOTE = "Founder's Access data"
+CHECKED = "Oct 21, 2026"
+CHECKED_ISO = "2026-10-21"
+DATA_NOTE = "Grand Launch notes and Founder's Access data"
 WEB3FORMS_KEY = os.environ.get("WEB3FORMS_KEY", "").strip()  # set in Vercel > Settings > Environment Variables; empty = feedback opens an email instead
 
 def load(n):
@@ -247,7 +247,7 @@ def build_home():
     fdata = {"route": [{"from": r["from"], "to": r["to"], "map": tidy(r["map"]), "monsters": r.get("monsters", ""), "monsterLevel": r.get("monsterLevel", ""), "confidence": r.get("confidence", "medium"),
                         "sprites": [IMG["mobs"][m] for m in mobs_in(r.get("monsters", ""), 2)]} for r in route],
              "classes": [{"id": c["id"], "name": c["name"], "npc": c["firstJob"]["npc"], "town": c["firstJob"]["town"], "sprite": IMG["classNpc"][c["id"]][0],
-                          "jobs": [j["id"] for j in c["jobs"]]} for c in JOBS["classes"]],
+                          "jobs": [j["id"] for j in c["jobs"]], "start": JOBS["creation"]["classes"][c["id"]]["stats"]} for c in JOBS["classes"]],
              "jobs": {j["id"]: {"name": j["name"], "cls": c["id"], "weapon": j["weapon"], "play": tidy(j["playstyle"]), "adv": {"test": tidy(j["advancement"]["test"])},
                                  "apSummary": tidy(j["ap"]["summary"]), "ap": [tidy(x) for x in j["ap"]["steps"]], "sp1": [tidy(x) for x in j["sp"]["firstJob"]], "sp2": [tidy(x) for x in j["sp"]["secondJob"]]} for c, j in ALLJOBS},
              "api": API}
@@ -330,6 +330,18 @@ def build_leveling():
                              schema={"@context": "https://schema.org", "@type": "Article", "headline": "MapleStory Classic Leveling Guide 1–100", "dateModified": CHECKED_ISO}))
 
 def build_jobs():
+    CR = JOBS["creation"]
+    start = ""
+    for c in JOBS["classes"]:
+        st = CR["classes"][c["id"]]
+        cn = IMG["classNpc"][c["id"]]
+        tiles = "".join(f'<div{" class=hot" if n == st["main"] else ""}><b>{v}</b><span>{n}</span></div>' for n, v in zip(["STR", "DEX", "INT", "LUK"], st["stats"]))
+        start += f'<article class="card start-card"><div class="start-top">{npc_img(cn[0], cn[1], "sprite sm")}<h3>{e(c["name"])}</h3></div><div class="facts stats" aria-label="{e(c["name"])} starting stats">{tiles}</div><p>{e(st["then"])}</p><p class="muted">Job up at level {e(c["firstJob"]["level"])} with {e(c["firstJob"]["npc"])} in {e(c["firstJob"]["town"])}.</p></article>'
+    start_html = f'''<h2 id="start">New character? Your first 9 points 🎲</h2>
+<p>{e(CR["intro"])}</p>
+<div class="start-grid">{start}</div>
+<p class="callout" style="margin-top:14px">🐌 {e(CR["beginner"])}</p>
+<ul>{"".join(f"<li>{e(x)}</li>" for x in CR["tips"])}</ul>'''
     blocks = ""
     for c in JOBS["classes"]:
         fj = c["firstJob"]
@@ -339,11 +351,11 @@ def build_jobs():
 <p><b>1st job:</b> level {e(fj["level"])} with {e(fj["npc"])} in {e(fj["town"])}. {e(tidy(fj["notes"]))}</p>
 <div class="grid">{jobs}</div>'''
     body = f'''<h1>MapleStory Classic Job Builds</h1>
-<p class="lede">AP and SP plans for every 2nd job. You place every point by hand in Classic, and a reset costs 7,000 NX, so plan before you click. Still choosing? See the <a href="/tier-list/">tier list</a>.</p>
-{stamp()}<div class="toc">{"".join(f'<a href="#{e(c["id"])}">{e(c["name"])}</a>' for c in JOBS["classes"])}</div>{blocks}
+<p class="lede">Where your first 9 points go when you make a character, then AP and SP plans for every 2nd job. You place every point by hand in Classic, and a reset costs 7,000 NX, so plan before you click. Still choosing? See the <a href="/tier-list/">tier list</a>.</p>
+{stamp()}<div class="toc"><a href="#start">New character</a>{"".join(f'<a href="#{e(c["id"])}">{e(c["name"])}</a>' for c in JOBS["classes"])}</div>{start_html}{blocks}
 <h2>What changed for jobs in Classic</h2><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in JOBS["classicChanges"])}</ul>'''
     write("/jobs/", page("/jobs/", "MapleStory Classic Job Builds: AP & SP for All 10 Jobs",
-                         "Every MapleStory Classic 2nd job compared: Fighter, Page, Spearman, F/P, I/L, Cleric, Hunter, Crossbowman, Assassin and Bandit, with AP/SP builds.", body,
+                         "MapleStory Classic character creation stats for every class, plus AP/SP builds for Fighter, Page, Spearman, F/P, I/L, Cleric, Hunter, Crossbowman, Assassin and Bandit.", body,
                          crumbs=[("/", "Guide"), (None, "Job builds")]))
     for c, j in ALLJOBS:
         def steps(lst):
@@ -785,7 +797,7 @@ def build_money():
                                  crumbs=[("/", "Guide"), (None, "Money making")], schema=faq_schema(Mo["faq"]), side_extra=side))
 
 EVENT_AT = {"The Journey Begins": "2026-10-21T18:00:00Z", "Housing": "2026-10-21T18:00:00Z", "Mark of the Beta": "2026-10-21T18:00:00Z",
-            "Halloween": "2026-10-28T15:00:00Z", "Forgotten Hollow": "2026-11-18T16:00:00Z", "Moon Bunny's Rice Cake": "2026-11-18T16:00:00Z",
+            "Halloween": "2026-10-28T00:00:00Z", "GM events": "2026-10-22T00:00:00Z", "Excavation Site and Stumpy": "2026-10-21T18:00:00Z", "Forgotten Hollow": "2026-11-18T16:00:00Z", "Moon Bunny's Rice Cake": "2026-11-18T16:00:00Z",
             "Guilds, Hollow PQ and Happyville": "2026-12-09T16:00:00Z"}
 
 def build_news():
@@ -909,7 +921,7 @@ def build_events():
     maybe = "".join(rw(x) for x in Hw["maybe"])
     body = f"""<h1>MapleStory Classic Events: Mark of the Beta, Halloween &amp; Daily Gifts</h1>
 <p class="lede">What's on in Classic World, how to finish each event fast, and what you get for it.</p>
-{guide_stamp("Event quests from the game files; Nexon's dates from MapleStory Fest. ")}
+{guide_stamp("Nexon's Grand Launch notes, plus quest steps from the game files. ")}
 <div class="toc"><a href="#now">On now</a><a href="#mark">Mark of the Beta</a><a href="#journey">The Journey Begins</a><a href="#halloween">Halloween</a><a href="#faq">FAQ</a></div>
 <h2 id="now">What's on</h2><div class="grid">{now}</div>
 <p class="muted" style="margin-top:10px">Forgotten Hollow, Moon Bunny, guilds and the rest of the roadmap are on the <a href="/news/#events">News page</a>.</p>
@@ -925,7 +937,7 @@ def build_events():
 <p class="muted" style="margin-top:8px">{e(J["note"])} Your boxes are saved on this device only.</p>
 <h2 id="halloween">Malady's Halloween 🎃</h2><div class="facts">{hfacts}</div>
 <ol class="stages" style="margin-top:16px">{hsteps}</ol>
-<h3 style="margin-top:20px">Possible goodies</h3><div class="rws">{maybe}</div><p class="muted">{e(Hw["maybeNote"])}</p>
+<h3 style="margin-top:20px">Rewards and goodies</h3><div class="rws">{maybe}</div><p class="muted">{e(Hw["maybeNote"])}</p>
 <h3 style="margin-top:18px">Tips</h3><ul>{"".join(f"<li>{e(x)}</li>" for x in Hw["tips"])}</ul>
 <p class="callout warn">{e(Hw["note"])}</p>
 {srcs(V["src"])}
@@ -1036,7 +1048,8 @@ def main():
     idx += [{"t": "News: launch day, events and patch notes", "u": "/news/", "k": "page", "x": "patch notes events launch halloween guild housing deadline maintenance"}]
     for ev in G["news"]["events"]:
         idx.append({"t": ev["name"] + " (" + ev["when"] + ")", "u": f"/news/#e-{qslug(ev['name'])}", "k": "Event", "x": ev["text"][:80]})
-    idx += [{"t": "Bosses: respawn timers and drops", "u": "/bosses/", "k": "page", "x": "boss timer respawn drops"},
+    idx += [{"t": "New character: where to put your first stat points", "u": "/jobs/#start", "k": "Builds", "x": "character creation starting stats ap ability points 9 free points dice beginner skill points three snails recovery nimble feet"},
+            {"t": "Bosses: respawn timers and drops", "u": "/bosses/", "k": "page", "x": "boss timer respawn drops"},
             {"t": "KPQ: Kerning City Party Quest guide", "u": "/party-quest/", "k": "page", "x": "kpq party quest cloto coupons king slime squishy shoes combos"},
             {"t": "Quests: best quests by level", "u": "/quests/", "k": "page", "x": "quest exp rewards citizenship"},
             {"t": "Money making: how to make mesos", "u": "/money-making/", "k": "page", "x": "mesos money free market prices merch farm sell"},
@@ -1046,7 +1059,7 @@ def main():
             {"t": "Citizenship donation items", "u": "/citizenship/#points", "k": "Citizenship", "x": "donate weekly daily greeting community board"},
             {"t": "Events: Mark of the Beta, Halloween, daily gifts", "u": "/events/", "k": "page", "x": "event halloween mark beta journey begins gift"},
             {"t": "Mark of the Beta walkthrough", "u": "/events/#mark", "k": "Event", "x": "jay journal pages pig beach marr's forest ant tunnel hat lv 25"},
-            {"t": "Halloween event: Malady's candy hunt", "u": "/events/#halloween", "k": "Event", "x": "halloween candies malady trick or treat pumpkin oct 28"},
+            {"t": "Halloween event: Malady's candy hunt", "u": "/events/#halloween", "k": "Event", "x": "halloween candies malady trick or treat pumpkin basket orange slime oct 27 oct 28"},
             {"t": "The Journey Begins daily gifts", "u": "/events/#journey", "k": "Event", "x": "maple leaves maple administrator daily gift 14"},
             {"t": "Free Market: selling, prices and scams", "u": "/free-market/", "k": "page", "x": "free market fm shop store permit sell price scam trade"},
             {"t": "Store permits and opening a shop", "u": "/free-market/#shop", "k": "Market", "x": "store permit shop hired merchant"},

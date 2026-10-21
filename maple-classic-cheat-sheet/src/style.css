@@ -115,6 +115,15 @@ p{margin:0 0 12px}
 .facts div{background:var(--surface);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow)}
 .facts b{display:block;font-size:22px;line-height:1.2;font-weight:800;color:var(--ink)}
 .facts span{display:block;font-size:13.5px;line-height:1.4;color:var(--muted);margin-top:2px}
+/* character creation stat tiles */
+.start-grid{display:grid;gap:14px;margin-top:12px}
+@media (min-width:700px){.start-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.start-top{display:flex;align-items:center;gap:10px}
+.start-top .sprite{max-height:56px}
+.facts.stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}
+.facts.stats div{background:var(--raised);box-shadow:none;padding:10px 6px;text-align:center}
+.facts.stats .hot{background:var(--maple)}
+.facts.stats .hot b,.facts.stats .hot span{color:var(--maple-ink)}
 
 /* finder */
 .finder{background:var(--surface);border-radius:24px;padding:22px;margin:28px 0 0;box-shadow:var(--shadow);border:2px solid var(--maple)}

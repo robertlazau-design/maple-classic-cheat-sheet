@@ -144,6 +144,8 @@ Repo: `robertlazau-design/maple-classic-cheat-sheet`. The site lives in the `map
 5. **Verify.**
    - Run `git -C /tmp/mcc fetch` and diff `origin/<branch>:path` against the local file. They must be identical.
    - Rebuild from `git archive origin/<branch>` and `diff -r` the `public/` folders.
+**Vercel build limit.** Every commit to any branch triggers a Vercel build, and the free plan has a daily deployment cap (we hit it on Oct 20). Make all of a file's changes in one commit, skip fix-up commits, and keep a PR to as few commits as you can. The real Vercel project is `maple-classic-cheat-she…-kz6a`; the duplicate `maple-classic-cheat-sheet` project was disconnected from Git on Oct 20, so only one build runs per push.
+
 6. **Open a PR** into `main` from the branch's compare page. End the PR body with the Claude Code attribution lines.
    - The Vercel bot posts a preview URL on the PR. Robert has granted the browser access to previews. The Vercel MCP returns 403 for this team.
 7. **Test locally** with `cd public && python3 -m http.server 8765`. Use Playwright via `NODE_PATH=$(npm root -g) node script.js`. Chromium is preinstalled, but sprites won't load in the cloud.
@@ -172,16 +174,17 @@ Repo: `robertlazau-design/maple-classic-cheat-sheet`. The site lives in the `map
   - Fix the affected pages.
   - Add an `updates.json` entry.
   - Bump `CHECKED`.
-- **Oct 21:** the Grand Launch notes (client v1.0.0) are due after maintenance, which runs 6–11 AM PDT. Watch the sources listed in game-facts.md.
-- **Oct 28:** Halloween goes live. Confirm the rewards, the candy exchange list, the kids' locations and the drop rate.
+- **Oct 21:** done. The Grand Launch notes (v1.0.0, Nexon notice 46506, posted Oct 20) are in `news.patches`. nexon.com renders empty, so they came from the Metaroad and NiaMeowDB recaps.
+- **Oct 27, 5 PM PDT (Oct 28, 00:00 UTC):** Halloween goes live. Confirm the candy exchange list, the kids' locations, the drop rate and which four towns get the Orange Slimes.
 - **Nov 18:** Forgotten Hollow, Rotten Mushmom, Moon Bunny, and the end of the Fall Store Permit sale.
 - **Dec 9:** guilds, Hollow PQ and Happyville.
 - **Nov 30:** remove the Founder's claim banner. It hides itself after the date anyway.
 
 ## Open ideas backlog
 
-- Housing price and furniture sources once they're live.
-- Each day's gift for The Journey Begins.
+- Housing price and furniture sources once players confirm them.
+- Stumpy: level, HP, spawn and drops, then a boss card. Excavation Site monster levels for the leveling page.
+- Each day's gift for The Journey Begins (the 14-gift totals are known).
 - Mark of the Beta: confirm the Fifth Mark location.
 - A Forgotten Hollow guide on Nov 18.
 - A guild guide on Dec 9.

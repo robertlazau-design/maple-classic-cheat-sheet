@@ -9,6 +9,20 @@
       "Third job (and El Nath/Orbis) is not in the launch build; at Lv70 you simply keep levelling as a 2nd job up to the Lv100 cap."
     ]
   },
+  "creation": {
+    "intro": "Every stat starts at 4 and you get 9 free points to place yourself. There are no dice to roll. Put 8 into your class's main stat and 1 into its second stat.",
+    "classes": {
+      "warrior": {"stats": [12, 5, 4, 4], "main": "STR", "then": "Levels 2 to 10: all 5 points into STR every level. You don't need DEX to job up."},
+      "magician": {"stats": [4, 4, 12, 5], "main": "INT", "then": "Levels 2 to 10: all 5 points into INT every level."},
+      "bowman": {"stats": [5, 12, 4, 4], "main": "DEX", "then": "Levels 2 to 10: all 5 points into DEX every level."},
+      "thief": {"stats": [4, 5, 4, 12], "main": "LUK", "then": "Levels 2 to 10: all 5 points into LUK every level."}
+    },
+    "beginner": "Skill points: as a Beginner you get 1 per level, so 9 by level 10. That's enough to max Three Snails, Recovery and Nimble Feet (3 each), so the order barely matters.",
+    "tips": [
+      "Not sure which class yet? Check the tier list before you click. Fixing your points later takes an AP Reset, which costs 7,000 NX.",
+      "Your job instructor doesn't check stats in Classic, so any spread can job up at level 10. The spreads above just make Maple Island faster."
+    ]
+  },
   "classes": [
     {
       "id": "warrior",
