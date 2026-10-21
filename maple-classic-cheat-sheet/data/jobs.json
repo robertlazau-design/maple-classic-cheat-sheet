@@ -23,6 +23,14 @@
       "Your job instructor doesn't check stats in Classic, so any spread can job up at level 10. The spreads above just make Maple Island faster."
     ]
   },
+  "magicianPick": {
+    "intro": "All three start the same: Magician at level 10, then pick at level 30. Grades come from our tier list.",
+    "rows": [
+      {"job": "fp-wizard", "solo": "A", "boss": "B", "party": "A", "first": "A", "pick": "You want the easiest Magician to level alone. Poison Breath hits up to 6 monsters and Fire Arrow burns. Bring lots of mana potions."},
+      {"job": "il-wizard", "solo": "B", "boss": "B", "party": "A", "first": "B", "pick": "You're in it for the long run. Thunder Bolt hits up to 6, but its group damage stays modest until 3rd job, and many Victoria Island monsters resist ice."},
+      {"job": "cleric", "solo": "B", "boss": "B", "party": "S", "first": "B", "pick": "You'll play with friends. Heal and Bless make every party better and you're the toughest Magician, but leveling alone is slow outside undead maps."}
+    ]
+  },
   "classes": [
     {
       "id": "warrior",
@@ -349,6 +357,14 @@
         {
           "id": "cleric",
           "name": "Cleric",
+          "leveling": [
+            "Train on undead. Heal damages Zombie Mushrooms, Jr. Wraiths, Zombie Lupins and Wraiths, so it's your group attack on those maps.",
+            "A Cleric route: Line 1 Area 1 in the Kerning subway at 30, Ant Tunnel II at 41, Line 1 Area 2 at 50. Forgotten Hollow maps take over from Nov 18.",
+            "Malady and Dark Stone Golem are weak to holy, so Holy Arrow hits harder there. Fairies resist holy, so skip them.",
+            "Heal was cut in Classic: it restores 100% (it was 300%) and its range shrank on Oct 8. Use it to fight undead and keep your party alive, not as your only attack.",
+            "Party up whenever you can. KPQ opens at 21, and every party wants a healer.",
+            "Buy Orange Potions and Lemons for mana (about 1 MP per meso). Blue Potions cost more per point."
+          ],
           "weapon": "Wand or staff (+ shield)",
           "playstyle": "Support healer: Heal and Bless for parties, Holy Arrow for single-target damage, Invincible for solo survival.",
           "pros": [
