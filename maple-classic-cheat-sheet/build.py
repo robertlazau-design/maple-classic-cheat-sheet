@@ -10,9 +10,9 @@ OUT = os.path.join(ROOT, "public")
 SITE = "https://www.mapleclassicguide.com"
 NAME = "Maple Classic Guide"
 COFFEE = "https://buymeacoffee.com/goldenboypro"  # your Buy Me a Coffee link, e.g. "https://buymeacoffee.com/yourname". Empty = hidden.
-CHECKED = "Oct 20, 2026"
-CHECKED_ISO = "2026-10-20"
-DATA_NOTE = "Founder's Access data"
+CHECKED = "Oct 21, 2026"
+CHECKED_ISO = "2026-10-21"
+DATA_NOTE = "Grand Launch notes and Founder's Access data"
 WEB3FORMS_KEY = os.environ.get("WEB3FORMS_KEY", "").strip()  # set in Vercel > Settings > Environment Variables; empty = feedback opens an email instead
 
 def load(n):
@@ -785,7 +785,7 @@ def build_money():
                                  crumbs=[("/", "Guide"), (None, "Money making")], schema=faq_schema(Mo["faq"]), side_extra=side))
 
 EVENT_AT = {"The Journey Begins": "2026-10-21T18:00:00Z", "Housing": "2026-10-21T18:00:00Z", "Mark of the Beta": "2026-10-21T18:00:00Z",
-            "Halloween": "2026-10-28T15:00:00Z", "Forgotten Hollow": "2026-11-18T16:00:00Z", "Moon Bunny's Rice Cake": "2026-11-18T16:00:00Z",
+            "Halloween": "2026-10-28T00:00:00Z", "GM events": "2026-10-22T00:00:00Z", "Excavation Site and Stumpy": "2026-10-21T18:00:00Z", "Forgotten Hollow": "2026-11-18T16:00:00Z", "Moon Bunny's Rice Cake": "2026-11-18T16:00:00Z",
             "Guilds, Hollow PQ and Happyville": "2026-12-09T16:00:00Z"}
 
 def build_news():
@@ -909,7 +909,7 @@ def build_events():
     maybe = "".join(rw(x) for x in Hw["maybe"])
     body = f"""<h1>MapleStory Classic Events: Mark of the Beta, Halloween &amp; Daily Gifts</h1>
 <p class="lede">What's on in Classic World, how to finish each event fast, and what you get for it.</p>
-{guide_stamp("Event quests from the game files; Nexon's dates from MapleStory Fest. ")}
+{guide_stamp("Nexon's Grand Launch notes, plus quest steps from the game files. ")}
 <div class="toc"><a href="#now">On now</a><a href="#mark">Mark of the Beta</a><a href="#journey">The Journey Begins</a><a href="#halloween">Halloween</a><a href="#faq">FAQ</a></div>
 <h2 id="now">What's on</h2><div class="grid">{now}</div>
 <p class="muted" style="margin-top:10px">Forgotten Hollow, Moon Bunny, guilds and the rest of the roadmap are on the <a href="/news/#events">News page</a>.</p>
@@ -925,7 +925,7 @@ def build_events():
 <p class="muted" style="margin-top:8px">{e(J["note"])} Your boxes are saved on this device only.</p>
 <h2 id="halloween">Malady's Halloween 🎃</h2><div class="facts">{hfacts}</div>
 <ol class="stages" style="margin-top:16px">{hsteps}</ol>
-<h3 style="margin-top:20px">Possible goodies</h3><div class="rws">{maybe}</div><p class="muted">{e(Hw["maybeNote"])}</p>
+<h3 style="margin-top:20px">Rewards and goodies</h3><div class="rws">{maybe}</div><p class="muted">{e(Hw["maybeNote"])}</p>
 <h3 style="margin-top:18px">Tips</h3><ul>{"".join(f"<li>{e(x)}</li>" for x in Hw["tips"])}</ul>
 <p class="callout warn">{e(Hw["note"])}</p>
 {srcs(V["src"])}
@@ -1046,7 +1046,7 @@ def main():
             {"t": "Citizenship donation items", "u": "/citizenship/#points", "k": "Citizenship", "x": "donate weekly daily greeting community board"},
             {"t": "Events: Mark of the Beta, Halloween, daily gifts", "u": "/events/", "k": "page", "x": "event halloween mark beta journey begins gift"},
             {"t": "Mark of the Beta walkthrough", "u": "/events/#mark", "k": "Event", "x": "jay journal pages pig beach marr's forest ant tunnel hat lv 25"},
-            {"t": "Halloween event: Malady's candy hunt", "u": "/events/#halloween", "k": "Event", "x": "halloween candies malady trick or treat pumpkin oct 28"},
+            {"t": "Halloween event: Malady's candy hunt", "u": "/events/#halloween", "k": "Event", "x": "halloween candies malady trick or treat pumpkin basket orange slime oct 27 oct 28"},
             {"t": "The Journey Begins daily gifts", "u": "/events/#journey", "k": "Event", "x": "maple leaves maple administrator daily gift 14"},
             {"t": "Free Market: selling, prices and scams", "u": "/free-market/", "k": "page", "x": "free market fm shop store permit sell price scam trade"},
             {"t": "Store permits and opening a shop", "u": "/free-market/#shop", "k": "Market", "x": "store permit shop hired merchant"},
