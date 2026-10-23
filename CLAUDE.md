@@ -48,6 +48,8 @@ Robert's standing ask is "fun, clear, and easy to understand and read."
 - `guides.json`: bosses, kpq, news (launch, tips, events, deadlines, rules, patches, faq), quests, citizen, money, icons, emoji.
 - `launch.json`: citizenship and housing, events (Mark of the Beta, The Journey Begins, Halloween), market, endgame (Lv60+ maps and the hit checker), home deadlines, and extra item icons that merge into `G["icons"]`.
 - `jobs.json`, `leveling.json`, `secrets.json` (the Rules page is `SEC["mechanics"]`), `crafting.json`, `tiers.json`, `exp.json`, `images.json` (mob, NPC and map IDs), `updates.json` (the What's new changelog).
+- `directions.json`: map-by-map walks from the nearest town, checked with NiaMeowDB's Pathfinder (`?from=<id>&to=<id>`, 9-digit Classic map IDs). `maps` is keyed by the exact map name used in route text; `alias` maps other spellings; `bosses` maps a boss id to its map. `go_html()` renders one walk and `route_go()` finds map names inside leveling, secrets and farm text. No working route yet for Florina Beach.
+- `prices.json`: the /prices/ page. `prices` holds NiaMeowDB "usual price, last 24 hours" quotes (individual prices with credit are OK under their reuse terms; never copy their data files). `picks` are this week's money farms, `popular` the chips, `sites` the live-price links.
 
 **Pages**
 
@@ -168,6 +170,8 @@ Repo: `robertlazau-design/maple-classic-cheat-sheet`. The site lives in the `map
 - **Use subagents for deep research.** Have them write markdown files with [official], [multi], [single] and [anecdote] tags plus a URL for each fact, and flag contradictions explicitly. That workflow produced `notes/game-facts.md`.
 
 ## Recurring jobs
+
+- **Every week (Fri):** refresh `prices.json`: re-check each quoted price on NiaMeowDB Price Check, update `week`/`weekISO` and every note date, re-pick the four `picks` from what sells best, and fix any tip that quotes a number. Do not scrape MesoWatch or Henesys.gg: their terms forbid it. Permission emails went to MeowDB and MesoWatch on Oct 23; if either says yes, switch to their feed.
 
 - **After every patch or maintenance:**
   - Add the patch to `guides.json` → `news.patches` (oldest first; the page reverses it).

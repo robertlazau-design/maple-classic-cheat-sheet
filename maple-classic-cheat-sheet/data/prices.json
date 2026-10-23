@@ -1,0 +1,263 @@
+{
+ "week": "Oct 23, 2026",
+ "weekISO": "2026-10-23",
+ "source": "NiaMeowDB Price Check",
+ "sourceUrl": "https://meowdb.com/msclassic/price-check",
+ "note": "Drop rates aren't public, so these picks show where the money is this week, not a promise of mesos per hour.",
+ "sites": [
+  [
+   "NiaMeowDB",
+   "https://meowdb.com/msclassic/price-check",
+   "Price check with charts, from player shops and sales"
+  ],
+  [
+   "MesoWatch",
+   "https://meso.watch/",
+   "Real sales tracked across the whole market"
+  ],
+  [
+   "HubCW",
+   "https://hubcw.com/",
+   "Recent sales, listings and a Discord price bot"
+  ]
+ ],
+ "popular": [
+  "Iron Ore",
+  "Black Crystal Ore",
+  "Squishy Shoes",
+  "Emerald Earrings",
+  "Garnet Ore",
+  "Screw",
+  "Mithril Ore",
+  "Leather",
+  "Fairy Wing",
+  "Moon Rock"
+ ],
+ "prices": {
+  "Iron Ore": [
+   400,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Garnet Ore": [
+   220,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Diamond Ore": [
+   272,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Leather": [
+   149,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Mithril Ore": [
+   230,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Sapphire Ore": [
+   130,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Black Crystal Ore": [
+   2999,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Drake Skull": [
+   70,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Stiff Feather": [
+   80,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Screw": [
+   234,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Squishy Shoes": [
+   9999,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Emerald Earrings": [
+   20000,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Fairy Wing": [
+   96000,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Piece of Ice": [
+   39500,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Moon Rock": [
+   30000,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Amethyst Ore": [
+   199,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Aquamarine Ore": [
+   199,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Opal Ore": [
+   133,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Gold Ore": [
+   120,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Emerald Ore": [
+   120,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Silver Ore": [
+   100,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Bronze Ore": [
+   100,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Orihalcon Ore": [
+   100,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Topaz Ore": [
+   100,
+   "usual price on Oct 23 (NiaMeowDB), only a few sales"
+  ],
+  "Adamantium Ore": [
+   99,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Fragment of Magic": [
+   99,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Iron Hog's Metal Hoof": [
+   69,
+   "usual price on Oct 23 (NiaMeowDB), only a few sales"
+  ],
+  "Lorang Claw": [
+   67,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Cursed Doll": [
+   62,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Animal Fur Bundle": [
+   46,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Curse Eye Tail": [
+   45,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Blue Mushroom Cap": [
+   45,
+   "usual price on Oct 23 (NiaMeowDB), only a few sales"
+  ],
+  "Ligator Skin": [
+   35,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Stirge Wing": [
+   33,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Jr. Necki Skin": [
+   33,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Pig's Ribbon": [
+   32,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Firewood": [
+   29,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Tree Branch": [
+   25,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Green Mushroom Cap": [
+   25,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Orange Mushroom Cap": [
+   22,
+   "usual price on Oct 23 (NiaMeowDB)"
+  ],
+  "Squishy Liquid": [
+   19,
+   "usual price on Oct 23 (NiaMeowDB), only a few sales"
+  ]
+ },
+ "picks": [
+  {
+   "title": "Copper Drakes for Black Crystal Ore",
+   "mob": "Copper Drake",
+   "lv": 45,
+   "from": 48,
+   "map": "Dangerous Valley",
+   "drops": [
+    "Black Crystal Ore",
+    "Drake Skull"
+   ],
+   "why": "Black Crystal Ore is the priciest ore by far this week, around 3,000 mesos each. Copper Drakes are weak to ice, so I/L Wizards clear them fastest. Maladies in The Forest of Evil II drop it too if you're 55+."
+  },
+  {
+   "title": "Fire Boars for four kinds of loot",
+   "mob": "Fire Boar",
+   "lv": 32,
+   "from": 32,
+   "map": "The Burnt Land V",
+   "drops": [
+    "Iron Ore",
+    "Diamond Ore",
+    "Garnet Ore",
+    "Leather"
+   ],
+   "why": "Almost everything a Fire Boar drops sells, and Iron Ore (about 400) is the priciest common ore right now. Great for warriors and bowmen right after 2nd job."
+  },
+  {
+   "title": "Stirges for Iron Ore early",
+   "mob": "Stirge",
+   "lv": 20,
+   "from": 18,
+   "map": "Dangerous Steam",
+   "drops": [
+    "Iron Ore",
+    "Garnet Ore",
+    "Stiff Feather"
+   ],
+   "why": "The earliest way to farm Iron Ore. Stirges fly, so ranged and magic attacks have it easiest. Transfer Area in the Kerning subway has them too."
+  },
+  {
+   "title": "Bubblings for Mithril while you level",
+   "mob": "Bubbling",
+   "lv": 15,
+   "from": 15,
+   "map": "Line 1 <Area 1>",
+   "drops": [
+    "Mithril Ore",
+    "Sapphire Ore"
+   ],
+   "why": "You're already here for EXP from 15 to 20, so keep the Mithril. It sells to crafters for more than most ores this low."
+  }
+ ],
+ "tips": [
+  "Check what things actually sold for, not what people ask in megaphones. Asking prices run high.",
+  "Look at two sites before you sell anything rare. If they disagree, the lower number is closer to what you'll get.",
+  "Keep ores, leather and screws. Players pay far more than NPCs do.",
+  "Got a Fairy Wing, Piece of Ice or Moon Rock? Those are the priciest crafting materials on this page right now (about 96,000, 39,500 and 30,000 mesos). Sell them to players, never to an NPC.",
+  "Ores dropped hard this week (Garnet Ore is around 220 now, after about 890 over the last two weeks), so don't sit on a big stack waiting for a bounce.",
+  "Undercut by a little, not a lot. A few mesos under the cheapest shop is enough to sell fast."
+ ]
+}
