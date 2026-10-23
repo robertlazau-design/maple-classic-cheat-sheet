@@ -58,6 +58,37 @@
     set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
 
+  // ---- Tap to explain: dotted words (AP, KPQ, mesos...) and the Confirmed/Likely tags open a little bubble.
+  // Hover titles never show on phones, so every explanation also works with a tap or the keyboard.
+  var tipEl = null, tipFor = null, tipY = 0;
+  function hideTip() { if (tipEl) tipEl.classList.remove("on"); tipFor = null; }
+  function showTip(el) {
+    var text = el.getAttribute("data-tip") || el.getAttribute("title");
+    if (!text) return;
+    if (tipFor === el) { hideTip(); return; }
+    if (!tipEl) { tipEl = document.createElement("div"); tipEl.className = "tipbub"; tipEl.setAttribute("role", "status"); document.body.appendChild(tipEl); }
+    tipEl.style.left = "0px"; tipEl.style.top = "0px";
+    tipEl.innerHTML = "<b>" + esc(el.textContent.trim()) + "</b> " + esc(text);
+    tipEl.classList.add("on"); tipFor = el; tipY = window.scrollY;
+    var r = el.getBoundingClientRect(), w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+    var left = Math.max(10, Math.min(window.innerWidth - w - 10, r.left + r.width / 2 - w / 2));
+    var top = r.top - h - 8;
+    if (top < 64) top = r.bottom + 8;
+    tipEl.style.left = left + "px"; tipEl.style.top = top + "px";
+  }
+  var TIPS = "abbr[title], .chip[title], [data-tip]";
+  document.querySelectorAll("main abbr[title], main .chip[title]").forEach(function (el) { if (!el.closest("a, button")) el.tabIndex = 0; });
+  document.addEventListener("click", function (e) {
+    var el = e.target.closest(TIPS);
+    if (el && !el.closest("a, button, summary")) { showTip(el); return; }
+    if (tipFor && !e.target.closest(".tipbub")) hideTip();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") hideTip();
+    else if ((e.key === "Enter" || e.key === " ") && document.activeElement && document.activeElement.matches && document.activeElement.matches(TIPS)) { e.preventDefault(); showTip(document.activeElement); }
+  });
+  window.addEventListener("scroll", function () { if (tipFor && Math.abs(window.scrollY - tipY) > 40) hideTip(); }, { passive: true });
+
   // ---- Secrets filters
   var fb = document.querySelector("[data-filters]");
   if (fb) {
@@ -69,36 +100,125 @@
     });
   }
 
-  // ---- Search
+  // ---- Search: quick answers from search.json (levels, items, slang), then full-text matches from Pagefind
   var box = document.getElementById("search"), q = document.getElementById("q"), hits = document.getElementById("hits");
-  var idx = null, sel = 0, last = [];
+  var idx = null, sel = 0, quickHits = [], pfHits = [], pfState = "idle", pf = null, pfTok = 0, pfTimer = 0, curText = "";
+  var STOP = {}, LVW = {};
+  ("a an the to of in on at for from and or is are am be do does did how what whats where wheres when which who why should can could would " +
+   "i im me my you your it its get got go find vs versus with about there this that want need please much many some any").split(" ").forEach(function (w) { STOP[w] = 1; });
+  "lv lvl level levels leveling train training grind grinding spot spots map maps exp xp".split(" ").forEach(function (w) { LVW[w] = 1; });
+  // Words players type -> words the guide uses
+  var SYN = { archer: ["bowman", "hunter", "crossbowman"], archers: ["bowman"], bow: ["bowman", "hunter"], mage: ["magician", "wizard", "cleric"], mages: ["magician"],
+    wizard: ["magician"], sin: ["assassin"], dit: ["bandit"], xbow: ["crossbowman", "crossbow"], priest: ["cleric"], fp: ["f/p", "fire/poison"], il: ["i/l", "ice/lightning"],
+    "1st": ["first"], first: ["1st"], "2nd": ["second"], second: ["2nd"], "3rd": ["third"], third: ["3rd"], "4th": ["fourth"],
+    money: ["mesos", "meso"], meso: ["mesos"], cash: ["nx"], nx: ["cash shop"], train: ["grind", "leveling"], grind: ["train", "leveling"], leveling: ["grind", "train"], xp: ["exp"],
+    boat: ["maple island"], pq: ["party quest"], jq: ["jump quest"], hpq: ["moon bunny"], home: ["housing", "house"], house: ["housing"], shop: ["store", "free market"],
+    fm: ["free market"], jobup: ["advancement"], advance: ["advancement"], founders: ["founder"], noob: ["beginner", "new player"], newbie: ["beginner"] };
+  var TRY = ["lvl 35", "Halloween", "Iron Ore", "best class", "KPQ", "2nd job"];
+  function norm(s) { return " " + String(s || "").toLowerCase().replace(/['’]/g, "").replace(/[^a-z0-9%/+]+/g, " ").trim() + " "; }
+  // Words match at the start of a word ("mush" finds Mushmom); 1-2 letter words must match a whole word ("sp" isn't "Spearman")
+  function has(hay, w) {
+    var alts = [w].concat(SYN[w] || []);
+    for (var i = 0; i < alts.length; i++) {
+      var a = alts[i];
+      if (a.length <= 2 ? new RegExp("[ /]" + a + "[ /]").test(hay) : hay.indexOf(" " + a) >= 0) return a;
+    }
+    return null;
+  }
+  function score(it, words, lvl, any, lvTalk) {
+    var t = it._t || (it._t = norm(it.t)), hay = it._h || (it._h = norm(it.t + " " + (it.k || "") + " " + (it.x || "") + " " + (it.d || ""))), s = 0, got = 0;
+    for (var i = 0; i < words.length; i++) {
+      var m = has(hay, words[i]);
+      if (!m) { if (any) continue; return 0; }
+      if (any && words[i].length <= 2) continue;  // "hp wash": don't match on "hp" alone
+      got++; s += t.indexOf(" " + m) >= 0 ? 3 : 1; if (t.indexOf(" " + m + " ") >= 0) s += 1;
+    }
+    if (any && !got) return 0;
+    if (lvl != null) { if (it.lo == null || lvl < it.lo || lvl > it.hi) return 0; s += 5; }
+    if (lvTalk && it.u.indexOf("/leveling/") === 0) s += 3;  // "where to level" -> the leveling page first
+    return s + (it.k === "page" ? 0.5 : 0);
+  }
+  function parse(text) {
+    var raw = norm(text).trim().split(" ").filter(Boolean), lvl = null, words = [];
+    raw.forEach(function (w) {
+      var m = w.match(/^(?:lv|lvl|level)?(\d{1,3})$/);
+      if (m && +m[1] >= 1 && +m[1] <= 100 && lvl == null) lvl = +m[1]; else if (!STOP[w]) words.push(w);
+    });
+    if (lvl != null && !words.every(function (w) { return LVW[w]; })) { words.push(String(lvl)); lvl = null; }  // "cleric 35": a word, not a level search
+    else if (lvl != null) words = [];  // "where to train 35", "lvl 35"
+    if (!words.length && lvl == null) words = raw;
+    return { words: words, lvl: lvl };
+  }
+  function quick(text) {
+    if (!text.trim()) return idx.filter(function (i) { return i.k === "page"; });
+    var p = parse(text), lvTalk = p.lvl == null && p.words.length > 0 && p.words.every(function (w) { return LVW[w]; });
+    var run = function (any) {
+      return idx.map(function (i) { return [score(i, p.words, p.lvl, any, lvTalk), i]; }).filter(function (x) { return x[0] > 0; })
+        .sort(function (a, b) { return b[0] - a[0]; }).slice(0, 8).map(function (x) { return x[1]; });
+    };
+    var r = run(false);
+    return r.length || p.words.length < 2 ? r : run(true);  // nothing has every word: show what has the most
+  }
+  function loadPF() {
+    if (!pf) pf = import("/pagefind/pagefind.js").then(function (m) {
+      return Promise.resolve(m.options ? m.options({ excerptLength: 22 }) : null).then(function () { return m; });
+    }).catch(function () { return null; });
+    return pf;
+  }
+  function fullText(text, tok) {
+    loadPF().then(function (m) {
+      if (!m || tok !== pfTok) return null;
+      return m.search(text).then(function (res) { return tok === pfTok ? Promise.all(res.results.slice(0, 5).map(function (r) { return r.data(); })) : null; });
+    }).then(function (rows) {
+      if (tok !== pfTok) return;
+      var seen = {};
+      pfHits = (rows || []).map(function (d) {
+        var subs = d.sub_results || [], best = subs.slice().sort(function (a, b) { return ((b.locations || []).length) - ((a.locations || []).length); })[0] || d;
+        var page = (d.meta && d.meta.title) || d.url;
+        return { u: best.url || d.url, t: page, sub: best.title && best.title !== page ? best.title : "", ex: String(best.excerpt || d.excerpt || "").replace(/<(?!\/?mark>)[^>]*>/g, "") };
+      }).filter(function (h) { if (seen[h.u]) return false; seen[h.u] = 1; return true; });
+      pfState = "done"; draw();
+    }).catch(function () { if (tok === pfTok) { pfHits = []; pfState = "done"; draw(); } });
+  }
+  function draw() {
+    if (!hits) return;
+    if (!idx) { hits.innerHTML = '<li class="muted">Loading…</li>'; return; }
+    var html = quickHits.map(function (it) {
+      return '<li role="option"><a href="' + esc(it.u) + '"><span class="h-t"><b>' + esc(it.t) + "</b>" + (it.d ? "<small>" + esc(it.d) + "</small>" : "") +
+        '</span><span class="h-k">' + esc(it.k === "page" ? "Page" : it.k) + "</span></a></li>";
+    }).join("");
+    if (pfHits.length) {
+      html += '<li class="h-sec" aria-hidden="true">On the pages</li>' + pfHits.map(function (h) {
+        return '<li role="option" class="pf"><a href="' + esc(h.u) + '"><span class="h-t"><b>' + esc(h.t) + (h.sub ? ' <i>› ' + esc(h.sub) + "</i>" : "") + "</b><small>" + h.ex + "</small></span></a></li>";
+      }).join("");
+    } else if (curText.trim().length >= 3 && pfState === "busy") html += '<li class="muted h-sec">Searching every page…</li>';
+    if (!quickHits.length && !pfHits.length && pfState !== "busy") {
+      html = '<li class="muted empty"><span aria-hidden="true">🐌</span><div>Even the snail looked everywhere. Try one of these:<p class="h-try">' +
+        TRY.map(function (t) { return '<button type="button" data-try="' + esc(t) + '">' + esc(t) + "</button>"; }).join("") + "</p></div></li>";
+    }
+    hits.innerHTML = html;
+    var li = hits.querySelectorAll("[role=option]");
+    sel = Math.min(sel, Math.max(0, li.length - 1));
+    li.forEach(function (x, i) { x.setAttribute("aria-selected", String(i === sel)); });
+  }
+  function renderHits(text) {
+    curText = text; sel = 0; pfTok++; clearTimeout(pfTimer);
+    quickHits = idx ? quick(text) : []; pfHits = [];
+    var tok = pfTok, t = text.trim();
+    pfState = t.length >= 3 ? "busy" : "idle";
+    if (pfState === "busy") pfTimer = setTimeout(function () { fullText(t, tok); }, 160);
+    draw();
+  }
   function openSearch() {
     if (!box) return;
     box.hidden = false; document.body.classList.add("noscroll"); q.value = ""; renderHits(""); q.focus();
     if (!idx) fetch("/search.json").then(function (r) { return r.json(); }).then(function (d) { idx = d; renderHits(q.value); }).catch(function () {});
+    loadPF();
   }
   function closeSearch() { if (box) { box.hidden = true; document.body.classList.remove("noscroll"); } }
-  function score(it, words, lvl) {
-    var hay = (it.t + " " + (it.k || "") + " " + (it.x || "")).toLowerCase(), s = 0;
-    for (var i = 0; i < words.length; i++) { var w = words[i]; if (!w) continue; var p = hay.indexOf(w); if (p < 0) return 0; s += p === 0 ? 3 : 1; if (it.t.toLowerCase().indexOf(w) >= 0) s += 2; }
-    if (lvl != null) { if (it.lo == null) return 0; if (lvl < it.lo || lvl > it.hi) return 0; s += 5; }
-    return s;
-  }
-  function renderHits(text) {
-    if (!hits) return;
-    if (!idx) { hits.innerHTML = '<li class="muted">Loading…</li>'; return; }
-    var t = text.trim().toLowerCase(), lvl = null;
-    var m = t.match(/(?:lv|level|lvl)?\s*(\d{1,3})$/);
-    if (m && Number(m[1]) <= 100 && /^(lv|level|lvl)?\s*\d{1,3}$/.test(t)) { lvl = Number(m[1]); t = ""; }
-    var words = t.split(/\s+/);
-    last = !t && lvl == null ? idx.filter(function (i) { return i.k === "page"; })
-      : idx.map(function (i) { return [score(i, words, lvl), i]; }).filter(function (x) { return x[0] > 0; }).sort(function (a, b) { return b[0] - a[0]; }).slice(0, 12).map(function (x) { return x[1]; });
-    sel = 0;
-    hits.innerHTML = last.length ? last.map(function (it, i) {
-      return '<li role="option" aria-selected="' + (i === 0) + '"><a href="' + esc(it.u) + '"><b>' + esc(it.t) + "</b><span>" + esc(it.k === "page" ? "Page" : it.k) + "</span></a></li>";
-    }).join("") : '<li class="muted empty"><span aria-hidden="true">🐌</span>Even the snail looked everywhere. Try a job, a monster or a level number.</li>';
-  }
   document.addEventListener("click", function (e) {
+    var tr = e.target.closest("[data-try]");
+    if (tr) { q.value = tr.dataset.try; renderHits(q.value); q.focus(); return; }
     if (e.target.closest("[data-search]")) { e.preventDefault(); openSearch(); }
     else if (e.target.closest("[data-close]") || e.target === box) closeSearch();
     else if (e.target.closest("#hits a")) closeSearch();
@@ -110,7 +230,10 @@
       e.preventDefault(); var li = hits.querySelectorAll("[role=option]"); if (!li.length) return;
       sel = (sel + (e.key === "ArrowDown" ? 1 : -1) + li.length) % li.length;
       li.forEach(function (x, i) { x.setAttribute("aria-selected", String(i === sel)); }); li[sel].scrollIntoView({ block: "nearest" });
-    } else if (box && !box.hidden && e.key === "Enter" && last[sel]) { location.href = last[sel].u; closeSearch(); }
+    } else if (box && !box.hidden && e.key === "Enter") {
+      var a = hits.querySelectorAll("[role=option] a")[sel];
+      if (a) { e.preventDefault(); location.href = a.getAttribute("href"); closeSearch(); }
+    }
   });
   if (q) q.addEventListener("input", function () { renderHits(q.value); });
 
@@ -500,6 +623,14 @@
 
   function ranges(text) { var m = String(text).match(/lv\s?(\d+)\s*(?:[-–]\s*(\d+))?/i); return m ? [Number(m[1]), Number(m[2] || m[1])] : null; }
   function pick(list, lv) { return (list || []).filter(function (t) { var r = ranges(t); return r && lv >= r[0] && lv <= r[1]; }); }
+  // AP, STR, DEX... become tap-to-explain words in the result boxes
+  function gl(s) {
+    var done = {};
+    return esc(s).replace(/\b(AP|SP|STR|DEX|INT|LUK|HP|MP)\b/g, function (k) {
+      if (done[k] || !D.gloss || !D.gloss[k]) return k;
+      done[k] = 1; return '<abbr title="' + esc(D.gloss[k]) + '">' + k + "</abbr>";
+    });
+  }
   function sprite(id) { return '<img src="' + D.api + "/mob/" + id + '/render/stand" alt="" referrerpolicy="no-referrer" onerror="this.remove()">'; }
 
   function drawChips() {
@@ -516,7 +647,9 @@
     var job = D.jobs[state.job];
     if (!job) { out.innerHTML = '<p class="muted">Pick your class and job, then slide to your level.</p>'; return; }
     var lv = state.lv, c = D.classes.filter(function (x) { return x.id === job.cls; })[0];
-    var spots = D.route.filter(function (r) { return lv >= r.from && lv <= r.to; });
+    var now = Date.now(), here = D.route.filter(function (r) { return lv >= r.from && lv <= r.to; });
+    var spots = here.filter(function (r) { return !r.opens || now >= Date.parse(r.opens); });
+    var soon = here.filter(function (r) { return r.opens && now < Date.parse(r.opens); });
     var next = lv < 10 ? "Hit level 10, then talk to " + c.npc + " in " + c.town + " for 1st job. No stat requirement."
       : lv < 30 ? "2nd job at level 30. " + job.adv.test
       : "You're set until 3rd job drops (planned for 2027). Cap is level 100.";
@@ -525,10 +658,14 @@
     var sp = lv < 10 ? ["Beginner: 3 points each into Three Snails, Recovery and Nimble Feet."] : pick(lv < 30 ? job.sp1 : job.sp2, lv);
     var h = "";
     h += '<div class="box grind"><h3>🗺️ Grind here rn</h3>' + (spots.length ? spots.map(function (r) {
-      return '<div class="spot"><div class="spr">' + r.sprites.map(sprite).join("") + '</div><div><b>' + esc(r.map) + '</b><span>' + esc(r.monsters) + " · lv " + esc(r.monsterLevel) + '</span><a href="/leveling/#lv-' + r.from + "-" + r.to + '">Details →</a></div></div>';
-    }).join("") : "<p>No set spot at this level yet. Grind wherever you kill fastest.</p>") + "</div>";
-    h += '<div class="box"><h3>💪 Your AP rn</h3><p>' + (ap.length ? ap.map(esc).join("<br>") : esc(job.apSummary)) + "</p></div>";
-    h += '<div class="box"><h3>✨ Your SP rn</h3><p>' + (sp.length ? sp.map(esc).join("<br>") : "Follow the skill order on your build page.") + "</p></div>";
+      var mm = r.mm ? '<img class="spot-mm" src="' + D.api + "/map/" + r.mm + '/minimap" alt="Minimap: ' + esc(r.map) + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">' : "";
+      return '<div class="spot"><div class="spr">' + r.sprites.map(sprite).join("") + '</div><div><b>' + esc(r.map) + '</b><span>' + (r.region ? esc(r.region) + " · " : "") + esc(r.monsters) +
+        '</span><span>Monsters are lv ' + esc(String(r.monsterLevel).replace("-", "–")) + "</span>" + mm + '<a href="/leveling/#lv-' + r.from + "-" + r.to + '">How to get there →</a></div></div>';
+    }).join("") : "<p>No set spot at this level yet. Grind wherever you kill fastest.</p>") + soon.map(function (r) {
+      return '<p class="soon">🔒 Opens ' + new Date(r.opens).toLocaleDateString("en-US", { month: "short", day: "numeric" }) + ': <a href="/leveling/#lv-' + r.from + "-" + r.to + '">' + esc(r.map.split(" (")[0]) + "</a> (lv " + r.from + "–" + r.to + ")</p>";
+    }).join("") + "</div>";
+    h += '<div class="box"><h3>💪 Your ' + gl("AP") + ' rn</h3><p>' + (ap.length ? ap.map(gl).join("<br>") : gl(job.apSummary)) + "</p></div>";
+    h += '<div class="box"><h3>✨ Your ' + gl("SP") + ' rn</h3><p>' + (sp.length ? sp.map(gl).join("<br>") : "Follow the skill order on your build page.") + "</p></div>";
     h += '<div class="box"><h3>⏭️ Next up</h3><p>' + esc(next) + "</p></div>";
     h += '<a class="btn btn-primary full" href="/jobs/' + state.job + '/">Full ' + esc(job.name) + " build →</a>";
     h += '<button type="button" class="btn btn-ghost full share-run">🔗 Share my run</button>';

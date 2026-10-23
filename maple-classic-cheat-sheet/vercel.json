@@ -1,6 +1,6 @@
 {
   "framework": null,
-  "buildCommand": "python3 build.py",
+  "buildCommand": "python3 build.py && (npx -y pagefind@1.3.0 --site public || echo Pagefind skipped, quick search still works)",
   "outputDirectory": "public",
   "trailingSlash": true
 }

@@ -67,7 +67,7 @@ Robert's standing ask is "fun, clear, and easy to understand and read."
 - `NAV` (footer links) and `MORE_EMOJI`
 - one group in `NAV_GROUPS`, which drives the five top-bar dropdowns (News, Leveling, Classes, Mesos, More) and the grouped mobile "More" sheet. Robert asked for fewer top-bar options, so don't add new top-level items; put pages in a group.
 - the home `cards`
-- the search index (`idx`)
+- the search index (`idx`), with a `d` context line
 - the sitemap `paths`
 - an `updates.json` entry
 
@@ -76,6 +76,13 @@ Bump `CHECKED` and `CHECKED_ISO` at the top of build.py when data is re-verified
 **Components to reuse**
 
 `.card`, `.grid`, `.grid.two`, `.facts` (four stat tiles), `ol.musts` (numbered tips), `.callout` / `.callout.warn`, `ol.stages > li.stage` (numbered steps with sprites), `.kp` (icon + text row), `.rws > .rw` (icon chips via `rw("Name|label")`), `.tbl.compact` (stays a table on mobile; use `.hide-sm` / `.show-sm`), `.evt` cards with `data-at` / `data-end` countdowns, `.toc`, `details.faq`, `srcs([...])`, `faq_html` / `faq_schema`.
+
+## Search and tap-to-explain
+
+- **Two layers of search.** `search.json` (built in `main()`) gives instant answers: pages, builds, grind spots by level, secrets, quests, bosses, events, rules, 124 items (from `build_prices` via `PC_ITEMS`) and "Not in Classic yet" entries. Every entry has `t` title, `u` URL, `k` kind, `d` one-line context shown under the result, `x` extra keywords, and `lo`/`hi` for level ranges. Under that, **Pagefind** searches every word on every page and shows excerpts.
+- **Pagefind runs in the Vercel build** (`vercel.json`: `python3 build.py && npx -y pagefind@1.3.0 --site public`). It indexes only `<main data-pagefind-body>`; `_pf_skip()` keeps breadcrumbs, the stamp, the tip jar and feedback out. If Pagefind fails, the build still ships and search falls back to `search.json`. Locally there's no `/pagefind/`, which is expected.
+- **Slang and filler** live in `src/site.js`: `STOP` (words ignored), `LVW` (level talk, so "where to train 35" becomes a level search) and `SYN` (archer → bowman, fp → f/p, 2nd → second...). Add a word there when players search for something and get the snail.
+- **Tap-to-explain:** `GLOSSARY` terms are wrapped in `<abbr>` once per section by `gloss()`; `conf()` tags carry what each level means. `site.js` turns any `abbr[title]`, `.chip[title]` or `[data-tip]` into a tap bubble (`.tipbub`), because hover titles never show on phones.
 
 ## Editing data: the #1 gotcha
 
