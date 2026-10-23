@@ -303,7 +303,7 @@
     "when": "Oct 27, 5 PM PDT to Nov 18",
     "lv": "Lv 10+",
     "npc": 9201028,
-    "blurb": "A witch has lost her candy. Bring her 100 Halloween Candies for the Pumpkin Basket sword. Orange Slimes invade four towns, too.",
+    "blurb": "A witch has lost her candy. Bring her 100 Halloween Candies for the Pumpkin Basket sword. Orange Slimes invade Henesys, Ellinia, Kerning City and Perion, too.",
     "conf": "medium"
    }
   ],
@@ -377,10 +377,10 @@
   },
   "halloween": {
    "steps": [
-    {"title": "Find Malady", "do": "She's on the left side of Kerning City from Oct 27 at 5 PM PDT (Oct 28, 00:00 UTC). Accept [Event] Halloween Candies.", "npc": 9201028},
+    {"title": "Find Malady", "do": "She's in Henesys and on the left side of Kerning City from Oct 27 at 5 PM PDT (Oct 28, 00:00 UTC). Talk to her in either town and accept [Event] Halloween Candies.", "npc": 9201028},
     {
      "title": "Collect 100 Halloween Candies",
-     "do": "Any level 10+ monster can drop them. The quest names Ribbon Pigs, Dark Stumps, Octopuses and Green Mushrooms. Accept the quest first; the candy may only drop while it's active.",
+     "do": "Any level 10+ monster can drop them, and so can the Orange Slimes in Henesys, Ellinia, Kerning City and Perion. The quest names Ribbon Pigs, Dark Stumps, Octopuses and Green Mushrooms. Accept the quest first; the candy may only drop while it's active.",
      "mobs": [1210101, 1110101, 1120100, 1110100]
     },
     {
@@ -390,7 +390,7 @@
     },
     {
      "title": "Back to Malady",
-     "do": "Turn in [Event] Trick or Treat! Nexon's notes name the Pumpkin Basket sword as the reward for 100 candies. Got extra candy? Trade it in at the Maple Administrator in Henesys.",
+     "do": "Turn in [Event] Trick or Treat! Finishing the kids' delivery gets you the Pumpkin Basket, a fast one-handed sword with +27 attack. Got extra candy? Trade it in at the Maple Administrator in Henesys.",
      "npc": null
     }
    ],
@@ -398,13 +398,13 @@
    "maybe": ["Halloween Candies", "Red Malady's Candy", "Blue Malady's Candy", "Green Malady's Candy", "Pumpkin Basket", "Pumpkin Hat", "Witch Hat"],
    "maybeNote": "Confirmed by Nexon's notes: the Pumpkin Basket (a one-handed sword with +27 attack, +3 speed, attack speed 3 and 7 upgrade slots) and Malady's Candy from the Slime Attack's Orange Slimes (Red heals 600 HP, Blue 450 MP, Green 300 of each). Not confirmed: the Halloween Broomstick Chair. The pumpkin and witch outfits are probably for a Cash Shop crate.",
    "tips": [
-    "During the Slime Attack, Orange Slimes show up in four towns and drop Halloween Candies too.",
-    "Candy stacks to 100, can't be traded and is time-limited. Don't plan to sell it.",
+    "During the Slime Attack, Orange Slimes show up in Henesys, Ellinia, Kerning City and Perion. They drop Halloween Candies plus Red, Blue and Green Malady's Candy.",
+    "Halloween Candies stack to 100, can't be traded and vanish on Nov 18 at 11:59 PM UTC. Don't plan to sell them. Malady's Candy is the opposite: tradable and permanent, so keep or sell the extras.",
     "Farm the busiest level 10+ map you can clear fast. Kill speed beats monster level here.",
     "The \"dark tunnel\" child might be in the Kerning subway. That's our guess until someone confirms it.",
     "It doesn't look repeatable, so it's probably one run per character."
    ],
-   "note": "Nexon's notes confirm the dates, the Pumpkin Basket and the Slime Attack. The candy drop rate, the kids' maps and the exchange list come once it's live. We'll update this on Oct 28."
+   "note": "Nexon's notes confirm the dates, Malady in Henesys and Kerning City, the Pumpkin Basket and the four Slime Attack towns. The candy drop rate, the kids' maps and the exchange list come once it's live. We'll update this on Oct 28."
   },
   "faq": [
    [
@@ -414,12 +414,13 @@
    ["What does Mark of the Beta give?", "A hat with +1 to all stats, 15 weapon defense and 7 slots. It's untradeable."],
    [
     "When is the MapleStory Classic Halloween event?",
-    "From Oct 27 at 5 PM PDT (Oct 28, 00:00 UTC) to Nov 18. Talk to Malady on the left side of Kerning City."
+    "From Oct 27 at 5 PM PDT (Oct 28, 00:00 UTC) to Nov 18. Talk to Malady in Henesys or on the left side of Kerning City."
    ],
-   ["Where do Halloween Candies drop?", "From any level 10+ monster while you have the quest. Accept it from Malady first."],
+   ["Where do Halloween Candies drop?", "From any level 10+ monster while you have the quest, and from the Orange Slimes in Henesys, Ellinia, Kerning City and Perion. Accept the quest from Malady first."],
    ["What is The Journey Begins?", "A daily launch gift from Oct 21 to Nov 18. Bring 30 Maple Leaves to the Maple Administrator once a day (per account) for 14 gifts, including a Snail pet."]
   ],
   "src": [
+   "https://www.nexon.com/maplestory/news/general/46506/grand-launch-release-notes",
    "https://meowdb.com/msclassic/quest-tracker/600004",
    "https://meowdb.com/msclassic/npcs/205",
    "https://henesys.gg/quests/event-the-marks-we-leave-behind",
