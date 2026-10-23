@@ -413,6 +413,70 @@
     drawBands();
   }
 
+  // ---- Leveling (/leveling/): "I'm level __" picks the best spot, highlights it and scrolls there
+  var pickIn = document.getElementById("pick-lv");
+  if (pickIn) {
+    var pickOut = document.getElementById("pick-out");
+    var routeLis = [].slice.call(document.querySelectorAll(".route li[data-from]"));
+    var calm = matchMedia("(prefers-reduced-motion:reduce)").matches;
+    var pickSpot = function () {
+      var lv = Math.round(Number(pickIn.value));
+      if (!lv || lv < 1 || lv > 100) { pickOut.textContent = "Type a level from 1 to 100."; return; }
+      var inBand = function (li) { return +li.dataset.from <= lv && lv <= +li.dataset.to; };
+      var fits = routeLis.filter(function (li) { return inBand(li) && !li.classList.contains("future"); });
+      if (!fits.length) fits = routeLis.filter(inBand);
+      fits.sort(function (a, b) { return (("all" in b.dataset) - ("all" in a.dataset)) || (b.dataset.from - a.dataset.from) || (a.dataset.to - b.dataset.to); });
+      routeLis.forEach(function (x) { x.classList.remove("hit"); });
+      var li = fits[0];
+      if (!li) { pickOut.textContent = "No set spot at that level. Grind wherever you kill fastest."; return; }
+      li.classList.add("hit");
+      var name = (li.querySelector(".map").firstChild.textContent || "").trim();
+      pickOut.innerHTML = "Level " + lv + "? Head to <b>" + esc(name) + "</b>." + (fits.length > 1 ? " " + (fits.length - 1) + " more option" + (fits.length > 2 ? "s" : "") + " right below it." : "");
+      li.scrollIntoView({ behavior: calm ? "auto" : "smooth", block: "start" });
+      store.set("mccs-pick-lv", lv);
+      if (history.replaceState) history.replaceState(null, "", "#" + li.id);
+    };
+    var savedLv = store.get("mccs-pick-lv");
+    if (savedLv) pickIn.value = savedLv;
+    document.getElementById("pick-go").addEventListener("click", pickSpot);
+    pickIn.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); pickSpot(); } });
+  }
+
+  // ---- Price check (/prices/): search an item, then one tap opens a price site and copies the item name
+  var pcData = document.getElementById("pc-data");
+  if (pcData) {
+    var PC = JSON.parse(pcData.textContent);
+    var pcQ = document.getElementById("pc-q"), pcOut = document.getElementById("pc-out");
+    var norm = function (t) { return String(t || "").toLowerCase().replace(/[^a-z0-9%]+/g, " ").trim(); };
+    var pcCard = function (it) {
+      var ic = it.ic ? '<img class="pc-ic" src="' + PC.api + "/item/" + it.ic + '/icon" alt="" referrerpolicy="no-referrer" onerror="this.remove()">' : '<span class="pc-ic emo" aria-hidden="true">📦</span>';
+      var price = it.p ? '<p class="pc-p"><b>~' + Number(it.p[0]).toLocaleString("en-US") + " mesos</b> <span>" + esc(it.p[1]) + "</span></p>"
+        : '<p class="pc-p muted">No price on this page yet. Check it live:</p>';
+      var meta = (it.from && it.from.length ? "<span>Dropped by " + esc(it.from.join(", ")) + "</span>" : "") + (it.use && it.use.length ? "<span>Crafters use it for " + esc(it.use.join(", ")) + "</span>" : "");
+      var btns = PC.sites.map(function (s) { return '<a class="btn btn-ghost sm" href="' + s[1] + '" target="_blank" rel="noopener" data-copy="' + esc(it.n) + '">' + esc(s[0]) + " ↗</a>"; }).join("");
+      return '<div class="pc-card">' + ic + '<div class="pc-b"><h3>' + esc(it.n) + "</h3>" + price + (meta ? '<p class="pc-m">' + meta + "</p>" : "") + '<div class="pc-btns">' + btns + "</div></div></div>";
+    };
+    var pcShow = function (text) {
+      var q = norm(text);
+      if (q.length < 2) { pcOut.innerHTML = ""; return; }
+      var hits = PC.items.filter(function (it) { return norm(it.n).indexOf(q) > -1; })
+        .sort(function (a, b) { return (norm(b.n).indexOf(q) === 0) - (norm(a.n).indexOf(q) === 0) || (!!b.p - !!a.p) || a.n.length - b.n.length; }).slice(0, 6);
+      pcOut.innerHTML = hits.length ? hits.map(pcCard).join("") : pcCard({ n: String(text).trim(), ic: null, from: [], use: [], p: null });
+    };
+    pcQ.addEventListener("input", function () { pcShow(pcQ.value); });
+    document.querySelector(".pc-chips").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-item]"); if (!b) return;
+      pcQ.value = b.dataset.item; pcShow(pcQ.value); toast("Nice pick. Tap a site to see its live price.");
+    });
+    pcOut.addEventListener("click", function (e) {
+      var a = e.target.closest("[data-copy]"); if (!a) return;
+      var n = a.dataset.copy;
+      if (navigator.clipboard) navigator.clipboard.writeText(n).then(function () { toast('Copied "' + n + '". Paste it into their search.'); }, function () {});
+    });
+    var asked = new URLSearchParams(location.search).get("item");
+    if (asked) { pcQ.value = asked; pcShow(asked); }
+  }
+
   // ---- Your run (home page)
   var dataEl = document.getElementById("finder-data");
   if (!dataEl) return;
