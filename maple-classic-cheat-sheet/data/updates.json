@@ -1,6 +1,17 @@
 {
  "entries": [
   {
+   "date": "2026-10-23",
+   "title": "Price check, money farms and walking directions",
+   "items": [
+    "New Price check page: search any item, see this week's price for 41 of them, then jump to NiaMeowDB, MesoWatch or HubCW for the live number. One tap copies the item name so you can paste it in.",
+    "This week's money farms: the four mobs worth hunting right now, what they drop and what it sells for.",
+    "Leveling: type your level and we'll show you where to go. Every training spot now has map-by-map directions from the nearest town, with a minimap link.",
+    "Bosses and hidden maps: how to walk to each one from town.",
+    "Rewrote the leveling tips so they read like a friend telling you where to go, not a spreadsheet."
+   ]
+  },
+  {
    "date": "2026-10-22",
    "title": "Magicians, a 1-30 route and faster job advancement",
    "items": [
