@@ -706,7 +706,7 @@ def faq_schema(rows):
         {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in rows]}
 
 def guide_stamp(extra=""):
-    return f'<p class="stamp"><b>✓ Checked {G["checked"]}</b><span>{extra}Tags show how sure we are: {conf("high")} {conf("medium")} {conf("low")}</span></p>'
+    return f'<p class="stamp" data-pagefind-ignore><b>✓ Checked {G["checked"]}</b><span>{extra}Tags show how sure we are: {conf("high")} {conf("medium")} {conf("low")}</span></p>'
 
 def build_bosses():
     B = G["bosses"]

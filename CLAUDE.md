@@ -153,6 +153,26 @@ Repo: `robertlazau-design/maple-classic-cheat-sheet`. The site lives in the `map
 5. **Verify.**
    - Run `git -C /tmp/mcc fetch` and diff `origin/<branch>:path` against the local file. They must be identical.
    - Rebuild from `git archive origin/<branch>` and `diff -r` the `public/` folders.
+**Many files in one commit (use this for anything over one file).** The upload page can commit files in several folders at once:
+
+1. Open `https://github.com/robertlazau-design/maple-classic-cheat-sheet/upload/<branch>` (repo root).
+2. Build each file in the page: fetch its base from `raw.githubusercontent.com/robertlazau-design/maple-classic-cheat-sheet/<sha>/<path>`, apply the diff hunks (same idea as `mk.py`, keyed by repo path), and check the length and the sha256 against your local file before going on.
+3. Hand GitHub the files with their folders by faking a folder drop:
+
+   ```js
+   // list = [["maple-classic-cheat-sheet/src/site.js", File], ["CLAUDE.md", File], ...]
+   const tree = {};
+   for (const [path, f] of list) { const parts = path.split('/'); let n = tree; for (const p of parts.slice(0, -1)) n = n[p] = n[p] || {}; n[parts.at(-1)] = { isFile: true, isDirectory: false, name: f.name, fullPath: '/' + path, file: ok => ok(f) }; }
+   const dir = (name, full, n) => ({ isFile: false, isDirectory: true, name, fullPath: full, createReader: () => { let done = false; return { readEntries: ok => ok(done ? [] : (done = true, Object.entries(n).map(([k, v]) => v.isFile ? v : dir(k, full + '/' + k, v)))) }; } });
+   const dt = new DataTransfer();
+   Object.defineProperty(dt, 'items', { value: Object.entries(tree).map(([k, v]) => ({ kind: 'file', webkitGetAsEntry: () => v.isFile ? v : dir(k, '/' + k, v) })) });
+   Object.defineProperty(dt, 'types', { value: ['Files'] });
+   await document.querySelector('file-attachment').attach(dt);  // manifest then lists /maple-classic-cheat-sheet/src/site.js etc.
+   ```
+
+4. New branch: tick `commit-choice=quick-pull`, set `target_branch` and `#commit-summary-input`, click "Propose changes". Existing branch: open `/upload/<branch>` and keep "Commit directly". One commit, one Vercel build.
+5. Check it: `fetch('https://api.github.com/repos/robertlazau-design/maple-classic-cheat-sheet/compare/main...<branch>')` should list every path as `modified`.
+
 **Vercel build limit.** Every commit to any branch triggers a Vercel build, and the free plan has a daily deployment cap (we hit it on Oct 20). Make all of a file's changes in one commit, skip fix-up commits, and keep a PR to as few commits as you can. The real Vercel project is `maple-classic-cheat-she…-kz6a`; the duplicate `maple-classic-cheat-sheet` project was disconnected from Git on Oct 20, so only one build runs per push.
 
 6. **Open a PR** into `main` from the branch's compare page. End the PR body with the Claude Code attribution lines.
