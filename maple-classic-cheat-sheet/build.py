@@ -19,7 +19,7 @@ def load(n):
     with open(os.path.join(ROOT, "data", n)) as f:
         return json.load(f)
 
-JOBS = load("jobs.json"); TIERS = load("tiers.json"); EXP = load("exp.json"); UPDATES = load("updates.json"); CRAFT = load("crafting.json"); LEV = load("leveling.json"); SEC = load("secrets.json"); IMG = load("images.json")
+JOBS = load("jobs.json"); TIERS = load("tiers.json"); EXP = load("exp.json"); UPDATES = load("updates.json"); CRAFT = load("crafting.json"); LEV = load("leveling.json"); SEC = load("secrets.json"); IMG = load("images.json"); DIR = load("directions.json"); PRICES = load("prices.json")
 API = "https://maplestory.io/api/GMS/83"
 
 e = lambda s: html.escape(str(s if s is not None else ""), quote=True)
@@ -122,9 +122,9 @@ LEAVES = '<div class="leaves" aria-hidden="true">' + "".join(
 HOUSE = '<svg class="house" viewBox="0 0 120 110" aria-hidden="true"><path fill="currentColor" d="M60 4C28 4 6 24 6 46c0 6 4 9 10 9h88c6 0 10-3 10-9C114 24 92 4 60 4z"/><rect x="26" y="55" width="68" height="48" rx="10" fill="currentColor"/><rect x="50" y="70" width="20" height="33" rx="10" fill="#fff" opacity=".5"/></svg>'
 LEAF_SM = '<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 2l2.6 5.4 4.2-2-1 5.6 5.2-1.6-2.6 4.6 4.6 1.6-6 3.6 1.4 3.2-6.2-1.2.4 6.8h-5.2l.4-6.8-6.2 1.2 1.4-3.2-6-3.6 4.6-1.6L5 9.4l5.2 1.6-1-5.6 4.2 2z"/></svg>'
 
-NAV = [("/", "Home"), ("/news/", "News"), ("/events/", "Events"), ("/leveling/", "Grind spots"), ("/jobs/", "Builds"), ("/tier-list/", "Tier list"), ("/bosses/", "Bosses"), ("/party-quest/", "KPQ"), ("/quests/", "Quests"), ("/citizenship/", "Citizenship"), ("/money-making/", "Mesos"), ("/free-market/", "Market"), ("/crafting/", "Crafting"), ("/tools/", "Tools"), ("/job-advancement/", "Job up"), ("/secrets/", "Secrets"), ("/classic-rules/", "Rules")]
+NAV = [("/", "Home"), ("/news/", "News"), ("/events/", "Events"), ("/leveling/", "Grind spots"), ("/jobs/", "Builds"), ("/tier-list/", "Tier list"), ("/bosses/", "Bosses"), ("/party-quest/", "KPQ"), ("/quests/", "Quests"), ("/citizenship/", "Citizenship"), ("/money-making/", "Mesos"), ("/prices/", "Price check"), ("/free-market/", "Market"), ("/crafting/", "Crafting"), ("/tools/", "Tools"), ("/job-advancement/", "Job up"), ("/secrets/", "Secrets"), ("/classic-rules/", "Rules")]
 
-MORE_EMOJI = {"/news/": "📰", "/events/": "🎃", "/citizenship/": "🏠", "/free-market/": "🏪", "/leveling/": "🗺️", "/jobs/": "⚔️", "/tier-list/": "🏆", "/bosses/": "👑", "/party-quest/": "🎟️", "/quests/": "📜", "/money-making/": "💰",
+MORE_EMOJI = {"/news/": "📰", "/events/": "🎃", "/citizenship/": "🏠", "/free-market/": "🏪", "/leveling/": "🗺️", "/jobs/": "⚔️", "/tier-list/": "🏆", "/bosses/": "👑", "/party-quest/": "🎟️", "/quests/": "📜", "/money-making/": "💰", "/prices/": "🔎",
               "/crafting/": "⚒️", "/tools/": "🧮", "/job-advancement/": "⬆️", "/secrets/": "🤫", "/classic-rules/": "📏"}
 
 # Top bar: five menus instead of 17 links. Every page in NAV should appear in exactly one group.
@@ -132,7 +132,7 @@ NAV_GROUPS = [
     ("News", [("/news/", "News", "Launch day, patch notes, deadlines"), ("/events/", "Events", "Mark of the Beta, Halloween, daily gifts"), ("/updates/", "What's new", "Changes to this guide")]),
     ("Leveling", [("/leveling/", "Grind spots", "Where to train at every level"), ("/quests/", "Quests", "Best quests by level"), ("/party-quest/", "KPQ", "Every answer and combo"), ("/bosses/", "Bosses", "Respawn timers and drops")]),
     ("Classes", [("/jobs/", "Builds", "AP and SP for all 10 jobs"), ("/tier-list/", "Tier list", "Best class for how you play"), ("/job-advancement/", "Job up", "1st and 2nd job tests")]),
-    ("Mesos", [("/money-making/", "Mesos", "What sells and what to keep"), ("/free-market/", "Market", "Shops, prices and scams"), ("/crafting/", "Crafting", "What each profession needs"), ("/citizenship/", "Citizenship", "Grades, perks and housing")]),
+    ("Mesos", [("/prices/", "Price check", "What it's worth + this week's farms"), ("/money-making/", "Mesos", "What sells and what to keep"), ("/free-market/", "Market", "Shops, prices and scams"), ("/crafting/", "Crafting", "What each profession needs"), ("/citizenship/", "Citizenship", "Grades, perks and housing")]),
     ("More", [("/tools/", "Tools", "EXP calculator, scroll simulator"), ("/secrets/", "Secrets", "Hidden maps and jump quests"), ("/classic-rules/", "Rules", "How Classic works")]),
 ]
 
@@ -230,6 +230,53 @@ def write(path, text):
 
 ALLJOBS = [(c, j) for c in JOBS["classes"] for j in c["jobs"]]
 
+PATHFINDER = "https://meowdb.com/msclassic/pathfinder"
+
+ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
+
+def _squash(stops):
+    """Ant Tunnel I, Ant Tunnel II, Ant Tunnel III -> Ant Tunnel I–III, so long walks stay readable."""
+    out = []
+    for x in stops:
+        base, _, num = x.rpartition(" ")
+        if out and num in ROMAN and out[-1][2] is not None and out[-1][0] == base and ROMAN.index(num) == out[-1][2] + 1:
+            out[-1][2] = ROMAN.index(num)
+        else:
+            out.append([base, num, ROMAN.index(num)] if (base and num in ROMAN) else [x, None, None])
+    return [b if n is None else (f"{b} {n}" if ROMAN.index(n) == hi else f"{b} {n}–{ROMAN[hi]}") for b, n, hi in out]
+
+def go_html(name, lead="", tip=True):
+    """Map-by-map walk from the nearest town (checked with NiaMeowDB's Pathfinder), plus a link to see each step on a minimap."""
+    d = DIR["maps"].get(name)
+    if not d: return ""
+    stops = [d["from"]] + d["via"] + [name]
+    hops = len(stops) - 1
+    show = [stops[0]] + _squash(stops[1:-1]) + [name]
+    arrow = '<span class="go-a" aria-hidden="true">›</span>'
+    path = arrow.join(f'<span class="go-s{" town" if i == 0 else ""}{" dest" if i == len(show) - 1 else ""}">{e(x)}</span>' for i, x in enumerate(show))
+    f, t = d["pf"].split("-")
+    walk = "It's right outside town." if hops == 1 else f"{hops} maps from town."
+    tip = f' <span class="go-tip">{e(d["tip"])}</span>' if tip and d.get("tip") else ""
+    return f'''<div class="go"><p class="go-h">🧭 {lead}Start in <b>{e(d["from"])}</b>. {walk}{tip}</p><p class="go-path">{path}</p><a class="go-link" href="{PATHFINDER}?from={f}&amp;to={t}" target="_blank" rel="noopener">See every step on a minimap (NiaMeowDB) ↗</a></div>'''
+
+def route_go(text, n=2):
+    """Directions for the first n maps named in a route entry that we have a walk for."""
+    names = {k: k for k in DIR["maps"]}; names.update(DIR["alias"])
+    hits = sorted((text.find(k), -len(k), k) for k in names if k in text)
+    taken, out = [], []
+    for pos, neg, k in hits:
+        span = (pos, pos - neg)
+        if any(a <= span[0] and span[1] <= b for a, b in taken): continue  # inside a longer name we already used
+        dest = names[k]
+        if dest in out: continue
+        taken.append(span); out.append(dest)
+    seen, html = set(), []
+    for i, k in enumerate(out[:n]):
+        t = DIR["maps"][k].get("tip")
+        html.append(go_html(k, "" if i == 0 else "Or: ", t not in seen))
+        seen.add(t)
+    return "".join(html)
+
 def route_li(r):
     cls = "future" if "Nov 18" in r["map"] or "from Nov" in r["map"] else ("wall" if r["from"] >= 80 else "")
     lv = f'{r["from"]}–{r["to"]}'
@@ -237,10 +284,11 @@ def route_li(r):
     sprites = "".join(mob_img(m) for m in mobs_in(r.get("monsters", "")))
     mm = next((v for k, v in IMG["routeMaps"].items() if k in r["map"]), None)
     pics = f'<div class="pics">{map_img(mm, tidy(r["map"]).split(" / ")[0].split(" (")[0]) if mm else ""}<div class="sprites">{sprites}</div></div>' if (sprites or mm) else ""
-    return f'''<li class="{cls}" id="lv-{r["from"]}-{r["to"]}"><span class="lv">Lv {lv}</span>{pics}
+    go = route_go(r["map"])
+    return f'''<li class="{cls}" id="lv-{r["from"]}-{r["to"]}" data-from="{r["from"]}" data-to="{r["to"]}"{" data-all" if "all" in (r.get("bestFor") or []) else ""}><span class="lv">Lv {lv}</span>{pics}
 <span class="map">{e(tidy(r["map"]))} {conf(r.get("confidence"))}</span>
 <span class="sub">{e(r.get("region",""))} · {e(r.get("monsters",""))} (lv {e(r.get("monsterLevel",""))}){" · best for " + e(best) if best and best != "all" else ""}</span>
-<span class="tip">{e(tidy(r.get("tip","")))}</span></li>'''
+<span class="tip">{e(tidy(r.get("tip","")))}</span>{go}</li>'''
 
 def build_home():
     route = sorted([r for r in LEV["route"]], key=lambda r: ("Nov 18" in r["map"], r["from"], r["to"]))
@@ -258,6 +306,7 @@ def build_home():
              ("/bosses/", "👑 Bosses", "Every boss, its respawn timer and what it drops. Mano to Jr. Balrog.", "mob/6130101"),
              ("/party-quest/", "🎟️ KPQ", "Kerning PQ answers and every combo, so your party never stalls.", "npc/9020000"),
              ("/quests/", "📜 Quests", "The quests worth doing at every level, and the ones to skip.", "npc/1012101"),
+             ("/prices/", "🔎 Price check", "What's it worth? One tap to live prices, plus this week's best money farms.", "npc/9030000"),
              ("/money-making/", "💰 Mesos", "What sells, what to keep and the quests that pay the most.", "npc/1052102"),
              ("/news/", "📰 News", "Launch day, events, patch notes and deadlines, in one place.", "npc/9010000"),
              ("/events/", "🎃 Events", "Mark of the Beta walkthrough, daily gifts and the Halloween candy hunt.", "npc/9201028"),
@@ -305,29 +354,27 @@ def build_home():
 def build_leveling():
     route = sorted(LEV["route"], key=lambda r: (r["from"], r["to"]))
     regions = "".join(f'<tr><td data-th="Region"><b>{e(r["region"])}</b></td><td data-th="Status">{e(r["status"])}</td><td data-th="Notes">{e(tidy(r["notes"]))}</td></tr>' for r in LEV["regionsAvailable"])
-    pqs = "".join(f'<div class="card"><h3>{e(p["name"])} {conf(p.get("confidence"))}</h3><p class="meta">Level {e(p["levels"])} · {e(p["where"])}</p><p>{e(tidy(p["notes"]))}</p></div>' for p in LEV["partyQuests"])
-    quests = "".join(f'<tr><td data-th="Quest"><b>{e(q["name"])}</b></td><td data-th="Level">{e(q["level"])}</td><td data-th="Where">{e(q["where"])}</td><td data-th="Why">{e(tidy(q["why"]))}</td></tr>' for q in LEV["quests"])
-    bosses = "".join(f'<tr><td data-th="Boss">{mob_img(b["name"], "sprite sm")}<b>{e(b["name"])}</b> {conf(b.get("confidence"))}</td><td data-th="Level">{e(b["level"])}</td><td data-th="Where">{e(b["where"])}</td><td data-th="Respawn">{e(b["respawn"])}</td><td data-th="Notes">{e(tidy(b.get("notes","")))}</td></tr>' for b in LEV["bosses"])
     notes = "".join(f'<details><summary>{e(n["class"])}</summary><p>{e(tidy(n["note"]))}</p>{srcs(n.get("source"))}</details>' for n in LEV["classNotes"])
     tips = "".join(f'<li>{e(tidy(t["tip"]))}</li>' for t in LEV["tips"])
-    body = f'''<h1>MapleStory Classic Leveling Guide 1–100</h1>
-<p class="lede">The fastest route through Maple Island and Victoria Island, level by level, with where each class should train.</p>
+    more = [("/party-quest/", "🎟️ KPQ from level 21", "Grab 3 friends. Half a level a run in your low 20s, and every answer's on the page.", "npc/9020000"),
+            ("/quests/", "📜 Quests worth doing", "Free EXP and gear by level, plus the ones to skip.", "npc/1012101"),
+            ("/bosses/", "👑 Bosses and timers", "Where each boss spawns, how to walk there and when it's back.", "mob/6130101")]
+    body = f'''<h1>Where to Train in MapleStory Classic, Level 1 to 100</h1>
+<p class="lede">Tell us your level. We'll show you the spot, how to walk there map by map, and what to hit.</p>
 {stamp()}
-<div class="toc"><a href="#quick">1–30 quick route</a><a href="#route">Route</a><a href="#class">By class</a><a href="#pq">Party quests</a><a href="#quests">Quests</a><a href="#bosses">Bosses</a><a href="#endgame">60+</a><a href="#tips">Tips</a><a href="#map">What's in the game</a></div>
-<p class="callout warn" style="margin-top:16px"><b>Heads up:</b> Classic launches with Maple Island and Victoria Island only. Monsters top out around level 75, and every level from 90 to 99 costs about twice the one before. Reaching 100 is a long-haul goal at launch.</p>
-<h2 id="quick">Quick route: level 1 to 30 ⚡</h2><ol class="musts">{"".join(f'<li><b>Lv {r["from"]}–{r["to"]}:</b> {e(tidy(r["map"]))} <a href="#lv-{r["from"]}-{r["to"]}">Details</a></li>' for r in route if r["to"] <= 30 and "Nov 18" not in r["map"])}</ol>
-<p class="muted" style="margin-top:8px">Most players are in this range right now. From 21, mix in <a href="/party-quest/">KPQ</a> runs; they're some of the best EXP before 30.</p>
-<h2 id="route">Leveling route</h2><div class="jump" role="group" aria-label="Jump to level">{"".join(f'<a href="#lv-{r["from"]}-{r["to"]}">{r["from"]}–{r["to"]}</a>' for r in route if not (r["from"] == 39 and r["to"] == 60))}</div><ol class="route">{"".join(route_li(r) for r in route)}</ol>
+<div class="lvpick" id="quick"><label for="pick-lv">I'm level</label><div class="pick-row"><input id="pick-lv" type="number" inputmode="numeric" min="1" max="100" placeholder="23" aria-describedby="pick-out"><button type="button" class="btn btn-primary" id="pick-go">Show me where</button></div><p class="pick-out" id="pick-out" aria-live="polite">Or tap a level range below.</p></div>
+<div class="jump" role="group" aria-label="Jump to level">{"".join(f'<a href="#lv-{r["from"]}-{r["to"]}">{r["from"]}–{r["to"]}</a>' for r in route if not (r["from"] == 39 and r["to"] == 60))}</div>
+<p class="callout warn" style="margin:4px 0 16px"><b>Heads up:</b> Classic is Maple Island and Victoria Island only for now. Monsters top out around level 75, so the last stretch to 100 is a long grind.</p>
+<h2 id="route">The route</h2><ol class="route">{"".join(route_li(r) for r in route)}</ol>
+<p class="go-credit">Routes checked with <a href="{PATHFINDER}" target="_blank" rel="noopener">NiaMeowDB's Pathfinder</a> on {e(DIR["checked"])}. Tap "See every step" to see where each portal sits.</p>
 <p class="callout" style="margin-top:12px">📈 Past 55? <a href="#endgame">Level 60 and beyond</a> has the best maps, a hit-chance checker and the EXP math.</p>
-<h2 id="class">Where each class should train</h2>{notes}
-<h2 id="pq">Party quests</h2><p class="callout">🎟️ Every KPQ answer and combination: <a href="/party-quest/">KPQ guide</a>.</p><div class="grid" style="margin-top:12px">{pqs}</div>
-<h2 id="quests">Quests worth your time</h2><p class="callout">📜 Full list with rewards and what to skip: <a href="/quests/">Quest guide</a>.</p><table class="tbl"><thead><tr><th>Quest</th><th>Level</th><th>Where</th><th>Why</th></tr></thead><tbody>{quests}</tbody></table>
-<h2 id="bosses">Bosses and respawn timers</h2><p class="callout">👑 Drops, tips and a respawn timer for each boss: <a href="/bosses/">Boss guide</a>.</p><table class="tbl"><thead><tr><th>Boss</th><th>Level</th><th>Where</th><th>Respawn</th><th>Notes</th></tr></thead><tbody>{bosses}</tbody></table>
+<h2 id="class">Training by class</h2>{notes}
+<h2 id="more">Also worth your time</h2><div class="grid tiles">{"".join(f'<a class="card" href="{h}"><div class="icon">{_img(f"{API}/{ic}/render/stand", "", "")}</div><h3>{t}</h3><p>{d}</p></a>' for h, t, d, ic in more)}</div>
 {endgame_html()}
-<h2 id="tips">Leveling tips</h2><ul>{tips}</ul>
-<h2 id="map">What's in the game right now</h2><table class="tbl"><thead><tr><th>Region</th><th>Status</th><th>Notes</th></tr></thead><tbody>{regions}</tbody></table>'''
-    write("/leveling/", page("/leveling/", "MapleStory Classic Leveling Guide 1–100: Best Training Spots",
-                             "Where to train in MapleStory Classic at every level: Maple Island to Victoria Island, Kerning PQ, bosses, quests and class-specific spots.", body,
+<h2 id="tips">Tips that save you time</h2><ul>{tips}</ul>
+<details id="map" style="margin-top:20px"><summary>What's in the game right now</summary><table class="tbl" style="margin-top:10px"><thead><tr><th>Region</th><th>Status</th><th>Notes</th></tr></thead><tbody>{regions}</tbody></table></details>'''
+    write("/leveling/", page("/leveling/", "MapleStory Classic Leveling Guide 1–100: Where to Train",
+                             "Where to train in MapleStory Classic at every level, with map-by-map directions from the nearest town: Maple Island to Victoria Island, by class.", body,
                              crumbs=[("/", "Guide"), (None, "Leveling")],
                              schema={"@context": "https://schema.org", "@type": "Article", "headline": "MapleStory Classic Leveling Guide 1–100", "dateModified": CHECKED_ISO}))
 
@@ -437,7 +484,7 @@ def build_secrets():
         future = "" if s.get("classicConfirmed", True) else ' <span class="tag">Not confirmed in Classic</span>'
         cards += f'''<article class="card" id="{slug(s["name"].split(" (")[0])}" data-type="{slug(s["type"])}">{secret_img(s["name"])}<h3>{e(s["name"])}</h3>
 <p class="meta">{e(s["type"].capitalize())} · {e(s["region"])} · Level {e(s["level"])} {conf(s.get("confidence"))}{future}</p>
-{spoil(f'<p><b>How to get there:</b> {e(tidy(s["howToGet"]))}</p><p><b>Why go:</b> {e(tidy(s["reward"]))}</p>', s)}</article>'''
+{spoil(f'<p><b>How to get there:</b> {e(tidy(s["howToGet"]))}</p>{route_go(s["name"], 1) or route_go(s["howToGet"], 1)}<p><b>Why go:</b> {e(tidy(s["reward"]))}</p>', s)}</article>'''
     body = f'''<h1>MapleStory Classic Hidden Maps &amp; Secrets</h1>
 <p class="lede">Hidden streets, jump quests, boss rooms and one-time rewards on Maple Island and Victoria Island, with directions.</p>
 {stamp()}
@@ -661,6 +708,7 @@ def build_bosses():
 <div class="boss-art"><span class="lvb">Lv {b["lv"]}</span>{boss_sprite(b, "big")}</div>
 <div class="boss-body"><h2>{e(b["name"])} {conf(b["conf"])}{' <span class="chip c-medium">Nov 18</span>' if b.get("future") else ""}</h2>
 <p class="meta">📍 {e(b["where"])} · 🔁 {e(b["respawn"])}</p>
+{go_html(DIR["bosses"].get(b["id"], ""), "How to get there: ")}
 {stats}<div class="els">{el}{traits}</div>
 <p><b>Try it at:</b> {e(b["tryAt"])}</p>
 <h3>Drops players have seen</h3><div class="rws">{drops}</div>{maybe}
@@ -788,6 +836,7 @@ def build_money():
     body = f"""<h1>MapleStory Classic Money Making Guide: How to Make Mesos</h1>
 <p class="lede">How to make mesos at every stage of your run: what to sell, what to keep, which quests pay best, and which bosses are worth farming.</p>
 {guide_stamp("Free Market data from launch week. ")}
+<p class="callout" style="margin-top:12px">🔎 <b>Selling something right now?</b> The <a href="/prices/">price check</a> takes you straight to its live price, and <a href="/prices/#farms">this week's money farms</a> tell you which mobs to hunt.</p>
 <div class="toc"><a href="#stages">By level</a><a href="#market">Prices</a><a href="#trends">Trends</a><a href="#vendor">Vendor list</a><a href="#quests">Meso quests</a><a href="#bosses">Bosses</a><a href="#crafting">Crafting</a><a href="#merch">Merching</a><a href="#faq">FAQ</a></div>
 <h2 id="stages">Making mesos by level</h2><div class="grid">{stages}</div>
 <h2 id="market">What sells on the Free Market</h2><table class="tbl compact"><thead><tr><th>Item</th><th>Mesos</th><th class="hide-sm">Note</th></tr></thead><tbody>{market}</tbody></table>
@@ -804,10 +853,61 @@ def build_money():
 <div class="callout warn"><b>Don't:</b><ul style="margin:6px 0 0">{"".join(f"<li>{e(x)}</li>" for x in Mo["dont"])}</ul></div>
 {srcs(Mo["src"])}
 <h2 id="faq">FAQ</h2>{faq_html(Mo["faq"])}"""
-    side = '<div class="card"><h3>Quick money</h3><p><a href="#market">Free Market prices</a></p><p><a href="#quests">Meso quests</a></p><p><a href="/bosses/">Boss timers</a></p><p><a href="/crafting/">What to keep</a></p></div>'
+    side = '<div class="card"><h3>Quick money</h3><p><a href="/prices/">Price check (this week)</a></p><p><a href="/prices/#farms">Money farms this week</a></p><p><a href="#market">Launch-week prices</a></p><p><a href="#quests">Meso quests</a></p><p><a href="/bosses/">Boss timers</a></p><p><a href="/crafting/">What to keep</a></p></div>'
     write("/money-making/", page("/money-making/", "MapleStory Classic Money Making Guide: Best Ways to Make Mesos",
                                  "How to make mesos in MapleStory Classic: Free Market prices, what to sell and keep, the best meso quests, boss meso drops, crafting profit and merching tips.", body,
                                  crumbs=[("/", "Guide"), (None, "Money making")], schema=faq_schema(Mo["faq"]), side_extra=side))
+
+def build_prices():
+    P = PRICES
+    for k, v in CRAFT["items"].items():
+        if v.get("icon"): G["icons"].setdefault(k, v["icon"])
+    icons = dict(G["icons"])
+    uses = {}
+    for pr in CRAFT["professions"]:
+        for k in pr.get("keep", []):
+            uses.setdefault(k[0], []).append(pr["name"])
+    quoted = {n: v for n, v in P["prices"].items()}
+    names = sorted(set(icons) | set(CRAFT["items"]) | set(quoted), key=str.lower)
+    items = [{"n": n, "ic": icons.get(n), "from": CRAFT["items"].get(n, {}).get("from", []), "use": uses.get(n, []), "p": quoted.get(n)} for n in names]
+    pdata = {"items": items, "sites": P["sites"], "week": P["week"], "api": API}
+    chips = "".join(f'<button type="button" class="pc-chip" data-item="{e(n)}">{gicon(n)}{e(n)}</button>' for n in P["popular"])
+    mobs = CRAFT["mobs"]
+    farms = ""
+    for i, f in enumerate(P["picks"], 1):
+        drops = "".join(f'<span class="rw">{gicon(d)}<span><b>{e(d)}</b><small>{"~" + format(quoted[d][0], ",") + " mesos" if d in quoted else "price: check"}</small></span></span>' for d in f["drops"])
+        spr = _img(mob_src(mobs[f["mob"]]), f["mob"], "sprite") if f["mob"] in mobs else ""
+        farms += f'''<li class="farm"><span class="farm-n">{i}</span><div class="farm-art">{spr}</div><div class="farm-body">
+<h3>{e(f["title"])}</h3><p class="meta">{e(f["mob"])}, lv {f["lv"]} · {e(f["map"])} · good from lv {f["from"]}</p>
+<div class="rws">{drops}</div><p>{e(f["why"])}</p>{go_html(f["map"])}</div></li>'''
+    sites = "".join(f'<li><a href="{u}" target="_blank" rel="noopener"><b>{e(n)}</b></a> <span class="muted">{e(d)}</span></li>' for n, u, d in P["sites"])
+    tips = "".join(f"<li>{e(t)}</li>" for t in P["tips"])
+    plist = "".join(f'<tr><td data-th="Item"><span class="rw">{gicon(n)}<b>{e(n)}</b></span></td><td data-th="Usual price"><b>{v[0]:,}</b>{" <small class=muted>few sales</small>" if "few sales" in v[1] else ""}</td></tr>' for n, v in sorted(quoted.items(), key=lambda kv: -kv[1][0]))
+    body = f'''<h1>MapleStory Classic Price Check: What's It Worth?</h1>
+<p class="lede">Type any item and jump straight to its live price. Then see which mobs are worth farming for mesos this week.</p>
+<div class="pcbox" id="pc">
+<label for="pc-q" class="pc-l">🔎 What are you selling?</label>
+<input id="pc-q" type="search" placeholder="Try Iron Ore or Squishy Shoes" autocomplete="off" spellcheck="false">
+<div class="pc-out" id="pc-out" aria-live="polite"></div>
+<p class="pc-pop">Popular this week</p>
+<div class="pc-chips" role="group" aria-label="Popular items">{chips}</div>
+<script type="application/json" id="pc-data">{json.dumps(pdata).replace("</", "<\\/")}</script>
+</div>
+<p class="muted" style="margin-top:10px">Tapping a price button opens that site and copies the item name, so you can paste it straight into their search.</p>
+<h2 id="farms">This week's money farms 💰</h2>
+<p class="lede" style="margin-top:0">Week of {e(P["week"])}. These mobs drop the items selling for the most right now, and you can reach them early.</p>
+<ol class="farms">{farms}</ol>
+<p class="go-credit">{e(P["note"])} Prices: <a href="{P["sourceUrl"]}" target="_blank" rel="noopener">{e(P["source"])}</a>, usual sold price over the last 24 hours on {e(P["week"])}.</p>
+<h2 id="list">This week's prices, most valuable first</h2>
+<p>Every price we quote, so you can scan your inventory in one go. These are the usual sold prices on NiaMeowDB on {e(P["week"])}. For anything not listed, use the search box up top.</p>
+<details class="pc-list"><summary>Show all {len(quoted)} prices</summary><table class="tbl compact"><thead><tr><th>Item</th><th>Mesos</th></tr></thead><tbody>{plist}</tbody></table></details>
+<h2 id="tips">Price check like a pro</h2><ol class="musts">{tips}</ol>
+<h2 id="sites">Where the live prices come from</h2><ul class="pc-sites">{sites}</ul>
+<p class="muted">We don't copy their data. The buttons send you to them, and the few prices quoted on this page link back to the source.</p>
+<p class="callout" style="margin-top:16px">💰 Want the bigger picture? <a href="/money-making/">How to make mesos</a> and <a href="/free-market/">selling on the Free Market</a>.</p>'''
+    write("/prices/", page("/prices/", "MapleStory Classic Price Check: Item Prices & Best Money Farms This Week",
+                           "Check what any MapleStory Classic item is worth in one tap, plus this week's best mobs to farm for mesos, with directions from town.", body,
+                           crumbs=[("/", "Guide"), (None, "Price check")]))
 
 EVENT_AT = {"The Journey Begins": "2026-10-21T18:00:00Z", "Housing": "2026-10-21T18:00:00Z", "Mark of the Beta": "2026-10-21T18:00:00Z",
             "Halloween": "2026-10-28T00:00:00Z", "GM events": "2026-10-22T00:00:00Z", "Excavation Site and Stumpy": "2026-10-21T18:00:00Z", "Forgotten Hollow": "2026-11-18T16:00:00Z", "Moon Bunny's Rice Cake": "2026-11-18T16:00:00Z",
@@ -1048,7 +1148,7 @@ def main():
         import base64
         with open(b64) as f, open(os.path.join(OUT, "og.png"), "wb") as g:
             g.write(base64.b64decode(f.read()))
-    build_home(); build_leveling(); build_jobs(); build_tiers(); build_tools(); build_crafting(); build_bosses(); build_kpq(); build_quests(); build_money(); build_news(); build_citizenship(); build_events(); build_market(); build_updates(); build_adv(); build_secrets(); build_rules(); build_static()
+    build_home(); build_leveling(); build_jobs(); build_tiers(); build_tools(); build_crafting(); build_bosses(); build_kpq(); build_quests(); build_money(); build_prices(); build_news(); build_citizenship(); build_events(); build_market(); build_updates(); build_adv(); build_secrets(); build_rules(); build_static()
     idx = [{"t": "Home: pick your class and level", "u": "/", "k": "page"}, {"t": "Grind spots: leveling route 1–100", "u": "/leveling/", "k": "page"},
            {"t": "Builds: all 10 jobs", "u": "/jobs/", "k": "page"}, {"t": "Tier list: best class for you", "u": "/tier-list/", "k": "page", "x": "best class ranking grinding bossing party beginner"}, {"t": "EXP calculator: time to next level", "u": "/tools/#exp", "k": "Tool", "x": "exp table hours level 100 calculator"}, {"t": "Scroll simulator", "u": "/tools/#scrolls", "k": "Tool", "x": "scroll chaos intermediate lesser greater success rate"}, {"t": "What's new", "u": "/updates/", "k": "page", "x": "changelog updates patch"}, {"t": "Crafting: what to keep for each profession", "u": "/crafting/", "k": "page", "x": "crafting smithing weaponcrafting tailoring woodcrafting leatherworking arcforge ore screw leather keep sell"}, {"t": "Job up: 1st and 2nd job advancement", "u": "/job-advancement/", "k": "page"},
            {"t": "Secrets: hidden maps and jump quests", "u": "/secrets/", "k": "page"}, {"t": "Rules: scrolls, EXP, crafting, mesos", "u": "/classic-rules/", "k": "page"}]
@@ -1063,11 +1163,13 @@ def main():
         idx.append({"t": ev["name"] + " (" + ev["when"] + ")", "u": f"/news/#e-{qslug(ev['name'])}", "k": "Event", "x": ev["text"][:80]})
     idx += [{"t": "Which Magician? F/P vs I/L vs Cleric", "u": "/jobs/#which-magician", "k": "Builds", "x": "magician mage wizard cleric fire poison ice lightning which job best pick"},
             {"t": "How to level a Cleric", "u": "/jobs/cleric/#how-to-level", "k": "Builds", "x": "cleric leveling undead heal holy arrow training spot"},
-            {"t": "Quick leveling route 1 to 30", "u": "/leveling/#quick", "k": "Leveling", "x": "where to level 1 10 20 30 fast route beginner"},
+            {"t": "Where should I train? Type your level", "u": "/leveling/#quick", "k": "Leveling", "x": "where to level train grind 1 10 20 30 fast route beginner directions how to get there"},
             {"t": "New character: where to put your first stat points", "u": "/jobs/#start", "k": "Builds", "x": "character creation starting stats ap ability points 9 free points dice beginner skill points three snails recovery nimble feet"},
             {"t": "Bosses: respawn timers and drops", "u": "/bosses/", "k": "page", "x": "boss timer respawn drops"},
             {"t": "KPQ: Kerning City Party Quest guide", "u": "/party-quest/", "k": "page", "x": "kpq party quest cloto coupons king slime squishy shoes combos"},
             {"t": "Quests: best quests by level", "u": "/quests/", "k": "page", "x": "quest exp rewards citizenship"},
+            {"t": "Price check: what's my item worth?", "u": "/prices/", "k": "page", "x": "price check prices worth value item cost sell mesos live market"},
+            {"t": "This week's best money farms", "u": "/prices/#farms", "k": "Mesos", "x": "farm farming money mesos best mob drops profit weekly"},
             {"t": "Money making: how to make mesos", "u": "/money-making/", "k": "page", "x": "mesos money free market prices merch farm sell"},
             {"t": "Citizenship and housing", "u": "/citizenship/", "k": "page", "x": "citizenship housing house home grade henesys kerning arthur roxy donation community board"},
             {"t": "Citizenship grades and unlocks", "u": "/citizenship/#grades", "k": "Citizenship", "x": "grade points discount storage resident's chair"},
@@ -1091,7 +1193,7 @@ def main():
         idx.append({"t": m["topic"], "u": f"/classic-rules/#m{i}", "k": "Rules"})
     with open(os.path.join(OUT, "search.json"), "w") as f:
         json.dump(idx, f, separators=(",", ":"))
-    paths = ["/", "/leveling/", "/jobs/", "/tier-list/", "/tools/", "/crafting/", "/news/", "/events/", "/citizenship/", "/free-market/", "/bosses/", "/party-quest/", "/quests/", "/money-making/", "/updates/", "/job-advancement/", "/secrets/", "/classic-rules/", "/about/", "/privacy/"] + [f"/jobs/{j['id']}/" for _, j in ALLJOBS]
+    paths = ["/", "/leveling/", "/jobs/", "/tier-list/", "/tools/", "/crafting/", "/news/", "/events/", "/citizenship/", "/free-market/", "/bosses/", "/party-quest/", "/quests/", "/money-making/", "/prices/", "/updates/", "/job-advancement/", "/secrets/", "/classic-rules/", "/about/", "/privacy/"] + [f"/jobs/{j['id']}/" for _, j in ALLJOBS]
     with open(os.path.join(OUT, "sitemap.xml"), "w") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"  <url><loc>{SITE}{p}</loc><lastmod>{CHECKED_ISO}</lastmod></url>\n" for p in paths) + "</urlset>\n")
     with open(os.path.join(OUT, "robots.txt"), "w") as f:
