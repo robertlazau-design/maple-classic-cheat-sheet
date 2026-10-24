@@ -2,8 +2,9 @@
 """Builds the Maple Classic Guide into ./public as plain static HTML.
 Edit the JSON in ./data, run `python3 build.py`, commit, and Vercel serves ./public.
 No dependencies."""
-import json, os, re, shutil, html, urllib.parse
-from datetime import date
+import json, os, re, shutil, html, urllib.parse, hashlib
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, "public")
@@ -151,15 +152,22 @@ def nav_html(cur):
         out += f'<details class="dd"{" data-here" if here else ""}><summary>{label}</summary><div class="dd-menu">{links}</div></details>'
     return out
 
+LAUNCHED = "2026-10-19"  # first commit and first updates.json entry
+PUBLISHER = {"@type": "Organization", "name": NAME, "url": SITE + "/"}
+
 def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=""):
     canon = SITE + path
     nav = nav_html("/jobs/" if path.startswith("/jobs/") else path)
     bc = ""
-    ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": NAME, "url": SITE + "/"}] if path == "/" else []
+    ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": NAME, "alternateName": "MapleStory Classic Guide", "url": SITE + "/", "inLanguage": "en", "publisher": PUBLISHER},
+          {"@context": "https://schema.org", **PUBLISHER, "logo": f"{SITE}/icon-512.png", "description": "A free, no-ads fan guide to MapleStory Classic World."}] if path == "/" else []
     if crumbs:
         bc = '<nav class="crumbs" aria-label="Breadcrumb">' + " › ".join(f'<a href="{h}">{e(t)}</a>' if h else e(t) for h, t in crumbs) + "</nav>"
         ld.append({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
             {"@type": "ListItem", "position": i + 1, "name": t, **({"item": SITE + h} if h else {})} for i, (h, t) in enumerate(crumbs)]})
+    if schema and schema.get("@type") == "Article":
+        schema = {**schema, "description": desc, "image": f"{SITE}/og.png", "datePublished": LAUNCHED, "dateModified": "__DATEMOD__",
+                  "author": PUBLISHER, "publisher": PUBLISHER, "mainEntityOfPage": canon, "inLanguage": "en"}
     if schema: ld.append(schema)
     tabs = [("/", "M3.5 11 12 4l8.5 7v8.5a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z", "Home"),
             ("/leveling/", "M9 4.5 3.5 6.5v13l5.5-2 6 2 5.5-2v-13l-5.5 2zM9 4.5v13M15 6.5v13", "Grind"),
@@ -181,13 +189,15 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 <title>{e(title)}</title>
 <meta name="description" content="{e(desc)}">
 <link rel="canonical" href="{canon}">
-<meta property="og:type" content="website"><meta property="og:site_name" content="{NAME}">
+<meta name="robots" content="max-image-preview:large">
+<meta property="og:type" content="{"article" if schema and schema.get("@type") == "Article" else "website"}"><meta property="og:site_name" content="{NAME}"><meta property="og:locale" content="en_US">
 <meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{canon}">
-<meta property="og:image" content="{SITE}/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="{SITE}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Maple Classic Guide: MapleStory Classic builds, leveling and secrets">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#120a05">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
 <script defer src="/_vercel/insights/script.js"></script>
 {ldtxt}
@@ -235,7 +245,31 @@ NO_INDEX = {"/404", "/privacy/"}
 def stamp():
     return f'<p class="stamp" data-pagefind-ignore><b>✓ Checked {CHECKED}</b><span>{DATA_NOTE}. Tags show how sure we are: {conf("high")} {conf("medium")} {conf("low")}</span></p>'
 
+def job_title(name):
+    """People search "cleric stats" and "warrior skill guide", not "AP & SP"."""
+    t = f"{name} Build Guide: MapleStory Classic Stats & Skills"
+    return t if len(t) <= 60 else f"{name} Build: MapleStory Classic Stats & Skills"
+
+LASTMOD_FILE = os.path.join(ROOT, "data", "lastmod.json")
+LASTMOD = json.load(open(LASTMOD_FILE)) if os.path.exists(LASTMOD_FILE) else {}
+LASTMOD_SEEN = {}
+try:
+    TODAY = datetime.now(ZoneInfo("America/Los_Angeles")).date().isoformat()
+except Exception:  # no time zone data on the build machine
+    TODAY = date.today().isoformat()
+
+def page_date(path, text):
+    """Date this page last changed, judged by a hash of its <main> content."""
+    m = re.search(r"<main\b.*?</main>", text, re.S)
+    main = re.sub(r'data-fb-key="[^"]*"', "", m.group(0) if m else text)  # the form key differs between local and Vercel builds
+    h = hashlib.sha256(main.encode()).hexdigest()[:16]
+    old = LASTMOD.get(path)
+    d = old["d"] if old and old["h"] == h else TODAY
+    LASTMOD_SEEN[path] = {"h": h, "d": d}
+    return d
+
 def write(path, text):
+    text = text.replace("__DATEMOD__", page_date(path, text))
     d = os.path.join(OUT, path.strip("/"))
     os.makedirs(d, exist_ok=True)
     with open(os.path.join(d, "index.html"), "w") as f:
@@ -365,7 +399,7 @@ def build_home():
 <div class="facts" style="margin-top:28px"><div><b>Lv 100</b><span>Level cap</span></div><div><b>1st + 2nd job</b><span>3rd job planned for 2027</span></div><div><b>Victoria Island</b><span>Plus Maple Island; no Ossyria yet</span></div><div><b>7,000 NX</b><span>Per AP or SP reset</span></div></div>
 <details style="margin-top:20px"><summary>What's different in Classic (60-second version)</summary><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in JOBS["classicChanges"][:8])}</ul></details>'''
     write("/", page("/", "MapleStory Classic Guide: Leveling, Builds & Secrets (2026)",
-                    "MapleStory Classic World guide and cheat sheet: pick your class and level and get your build, where to train and the secrets you'll miss. All 10 jobs, mobile-first.", body, hero=hero))
+                    "MapleStory Classic World guide: pick your class and level, then get your build, where to train and the secrets you'll miss. All 10 jobs, made for phones.", body, hero=hero))
 
 def build_leveling():
     route = sorted(LEV["route"], key=lambda r: (r["from"], r["to"]))
@@ -392,7 +426,7 @@ def build_leveling():
     write("/leveling/", page("/leveling/", "MapleStory Classic Leveling Guide 1–100: Where to Train",
                              "Where to train in MapleStory Classic at every level, with map-by-map directions from the nearest town: Maple Island to Victoria Island, by class.", body,
                              crumbs=[("/", "Guide"), (None, "Leveling")],
-                             schema={"@context": "https://schema.org", "@type": "Article", "headline": "MapleStory Classic Leveling Guide 1–100", "dateModified": CHECKED_ISO}))
+                             schema={"@context": "https://schema.org", "@type": "Article", "headline": "MapleStory Classic Leveling Guide 1–100"}))
 
 def mage_pick_html():
     MP = JOBS["magicianPick"]
@@ -426,8 +460,8 @@ def build_jobs():
 <p class="lede">Where your first 9 points go when you make a character, then AP and SP plans for every 2nd job. You place every point by hand in Classic, and a reset costs 7,000 NX, so plan before you click. Still choosing? See the <a href="/tier-list/">tier list</a>.</p>
 {stamp()}<div class="toc"><a href="#start">New character</a>{"".join(f'<a href="#{e(c["id"])}">{e(c["name"])}</a>' for c in JOBS["classes"])}</div>{start_html}{blocks}
 <h2>What changed for jobs in Classic</h2><ul>{"".join(f"<li>{e(tidy(x))}</li>" for x in JOBS["classicChanges"])}</ul>'''
-    write("/jobs/", page("/jobs/", "MapleStory Classic Job Builds: AP & SP for All 10 Jobs",
-                         "MapleStory Classic character creation stats for every class, plus AP/SP builds for Fighter, Page, Spearman, F/P, I/L, Cleric, Hunter, Crossbowman, Assassin and Bandit.", body,
+    write("/jobs/", page("/jobs/", "MapleStory Classic Builds: Stats & Skills for All 10 Jobs",
+                         "MapleStory Classic builds for all 10 jobs: starting stats, then where to put your stats (AP) and skills (SP) for every Warrior, Magician, Bowman and Thief.", body,
                          crumbs=[("/", "Guide"), (None, "Job builds")]))
     for c, j in ALLJOBS:
         def steps(lst):
@@ -462,10 +496,10 @@ def build_jobs():
 <p style="margin-top:20px">How does {e(j["name"])} rank? See the <a href="/tier-list/">MapleStory Classic tier list</a>.</p>
 <p>Other {e(c["name"])} jobs: {" · ".join(f'<a href="/jobs/{e(x["id"])}/">{e(x["name"])}</a>' for x in c["jobs"] if x["id"] != j["id"])}</p>
 {srcs(j.get("sources"))}'''
-        write(f"/jobs/{j['id']}/", page(f"/jobs/{j['id']}/", f"{j['name']} Build Guide: MapleStory Classic AP & SP",
-                                        f"MapleStory Classic {j['name']} build: AP stat plan by level, SP skill order for 1st and 2nd job, job advancement and pros/cons.", body,
+        write(f"/jobs/{j['id']}/", page(f"/jobs/{j['id']}/", job_title(j["name"]),
+                                        f"MapleStory Classic {j['name']} build: where to put your stats (AP) each level, skill order (SP) for 1st and 2nd job, job advancement, pros and cons.", body,
                                         crumbs=[("/", "Guide"), ("/jobs/", "Job builds"), (None, j["name"])], side_extra=side,
-                                        schema={"@context": "https://schema.org", "@type": "Article", "headline": f"{j['name']} Build Guide: MapleStory Classic", "dateModified": CHECKED_ISO}))
+                                        schema={"@context": "https://schema.org", "@type": "Article", "headline": f"{j['name']} Build Guide: MapleStory Classic"}))
 
 def build_adv():
     first = "".join(f'<tr><td data-th="Class">{npc_img(IMG["classNpc"][c["id"]][0], IMG["classNpc"][c["id"]][1], "sprite sm")}<b>{e(c["name"])}</b></td><td data-th="Level">{e(c["firstJob"]["level"])}</td><td data-th="NPC">{e(c["firstJob"]["npc"])}</td><td data-th="Where">{e(c["firstJob"]["town"])}</td><td data-th="Stat req">{e(c["firstJob"]["statReq"])}</td></tr>' for c in JOBS["classes"])
@@ -505,6 +539,7 @@ def build_secrets():
 <p class="lede">Hidden streets, jump quests, boss rooms and one-time rewards on Maple Island and Victoria Island, with directions.</p>
 {stamp()}
 <p class="callout warn" style="margin-top:12px"><b>Don't miss:</b> Maple Island is one-way. Finish its quests (including Pio's boxes for the Green Relaxer chair) before you take the boat.</p>
+<h2 id="all">All {len(SEC["secrets"])} secrets</h2>
 <div class="filters" data-filters role="group" aria-label="Filter by type">{btns}</div>
 <div class="grid">{cards}</div>
 '''
@@ -619,7 +654,7 @@ def build_tools():
 <p class="muted" style="margin-top:8px">Weapon attack scrolls add +1 / +2 / +4 / +5 (Lesser / Intermediate / Greater / Chaos), so the average gain per slot is 1.0, 1.2, 0.4 and 0.5. Magic attack scrolls add +2 / +4 / +8 / +10, and stat scrolls +1 / +2 / +3 / +4. Intermediate is the best value every time, and each Chaos attempt has a 45% chance to boom.</p>
 <h2>More on scrolls and EXP</h2><p>The full rules (scroll families, resets, death penalty) are on <a href="/classic-rules/">Classic rules</a>.</p>{srcs(EXP["source"])}"""
     write("/tools/", page("/tools/", "MapleStory Classic EXP Calculator & Scroll Simulator",
-                          "Free MapleStory Classic tools: EXP calculator (time to your next level and to 100, with an EXP/hour stopwatch) and a scroll success simulator for Lesser, Intermediate, Greater and Chaos scrolls.", body,
+                          "Free MapleStory Classic tools: an EXP calculator with an EXP-per-hour stopwatch, and a scroll simulator for Lesser, Intermediate, Greater and Chaos.", body,
                           crumbs=[("/", "Guide"), (None, "Tools")]))
 
 def build_crafting():
@@ -672,8 +707,8 @@ def build_crafting():
     schema = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
         {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in C["faq"]]}
     side = '<div class="card"><h3>Professions</h3>' + "".join(f'<p><a href="#{p["id"]}">{p["emoji"]} {e(p["name"])}</a></p>' for p in C["professions"]) + "</div>"
-    write("/crafting/", page("/crafting/", "MapleStory Classic Crafting Guide: Items to Keep for Each Profession",
-                             "MapleStory Classic crafting guide: what to keep for Smithing, Weaponcrafting, Tailoring, Woodcrafting, Leatherworking and Arcforge, where the materials drop, and crafting level requirements.", body,
+    write("/crafting/", page("/crafting/", "MapleStory Classic Crafting Guide: What to Keep and Sell",
+                             "MapleStory Classic crafting: what to keep for Smithing, Weaponcrafting, Tailoring, Woodcrafting, Leatherworking and Arcforge, and where it drops.", body,
                              crumbs=[("/", "Guide"), (None, "Crafting")], schema=schema, side_extra=side))
 
 G = load("guides.json")
@@ -739,7 +774,7 @@ def build_bosses():
 <h2 id="faq">FAQ</h2>{faq_html(G["bossFaq"])}"""
     side = '<div class="card"><h3>Bosses</h3>' + "".join(f'<p><a href="#{b["id"]}">{e(b["name"])}</a> <span class="muted">Lv {b["lv"]}</span></p>' for b in B) + '<p><a href="/party-quest/">KPQ guide →</a></p></div>'
     write("/bosses/", page("/bosses/", "MapleStory Classic Bosses: Locations, Respawn Timers & Drops",
-                           "Every MapleStory Classic boss: Mano, King Slime, Mushmom, Shade, Zombie Mushmom, Rotten Mushmom and Jr. Balrog. Where they spawn, respawn timers, drops and what level to fight them.", body,
+                           "Every MapleStory Classic boss from Mano to Jr. Balrog: where it spawns, how long it takes to respawn, what it drops and the level to fight it.", body,
                            crumbs=[("/", "Guide"), (None, "Bosses")], schema=faq_schema(G["bossFaq"]), side_extra=side))
 
 def build_kpq():
@@ -778,7 +813,7 @@ def build_kpq():
 <h2 id="faq">FAQ</h2>{faq_html(K["faq"])}"""
     side = '<div class="card"><h3>KPQ stages</h3>' + "".join(f'<p><a href="#stage-{s["n"]}">{s["n"]}. {e(s["title"])}</a></p>' for s in K["stages"]) + '<p><a href="/bosses/#king-slime">King Slime →</a></p></div>'
     write("/party-quest/", page("/party-quest/", "KPQ Guide: Kerning City Party Quest in MapleStory Classic",
-                                "MapleStory Classic KPQ guide: level 21+, Cloto's coupon answers, every rope, kitten and barrel combination, King Slime, Squishy Shoes and Companion's Magic Box rewards.", body,
+                                "MapleStory Classic KPQ guide: level 21+, Cloto's coupon answers, every rope, kitten and barrel combo, King Slime and the rewards worth farming.", body,
                                 crumbs=[("/", "Guide"), (None, "Party quest")], schema=faq_schema(K["faq"]), side_extra=side))
 
 VERDICT = {"must": ("Must do", "v-must"), "good": ("Worth it", "v-good"), "fun": ("For fun", "v-fun"), "skip": ("Skip it", "v-skip"), "future": ("From Nov 18", "v-future")}
@@ -832,7 +867,7 @@ def build_quests():
 <h2 id="faq">FAQ</h2>{faq_html(G["questFaq"])}"""
     side = '<div class="card"><h3>Must-do quests</h3>' + "".join(f'<p><a href="#q-{qslug(q["name"])}">{e(q["name"])}</a> <span class="muted">Lv {q["lv"]}</span></p>' for q in G["quests"] if q["verdict"] == "must") + "</div>"
     write("/quests/", page("/quests/", "MapleStory Classic Quest Guide: Best Quests by Level (1–65)",
-                           "The best MapleStory Classic quests by level: EXP, mesos and rewards for every worthwhile quest from Maple Island to level 65, plus citizenship quests and which ones to skip.", body,
+                           "The best MapleStory Classic quests by level, from Maple Island to level 65: EXP, mesos and rewards, citizenship quests and which ones to skip.", body,
                            crumbs=[("/", "Guide"), (None, "Quests")], schema=faq_schema(G["questFaq"]), side_extra=side))
 
 def build_money():
@@ -929,7 +964,7 @@ def build_prices():
 <h2 id="sites">Where the live prices come from</h2><ul class="pc-sites">{sites}</ul>
 <p class="muted">We don't copy their data. The buttons send you to them, and the few prices quoted on this page link back to the source.</p>
 <p class="callout" style="margin-top:16px">💰 Want the bigger picture? <a href="/money-making/">How to make mesos</a> and <a href="/free-market/">selling on the Free Market</a>.</p>'''
-    write("/prices/", page("/prices/", "MapleStory Classic Price Check: Item Prices & Best Money Farms This Week",
+    write("/prices/", page("/prices/", "MapleStory Classic Price Check: Item Prices & Money Farms",
                            "Check what any MapleStory Classic item is worth in one tap, plus this week's best mobs to farm for mesos, with directions from town.", body,
                            crumbs=[("/", "Guide"), (None, "Price check")]))
 
@@ -963,8 +998,8 @@ def build_news():
 {srcs(N["src"])}
 <h2 id="faq">FAQ</h2>{faq_html(N["faq"])}"""
     side = '<div class="card"><h3>Coming up</h3>' + "".join(f'<p><a href="#e-{qslug(ev["name"])}">{ev["emoji"]} {e(ev["name"])}</a> <span class="muted">{e(ev["when"])}</span></p>' for ev in N["events"]) + "</div>"
-    write("/news/", page("/news/", "MapleStory Classic News: Launch Day, Events & Patch Notes (Oct 2026)",
-                         "MapleStory Classic World news: Grand Launch Oct 21 times, events (The Journey Begins, Halloween, Moon Bunny), housing, guilds Dec 9, deadlines and every patch since Founder's Access.", body,
+    write("/news/", page("/news/", "MapleStory Classic News: Patch Notes, Events & Key Dates",
+                         "MapleStory Classic World news: every patch since Founder's Access, live events, Cash Shop deadlines, Forgotten Hollow on Nov 18 and guilds on Dec 9.", body,
                          crumbs=[("/", "Guide"), (None, "News")], schema=faq_schema(N["faq"]), side_extra=side))
 
 L = load("launch.json")
@@ -1029,8 +1064,8 @@ def build_citizenship():
 {srcs(C["src"])}
 <h2 id="faq">FAQ</h2>{faq_html(C["faq"])}"""
     side = '<div class="card"><h3>Citizenship</h3><p><a href="#town">Henesys or Kerning?</a></p><p><a href="#grades">Grade planner</a></p><p><a href="#points">Donation items</a></p><p><a href="#housing">Housing</a></p></div>'
-    write("/citizenship/", page("/citizenship/", "MapleStory Classic Citizenship & Housing Guide: Grades, Points & Houses",
-                                "MapleStory Classic citizenship and housing: Henesys vs Kerning, all 10 grades and unlocks, daily greetings, donation items, story quests, the Resident's Chair and how to buy a house at grade 2.", body,
+    write("/citizenship/", page("/citizenship/", "MapleStory Classic Citizenship & Housing: Grades and Houses",
+                                "MapleStory Classic citizenship: Henesys or Kerning, all 10 grades and what they unlock, donation items, the Resident's Chair and buying a house.", body,
                                 crumbs=[("/", "Guide"), (None, "Citizenship")], schema=faq_schema(C["faq"]), side_extra=side))
 
 def build_events():
@@ -1080,8 +1115,8 @@ def build_events():
 {srcs(V["src"])}
 <h2 id="faq">FAQ</h2>{faq_html(V["faq"])}"""
     side = '<div class="card"><h3>Events</h3>' + "".join(f'<p><a href="#{ev["id"]}">{ev["emoji"]} {e(ev["name"])}</a> <span class="muted">{e(ev["when"])}</span></p>' for ev in V["now"]) + '<p><a href="/news/">All news →</a></p></div>'
-    write("/events/", page("/events/", "MapleStory Classic Events: Mark of the Beta Walkthrough, Halloween & Daily Gifts",
-                           "MapleStory Classic World events: a step-by-step Mark of the Beta walkthrough, The Journey Begins daily gifts, and Malady's Halloween event (Oct 28) with candy farming tips.", body,
+    write("/events/", page("/events/", "MapleStory Classic Events: Halloween, Mark of the Beta & Gifts",
+                           "MapleStory Classic events: Malady's Halloween candy hunt (Oct 27 to Nov 18), a Mark of the Beta walkthrough and The Journey Begins daily gifts.", body,
                            crumbs=[("/", "Guide"), (None, "Events")], schema=faq_schema(V["faq"]), side_extra=side))
 
 def build_market():
@@ -1114,8 +1149,8 @@ def build_market():
 {srcs(Mk["src"])}
 <h2 id="faq">FAQ</h2>{faq_html(Mk["faq"])}"""
     side = '<div class="card"><h3>Free Market</h3><p><a href="#quick">Quick tips</a></p><p><a href="#shop">Store permits</a></p><p><a href="#scams">Scams</a></p><p><a href="/money-making/">Mesos guide →</a></p></div>'
-    write("/free-market/", page("/free-market/", "MapleStory Classic Free Market Guide: How to Sell, Price Items & Avoid Scams",
-                                "MapleStory Classic Free Market guide: how shops and store permits work, pricing at the sold price, what sells, common trade scams, bots, bans and turning NX into mesos.", body,
+    write("/free-market/", page("/free-market/", "MapleStory Classic Free Market: How to Sell & Avoid Scams",
+                                "MapleStory Classic Free Market guide: how shops and store permits work, how to price at the sold price, what sells, trade scams, bots and bans.", body,
                                 crumbs=[("/", "Guide"), (None, "Free Market")], schema=faq_schema(Mk["faq"]), side_extra=side))
 
 def endgame_html():
@@ -1138,7 +1173,7 @@ def build_updates():
     items = "".join(f'<article class="upd" id="u{e(u["date"])}"><p class="upd-d"><time datetime="{e(u["date"])}">{date.fromisoformat(u["date"]).strftime("%b %-d, %Y")}</time></p><h2>{e(u["title"])}</h2><ul>' + "".join(f"<li>{e(x)}</li>" for x in u["items"]) + "</ul></article>" for u in UPDATES["entries"])
     body = f"""<h1>What's new on Maple Classic Guide</h1>
 <p class="lede">Every fix and addition, newest first. Spotted something wrong? Use "Was this page right?" at the bottom of any page.</p>{items}"""
-    write("/updates/", page("/updates/", "What's New | Maple Classic Guide", "Changelog for the Maple Classic Guide: new pages, tools and data fixes after every MapleStory Classic patch.", body,
+    write("/updates/", page("/updates/", "What's New | Maple Classic Guide", "What's new on the Maple Classic Guide: every new page, tool and data fix, logged after each MapleStory Classic World patch and event.", body,
                             crumbs=[("/", "Guide"), (None, "What's new")]))
 
 def build_static():
@@ -1151,22 +1186,30 @@ def build_static():
 {f'<h2>Support the guide</h2><p>No ads, no paywalls, no sign-ups, ever. The guide runs entirely on player donations. If it helped you, {coffee_btn()}</p>' if COFFEE else ""}
 <h2>Found a mistake?</h2><p>Classic is new and numbers change with patches. Email <a href="mailto:robertlazau@gmail.com?subject=Maple%20Classic%20Guide%20fix">robertlazau@gmail.com</a> with what you saw in game and we'll fix it.</p>
 <h2>Not affiliated with Nexon</h2><p>This is an unofficial fan site. MapleStory and related names are trademarks of Nexon Korea Corporation and Nexon America Inc.</p>'''
-    write("/about/", page("/about/", "About & Sources | Maple Classic Guide", "Where the Maple Classic Guide gets its data, how we rate confidence, and how to report a fix.", about, crumbs=[("/", "Guide"), (None, "About")]))
+    write("/about/", page("/about/", "About & Sources | Maple Classic Guide", "Where the Maple Classic Guide gets its MapleStory Classic data, how we mark what's confirmed, and how to send us a fix. No ads, kept alive by players.", about, crumbs=[("/", "Guide"), (None, "About")]))
     priv = f'''<h1>Privacy policy</h1><p>Last updated {CHECKED}.</p>
 <p>This site doesn't ask for accounts or personal information. Your last job and level in the "Your run" picker are saved only in your own browser.</p>
 <h2>Analytics</h2><p>We use Vercel Web Analytics to count page views. It doesn't use cookies or track you across sites.</p>
 <h2>No ads</h2><p>This site runs no ads and no ad trackers. It's kept alive by player donations through <a href="https://buymeacoffee.com/goldenboypro" rel="noopener">Buy Me a Coffee</a>, which has its own privacy policy if you choose to donate.</p>
 <h2>Contact</h2><p><a href="mailto:robertlazau@gmail.com">robertlazau@gmail.com</a></p>'''
-    write("/privacy/", page("/privacy/", "Privacy Policy | Maple Classic Guide", "Privacy policy for the Maple Classic Guide: no accounts, no ads, cookie-free analytics.", priv, crumbs=[("/", "Guide"), (None, "Privacy")]))
+    write("/privacy/", page("/privacy/", "Privacy Policy | Maple Classic Guide", "Privacy policy for the Maple Classic Guide: no accounts, no ads, no ad trackers and cookie-free analytics. Your settings stay on your own device.", priv, crumbs=[("/", "Guide"), (None, "Privacy")]))
     nf = page("/404", "Page not found | Maple Classic Guide", "Page not found.", '<h1>Lost in the Ant Tunnel?</h1><p class="lede">That page doesn\'t exist. Use a Return Scroll:</p><p><a href="/">Back to the guide →</a></p>')
-    with open(os.path.join(OUT, "404.html"), "w") as f: f.write(nf.replace(f'<link rel="canonical" href="{SITE}/404">', '<meta name="robots" content="noindex">'))
+    with open(os.path.join(OUT, "404.html"), "w") as f:
+        f.write(nf.replace(f'<link rel="canonical" href="{SITE}/404">', '<meta name="robots" content="noindex">').replace('<meta name="robots" content="max-image-preview:large">\n', ""))
 
 def main():
     if os.path.exists(OUT): shutil.rmtree(OUT)
     os.makedirs(OUT)
-    for n in ["style.css", "site.js", "favicon.svg", "og.png"]:
+    for n in ["style.css", "site.js", "favicon.svg", "og.png", "favicon-48.png", "apple-touch-icon.png", "icon-192.png", "icon-512.png"]:
         p = os.path.join(ROOT, "src", n)
         if os.path.exists(p): shutil.copy(p, OUT)
+    if os.path.isdir(os.path.join(ROOT, "src", "fonts")):
+        shutil.copytree(os.path.join(ROOT, "src", "fonts"), os.path.join(OUT, "fonts"))
+    with open(os.path.join(OUT, "site.webmanifest"), "w") as f:
+        json.dump({"name": NAME, "short_name": "Maple Guide", "description": "MapleStory Classic builds, leveling and secrets",
+                   "start_url": "/", "scope": "/", "display": "standalone", "background_color": "#120a05", "theme_color": "#120a05",
+                   "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"},
+                             {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}]}, f, indent=1)
     b64 = os.path.join(ROOT, "src", "og.b64")  # share image kept as text so it can be edited on github.com
     if os.path.exists(b64):
         import base64
@@ -1255,9 +1298,12 @@ def main():
         json.dump(idx, f, separators=(",", ":"))
     paths = ["/", "/leveling/", "/jobs/", "/tier-list/", "/tools/", "/crafting/", "/news/", "/events/", "/citizenship/", "/free-market/", "/bosses/", "/party-quest/", "/quests/", "/money-making/", "/prices/", "/updates/", "/job-advancement/", "/secrets/", "/classic-rules/", "/about/", "/privacy/"] + [f"/jobs/{j['id']}/" for _, j in ALLJOBS]
     with open(os.path.join(OUT, "sitemap.xml"), "w") as f:
-        f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"  <url><loc>{SITE}{p}</loc><lastmod>{CHECKED_ISO}</lastmod></url>\n" for p in paths) + "</urlset>\n")
+        f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"  <url><loc>{SITE}{p}</loc><lastmod>{LASTMOD_SEEN.get(p, {}).get('d', TODAY)}</lastmod></url>\n" for p in paths) + "</urlset>\n")
     with open(os.path.join(OUT, "robots.txt"), "w") as f:
         f.write(f"User-agent: *\nAllow: /\n\nSitemap: {SITE}/sitemap.xml\n")
+    if not os.environ.get("VERCEL"):  # local builds keep the dates file current; commit it with your change
+        with open(LASTMOD_FILE, "w") as f:
+            f.write("{\n" + ",\n".join(f'  {json.dumps(k)}: {json.dumps(v)}' for k, v in sorted(LASTMOD_SEEN.items())) + "\n}\n")
     print("built", len(paths), "pages")
 
 if __name__ == "__main__":
