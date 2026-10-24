@@ -536,6 +536,36 @@
     drawBands();
   }
 
+  // ---- Quest walkthrough (/quests/<slug>/): tick steps as you go; ticking the last one marks the quest done on /quests/ too
+  var qp = document.querySelector("[data-qpage]");
+  if (qp) {
+    var qkey = qp.dataset.qpage, allSteps = store.get("mccs-steps") || {}, mine = allSteps[qkey] || [];
+    var qdone = store.get("mccs-quests") || {};
+    var boxes = [].slice.call(qp.querySelectorAll(".qstep input"));
+    var qbtn = qp.querySelector(".qp-done"), qprog = qp.querySelector(".qp-prog");
+    var setQ = function (v) {
+      if (v) qdone[qkey] = 1; else delete qdone[qkey];
+      store.set("mccs-quests", qdone);
+      qbtn.setAttribute("aria-pressed", String(v)); qbtn.textContent = v ? "✓ Quest done" : "Mark quest done";
+    };
+    var drawQ = function () {
+      var n = boxes.filter(function (b) { return b.checked; }).length;
+      qprog.textContent = n ? "✓ " + n + "/" + boxes.length : "";
+    };
+    boxes.forEach(function (b, i) {
+      b.checked = mine.indexOf(i) > -1;
+      b.closest("li").classList.toggle("ok", b.checked);
+      b.addEventListener("change", function () {
+        mine = mine.filter(function (x) { return x !== i; }); if (b.checked) mine.push(i);
+        allSteps[qkey] = mine; store.set("mccs-steps", allSteps);
+        b.closest("li").classList.toggle("ok", b.checked); drawQ();
+        if (b.checked && mine.length === boxes.length) { setQ(true); toast("Quest complete! +EXP"); }
+      });
+    });
+    setQ(!!qdone[qkey]); drawQ();
+    qbtn.addEventListener("click", function () { var v = !qdone[qkey]; setQ(v); if (v) toast("Quest complete! +EXP"); });
+  }
+
   // ---- Leveling (/leveling/): "I'm level __" picks the best spot, highlights it and scrolls there
   var pickIn = document.getElementById("pick-lv");
   if (pickIn) {

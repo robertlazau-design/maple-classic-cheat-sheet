@@ -1,6 +1,15 @@
 {
  "entries": [
   {
+   "date": "2026-10-24",
+   "title": "Step-by-step guides for all 37 quests",
+   "items": [
+    "Every quest on the Quests page has a \"Step-by-step guide\" button now. Each guide shows where to start and how to walk there, every item and monster you need with where it drops, every step in order, and every reward.",
+    "Tick steps off as you go. Your ticks stay on your device, and finishing the last step marks the quest done on the Quests page too.",
+    "We checked every quest against the Classic game data. Some quest cards got fixes: missing rewards added (Oranges for Dr. Betty, the headband for Mrs. Ming Ming, fame for Proof of Companionship), class boots and ingots for Nella's later requests, and corrected numbers for the Forgotten Hollow quests."
+   ]
+  },
+  {
    "date": "2026-10-23",
    "title": "Search that understands you, and tap-to-explain",
    "items": [

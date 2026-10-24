@@ -770,3 +770,53 @@ abbr[title]:focus-visible,.chip[title]:focus-visible{outline:2px solid var(--map
 
 /* Nunito, served from our own domain (one less connection before the first paint) */
 @font-face{font-family:"Nunito";font-style:normal;font-weight:200 1000;font-display:swap;src:url(/fonts/nunito-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+/* quest walkthrough pages (/quests/<slug>/) and the card link to them */
+.q-acts{margin-top:auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.q-acts .q-done{margin-top:0}
+.q-steps{font-weight:800;font-size:14px;color:var(--maple-deep)}
+.qverdict{margin:10px 0 0}
+.qfacts{margin-top:14px}
+@media (min-width:760px){.qfacts{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.qfacts b{font-size:19px;overflow-wrap:anywhere}
+.qstart{display:flex;align-items:flex-end;gap:14px;background:var(--surface);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow)}
+.qstart img.sprite{max-height:72px;max-width:90px;flex:none}
+.qstart p{margin:0}.qstart p+p{margin-top:4px;color:var(--body)}
+.qchain{margin:14px 0 0;font-size:15px}
+.qh3{margin:18px 0 8px;font-size:17px}
+.qneed td{font-size:14.5px}
+.qsrc{display:flex;align-items:center;gap:8px;margin:2px 0}
+.qsrc img.msm,.qneed img.msm{max-height:34px;max-width:46px;flex:none}
+.qnote2{display:block;font-size:13.5px;color:var(--muted);margin-top:4px}
+.qhint{margin:-4px 0 10px}
+.qsteps .qstep label{display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.qsteps .qstep label>span{flex:1;min-width:0}
+.qs-t{display:block;overflow-wrap:anywhere}
+.qs-m{display:block;font-size:13px;color:var(--muted);margin-top:3px;font-weight:600}
+.qsteps input{width:24px;height:24px;flex:none;margin:1px 0 0;accent-color:var(--green);cursor:pointer}
+.qsteps .qstep.ok{opacity:.55}
+.qsteps .qstep.ok::before{background:var(--green-soft);color:var(--green);content:"✓"}
+.qp-prog{font-size:14px;font-weight:800;color:var(--green);margin-left:6px}
+.qp-act{margin:12px 0 0}
+.qrw{margin-top:0}
+.qrlist{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.qrlist li{background:var(--surface);border-radius:12px;padding:8px 12px;box-shadow:var(--shadow)}
+.qrlist small{display:block;color:var(--muted);font-size:13px;font-weight:500}
+.c-tag{background:var(--pill);color:var(--ink);margin-left:6px}
+.qtips li{margin:4px 0}
+.qnav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin:28px 0 8px}
+.qnav a{background:var(--surface);border-radius:var(--r);padding:12px 14px;box-shadow:var(--shadow);font-weight:800;text-decoration:none;color:var(--ink);font-size:14.5px}
+.qnav a span{display:block;font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.qnav a.all{display:flex;align-items:center}
+.qnav a.nx{text-align:right}
+@media (max-width:640px){.qnav{grid-template-columns:1fr 1fr}.qnav a.all{grid-column:1/-1;grid-row:2;justify-content:center}}
+.qside .toc-s{display:flex;flex-direction:column;gap:4px;font-size:14.5px}
+.qrlist .rw{background:transparent;padding:0}
+@media (max-width:640px){
+  .qneed tr{display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;padding:10px 0}
+  .qneed td{width:auto}
+  .qneed td:first-child::before,.qneed td.qn::before,.qneed td.qn0,.qneed td:nth-child(3)::before{display:none}
+  .qneed td.qn{text-align:right;font-size:17px;white-space:nowrap}
+  .qneed td.qn b::before{content:"x";color:var(--muted);font-weight:700;margin-right:1px}
+  .qneed td:nth-child(3){grid-column:1/-1;padding-top:2px}
+}

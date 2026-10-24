@@ -157,7 +157,8 @@ PUBLISHER = {"@type": "Organization", "name": NAME, "url": SITE + "/"}
 
 def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=""):
     canon = SITE + path
-    nav = nav_html("/jobs/" if path.startswith("/jobs/") else path)
+    sect = "/jobs/" if path.startswith("/jobs/") else "/quests/" if path.startswith("/quests/") else path
+    nav = nav_html(sect)
     bc = ""
     ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": NAME, "alternateName": "MapleStory Classic Guide", "url": SITE + "/", "inLanguage": "en", "publisher": PUBLISHER},
           {"@context": "https://schema.org", **PUBLISHER, "logo": f"{SITE}/icon-512.png", "description": "A free, no-ads fan guide to MapleStory Classic World."}] if path == "/" else []
@@ -174,7 +175,7 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
             ("/jobs/", "M14.5 3.5h6v6L10 20l-6-6zM7 11l6 6M3.5 20.5l3-3", "Builds"),
             ("/tier-list/", "M8 3.5h8V9a4 4 0 0 1-8 0zM8 5.5H5a3 3 0 0 0 3 4.5M16 5.5h3a3 3 0 0 1-3 4.5M12 13v4M8.5 20.5h7M10 17h4", "Tiers"),
             ("/events/", "M4.5 6.5h15v13h-15zM4.5 10.5h15M8.5 4v4M15.5 4v4M8 14h2M14 14h2M8 17h2", "Events")]
-    cur = "/jobs/" if path.startswith("/jobs/") else path
+    cur = sect
     tabbar = "".join(f'<a href="{h}"{" aria-current=page" if h == cur else ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{d}"/></svg>{t}</a>' for h, d, t in tabs)
     in_more = cur not in [h for h, _, _ in tabs]
     tabbar += f'<button type="button" class="tb-more" data-more aria-expanded="false" aria-controls="more-sheet"{" aria-current=page" if in_more else ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z"/></svg>More</button>'
@@ -712,12 +713,24 @@ def build_crafting():
                              crumbs=[("/", "Guide"), (None, "Crafting")], schema=schema, side_extra=side))
 
 G = load("guides.json")
+QG = load("questguides.json")  # step-by-step data for each quest page (/quests/<slug>/)
+QGB = {q["name"]: q for q in QG["quests"]}
+
+def icon_id(name):
+    """maplestory.io (GMS v83) item ID for an item name, or None. Classic's scroll names get a stand-in scroll icon."""
+    if name in G["icons"]: return G["icons"][name]
+    if name in QG["icons"]: return QG["icons"][name]
+    if "Scroll:" in name or name.startswith("Greater weapon"):
+        kind = "attack" if "Attack" in name or "weapon" in name else "shoes" if name.startswith("Shoes") else "armor"
+        return QG["icons"]["_scroll_" + kind]
+    return None
 
 def gicon(spec, cls="ic"):
     name = spec.split("|")[0]
-    if name in G["icons"]:
-        return f'<img class="{cls}" src="{API}/item/{G["icons"][name]}/icon" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{{className:\'{cls} emo\',textContent:\'📦\'}}))">'
-    em = next((v for k, v in G["emoji"].items() if k in name), "📦")
+    iid = icon_id(name)
+    if iid:
+        return f'<img class="{cls}" src="{API}/item/{iid}/icon" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{{className:\'{cls} emo\',textContent:\'📦\'}}))">'
+    em = next((v for k, v in {**G["emoji"], **QG["emoji"]}.items() if k in name), "📦")
     return f'<span class="{cls} emo" aria-hidden="true">{em}</span>'
 
 def rw(spec):
@@ -818,6 +831,14 @@ def build_kpq():
 
 VERDICT = {"must": ("Must do", "v-must"), "good": ("Worth it", "v-good"), "fun": ("For fun", "v-fun"), "skip": ("Skip it", "v-skip"), "future": ("From Nov 18", "v-future")}
 def qslug(n): return re.sub(r"[^a-z0-9]+", "-", n.lower()).strip("-")
+def qhref(q):
+    """The quest's own step-by-step page when it has one, else its card on /quests/."""
+    gq = QGB.get(q["name"] if isinstance(q, dict) else q)
+    return f'/quests/{gq["slug"]}/' if gq else f'/quests/#q-{qslug(q["name"] if isinstance(q, dict) else q)}'
+def first_sentence(t):
+    """First sentence of t, without splitting on Mr. / Dr. / Lv. and friends."""
+    m = re.search(r"(?<!\bMr)(?<!\bMrs)(?<!\bDr)(?<!\bJr)(?<!\bLv)(?<!\bSt)\.(\s|$)", t or "")
+    return (t[:m.start() + 1] if m else t or "").strip()
 
 def build_quests():
     toNext = EXP["toNext"]
@@ -832,21 +853,27 @@ def build_quests():
         chips += f'<a href="#{bid}">{lo}–{hi if hi < 99 else "+"}</a>'
         cards = ""
         for q in qs:
+            gq = QGB.get(q["name"])
+            if gq:  # the walkthrough data is newer and checked step by step, so it wins on the card too
+                r = gq["rewards"]
+                q = {**q, "task": gq["card"], "rewards": gq["cardRewards"], "exp": r["exp"] or q["exp"], "mesos": r["mesos"] or q["mesos"],
+                     "verdict": "future" if gq["status"] == "future" else q["verdict"], "steps": len(gq["chain"]) or q["steps"],
+                     "note": first_sentence(gq["missable"]), "link": f'/quests/{gq["slug"]}/'}
             need = toNext[min(q["lv"], len(toNext)) - 1]
             ratio = q["exp"] / need
             gauge = f"{ratio:.1f} levels at Lv {q['lv']}" if ratio >= 1 else f"{round(ratio * 100)}% of a level at Lv {q['lv']}"
             if q["lv"] < 8: gauge = "gets you to about Lv 8"
             vl, vc = VERDICT[q["verdict"]]
             rws = "".join(rw(r) for r in q["rewards"])
-            link = f' <a href="{q["link"]}">Guide →</a>' if q.get("link") else ""
-            note = f'<p class="qnote">{e(q["note"])}{link}</p>' if q["note"] else (f'<p class="qnote">{link}</p>' if link else "")
+            note = f'<p class="qnote">{e(q["note"])}</p>' if q["note"] else ""
+            step = f'<a class="q-steps" href="{q["link"]}">Step-by-step guide →</a>' if q.get("link") else ""
             cards += f'''<article class="quest {vc}" id="q-{qslug(q["name"])}" data-q="{qslug(q["name"])}">
 <div class="q-top">{who(q["npcId"], q["npc"], "sprite")}<span class="verdict">{vl}</span></div>
-<h3>{e(q["name"])}</h3><p class="meta">Lv {q["lv"]} · {e(q["npc"])}, {e(q["town"])}{f" · {q['steps']} steps" if q["steps"] > 1 else ""}</p>
+<h3>{e(q["name"])}</h3><p class="meta">Lv {q["lv"]} · {e(q["npc"])}, {e(q["town"])}{f" · {q['steps']} quests" if q["steps"] > 1 else ""}</p>
 <div class="gauge" title="EXP compared with what level {q["lv"]} needs"><i style="width:{min(100, round(ratio * 100))}%"></i></div>
 <p class="q-nums"><b>{q["exp"]:,} EXP</b> <span>≈ {gauge}</span>{f" · <b>{q['mesos']:,}</b> mesos" if q["mesos"] else ""}</p>
 <p>{e(q["task"])}</p>{f'<div class="rws">{rws}</div>' if rws else ""}{note}
-<button type="button" class="q-done" aria-pressed="false">Mark done</button></article>'''
+<div class="q-acts"><button type="button" class="q-done" aria-pressed="false">Mark done</button>{step}</div></article>'''
         tot = f'<span class="muted">{total:,} EXP of shared quests in this band</span>' if total else ""
         sections += f'<h2 id="{bid}">{label} <span class="band-prog" data-band="{bid}"></span></h2>{tot}<div class="qgrid" data-bandgrid="{bid}">{cards}</div>'
     C = G["citizen"]
@@ -857,7 +884,7 @@ def build_quests():
 {guide_stamp("Quest tracker data, launch week. ")}
 <div class="toc">{chips}<a href="#citizenship">Citizenship</a><a href="#faq">FAQ</a></div>
 <p class="legend">{legend}</p>
-<p class="callout" style="margin-top:12px">✅ Tap <b>Mark done</b> as you finish quests. Your progress stays on this device. The bar under each quest shows its EXP as a share of the level you'd be doing it at.</p>
+<p class="callout" style="margin-top:12px">✅ Tap <b>Step-by-step guide</b> on any quest for every NPC, item, monster and reward, in order. Tap <b>Mark done</b> as you finish quests; your progress stays on this device. The bar under each quest shows its EXP as a share of the level you'd be doing it at.</p>
 {sections}
 <h2 id="citizenship">Citizenship quests</h2><p>{e(C["intro"])}</p>
 <p class="callout" style="margin:10px 0 12px">🏠 Grades, donation items, every story arc and housing: <a href="/citizenship/">Citizenship guide</a>.</p>
@@ -865,10 +892,143 @@ def build_quests():
 <p class="callout" style="margin-top:12px">Your 2nd job advancement quests at level 30 pay 9,560 EXP too. See <a href="/job-advancement/">Job up</a>.</p>
 {srcs(G["questSrc"])}
 <h2 id="faq">FAQ</h2>{faq_html(G["questFaq"])}"""
-    side = '<div class="card"><h3>Must-do quests</h3>' + "".join(f'<p><a href="#q-{qslug(q["name"])}">{e(q["name"])}</a> <span class="muted">Lv {q["lv"]}</span></p>' for q in G["quests"] if q["verdict"] == "must") + "</div>"
+    side = '<div class="card"><h3>Must-do quests</h3>' + "".join(f'<p><a href="{qhref(q)}">{e(q["name"])}</a> <span class="muted">Lv {q["lv"]}</span></p>' for q in G["quests"] if q["verdict"] == "must" and not (QGB.get(q["name"]) or {}).get("status") == "future") + "</div>"
     write("/quests/", page("/quests/", "MapleStory Classic Quest Guide: Best Quests by Level (1–65)",
                            "The best MapleStory Classic quests by level, from Maple Island to level 65: EXP, mesos and rewards, citizenship quests and which ones to skip.", body,
                            crumbs=[("/", "Guide"), (None, "Quests")], schema=faq_schema(G["questFaq"]), side_extra=side))
+
+def quest_title(name):
+    for t in (f"{name} Quest Guide: MapleStory Classic Walkthrough", f"{name}: MapleStory Classic Quest Guide", f"{name} Quest Guide (MapleStory Classic)"):
+        if len(t) <= 62: return t
+    return f"{name} | MapleStory Classic"
+
+def build_quest_pages():
+    """One step-by-step page per quest: where to start, what to bring, every step, rewards and tips."""
+    toNext = EXP["toNext"]
+    order = [q for q in G["quests"] if q["name"] in QGB]
+    for i, card in enumerate(order):
+        g = QGB[card["name"]]
+        key, path = qslug(card["name"]), f'/quests/{g["slug"]}/'
+        lv, r, st = g["level"] or card["lv"], g["rewards"], g["start"]
+        future = g["status"] == "future"
+        vl, vc = VERDICT["future" if future else card["verdict"]]
+        need = toNext[min(lv, len(toNext)) - 1]
+        ratio = (r["exp"] or 0) / need
+        share = ((f"{ratio:.1f} levels" if ratio >= 1 else f"{round(ratio * 100)}% of a level") + f" at Lv {lv}") if r["exp"] else ""
+        if lv < 8 and r["exp"]: share = "enough to reach about Lv 8"
+        where = st["map"] + (f", {st['town']}" if st["town"] and st["town"] not in st["map"] else "")
+
+        # The 30-second version
+        need_bits = [f'{c["count"]:,} {c["name"]}' if c["count"] else c["name"] for c in g["collect"] if c["from"]][:4]
+        kill_bits = [f'{k["count"]:,} {k["monster"]}' if k["count"] else k["monster"] for k in g["kills"]][:3]
+        got = []
+        for x in g["cardRewards"]:
+            n, _, lab = x.partition("|")
+            got.append(f"{n} {lab}" if lab.startswith("x") else (lab or n))
+        money = ", ".join(b for b in [f'{r["exp"]:,} EXP' if r["exp"] else "", f'{r["mesos"]:,} mesos' if r["mesos"] else ""] if b)
+        musts = [f"<b>Start:</b> talk to {e(st['npc'])} in {e(where)}{f' at Lv {lv}' if lv > 1 else ''}."]
+        if need_bits: musts.append("<b>Collect:</b> " + e(", ".join(need_bits)) + ".")
+        if kill_bits: musts.append("<b>Defeat:</b> " + e(", ".join(kill_bits)) + ".")
+        musts.append("<b>You get:</b> " + e(", ".join(([money] if money else []) + got)) + ".")
+
+        fame = f' · +{r["fame"]} fame' if r.get("fame") else ""
+        exp_b = f'{r["exp"]:,}' if r["exp"] else "–"
+        mes_b = f'{r["mesos"]:,}' if r["mesos"] else "–"
+        facts = (f'<div class="facts qfacts"><div><b>Lv {lv}+</b><span>{e(g["jobs"] or "All jobs")}</span></div>'
+                 f'<div><b>{e(st["npc"])}</b><span>{e(st["town"] or st["map"])}</span></div>'
+                 f'<div><b>{exp_b}</b><span>EXP{(" · " + e(share)) if share else ""}</span></div>'
+                 f'<div><b>{mes_b}</b><span>mesos{fame}</span></div></div>')
+
+        sid = st.get("npcId") or (card["npcId"] if st["npc"] == card["npc"] else None)
+        sprite = who(sid, st["npc"]) if sid else ""
+        dirs = f'<p>{e(st["directions"])}</p>' if st["directions"] else ""
+        start = (f'<h2 id="start">Where to start</h2><div class="qstart">{sprite}<div><p><b>{e(st["npc"])}</b> · {e(where)}</p>{dirs}</div></div>'
+                 + go_html(st["map"], tip=False))
+        pre = ('<h2 id="before">Before you start</h2><ul class="qtips">' + "".join(f"<li>{e(x)}</li>" for x in g["prereqs"]) + "</ul>") if g["prereqs"] else ""
+        chain = ""
+        if len(g["chain"]) > 1:
+            chain = (f'<p class="qchain"><b>This guide covers {len(g["chain"])} quests:</b> '
+                     + " › ".join(e(c["name"]) + (f' <span class="muted">(Lv {c["level"]})</span>' if c.get("level") and len({x.get("level") for x in g["chain"]}) > 1 else "") for c in g["chain"]) + "</p>")
+
+        def src_cell(froms, note):
+            out = ""
+            for f in froms:
+                maps = (": " + e(", ".join(f["maps"]))) if f["maps"] else ""
+                out += f'<span class="qsrc">{mob_img(f["monster"], "msm")}<span><b>{e(f["monster"])}</b>{maps}</span></span>'
+            return out + (f'<span class="qnote2">{e(note)}</span>' if note else "") or "–"
+        rows = "".join(
+            f'<tr><td data-th="Item"><span class="rw">{gicon(c["name"])}<span><b>{e(c["name"])}</b></span></span></td>'
+            f'<td data-th="How many" class="{"qn" if c["count"] else "qn0"}"><b>{format(c["count"], ",") if c["count"] else "–"}</b></td><td data-th="Where to get it">{src_cell(c["from"], c["note"])}</td></tr>'
+            for c in g["collect"])
+        krows = "".join(
+            f'<tr><td data-th="Monster"><span class="rw">{mob_img(k["monster"], "msm")}<span><b>{e(k["monster"])}</b></span></span></td>'
+            f'<td data-th="How many" class="{"qn" if k["count"] else "qn0"}"><b>{format(k["count"], ",") if k["count"] else "–"}</b></td><td data-th="Where">{e(", ".join(k["maps"])) or "–"}</td></tr>'
+            for k in g["kills"])
+        hunt = []
+        for nm in [m for c in g["collect"] for f in c["from"] for m in f["maps"]] + [m for k in g["kills"] for m in k["maps"]]:
+            if nm in DIR["maps"] and nm not in hunt and nm != st["map"]: hunt.append(nm)
+        gos = "".join(go_html(nm, lead=f"<b>{e(nm)}:</b> ", tip=False) for nm in hunt[:3])
+        needs = ""
+        if rows or krows:
+            needs = '<h2 id="need">What you need</h2>'
+            if rows: needs += f'<table class="tbl qneed"><thead><tr><th>Item</th><th>How many</th><th>Where to get it</th></tr></thead><tbody>{rows}</tbody></table>'
+            if krows: needs += f'<h3 class="qh3">Monsters to defeat</h3><table class="tbl qneed"><thead><tr><th>Monster</th><th>How many</th><th>Where</th></tr></thead><tbody>{krows}</tbody></table>'
+            if gos: needs += f'<h3 class="qh3">Getting to the hunting spots</h3>{gos}'
+
+        steps = ""
+        for n, x in enumerate(g["steps"]):
+            meta = " · ".join(e(v) for v in (x["npc"], x["map"]) if v)
+            meta = f'<span class="qs-m">{meta}</span>' if meta else ""
+            steps += f'<li class="qstep"><label><span><span class="qs-t">{e(x["text"])}</span>{meta}</span><input type="checkbox" aria-label="Step {n + 1} done"></label></li>'
+        stepsec = (f'<section data-qpage="{key}"><h2 id="steps">Step by step <span class="qp-prog" aria-live="polite"></span></h2>'
+                   '<p class="muted qhint">Tick each step as you finish it. Your ticks stay on this device.</p>'
+                   f'<ol class="steps qsteps">{steps}</ol>'
+                   '<p class="qp-act"><button type="button" class="q-done qp-done" aria-pressed="false">Mark quest done</button></p></section>')
+
+        def rline(it):
+            tags = " ".join(t for t, on in (("choose one", it.get("choice")), ("random", it.get("random"))) if on)
+            cnt = f' x{it["count"]:,}' if (it.get("count") or 0) > 1 else ""
+            tag = f' <span class="chip c-tag">{e(tags)}</span>' if tags else ""
+            note = f'<small>{e(it["note"])}</small>' if it.get("note") else ""
+            return f'<li><span class="rw">{gicon(it["name"])}<span><b>{e(it["name"])}{cnt}</b>{tag}{note}</span></span></li>'
+        nq = len(g["chain"]) or 1
+        each = " each" if r["other"].startswith("Numbers are per") else ""
+        rew = (f'<h2 id="rewards">Rewards</h2><div class="facts stats qrw"><div class="hot"><b>{exp_b}</b><span>EXP{each}</span></div>'
+               f'<div><b>{mes_b}</b><span>Mesos{each}</span></div><div><b>{("+" + str(r["fame"])) if r.get("fame") else "–"}</b><span>Fame</span></div>'
+               f'<div><b>{nq}</b><span>Quest{"s" if nq > 1 else ""}</span></div></div>'
+               + (f'<p class="muted">That EXP is {e(share)}.</p>' if share else "")
+               + (f'<ul class="qrlist">{"".join(rline(it) for it in r["items"])}</ul>' if r["items"] else "")
+               + (f'<p>{e(r["other"])}</p>' if r["other"] else ""))
+
+        miss = f'<p class="callout warn" style="margin-top:14px"><b>Don&#39;t miss:</b> {e(g["missable"])}</p>' if g["missable"] else ""
+        fut = (f'<p class="callout warn" style="margin-top:14px"><b>Not out yet.</b> This quest opens {e(g["opens"] or "with the Forgotten Hollow update")}. '
+               'The steps come from the quest data already in the game, so details may change when it goes live.</p>') if future else ""
+        tips = ('<h2 id="tips">Tips</h2><ul class="qtips">' + "".join(f"<li>{e(t)}</li>" for t in g["tips"]) + "</ul>") if g["tips"] else ""
+        unk = ('<h2 id="unconfirmed">Still being confirmed</h2><ul class="qtips">' + "".join(f"<li>{e(t)}</li>" for t in g["unknowns"])
+               + '</ul><p class="muted">We update this page as players confirm these. Know the answer? Use the feedback box below.</p>') if g["unknowns"] else ""
+        prev, nxt = (order[i - 1] if i else None), (order[i + 1] if i + 1 < len(order) else None)
+        qnav = ('<nav class="qnav" aria-label="More quests">'
+                + (f'<a href="{qhref(prev)}"><span>← Lv {prev["lv"]}</span>{e(prev["name"])}</a>' if prev else "<span></span>")
+                + '<a class="all" href="/quests/">All quests</a>'
+                + (f'<a class="nx" href="{qhref(nxt)}"><span>Lv {nxt["lv"]} →</span>{e(nxt["name"])}</a>' if nxt else "<span></span>")
+                + "</nav>")
+
+        title = quest_title(card["name"])
+        desc = f"How to do {card['name']} in MapleStory Classic, step by step: start at {st['npc']} in {st['town'] or st['map']} (Lv {lv}), what to bring, where it drops and every reward."
+        if len(desc) > 160: desc = f"{card['name']} in MapleStory Classic, step by step: where to start, what to bring, every step and every reward."
+        ingame = f'{e(g["inGame"]).rstrip(".")}. ' if g["inGame"] else ""
+        body = (f'<h1>{e(card["name"])}: step-by-step guide</h1><p class="lede">{e(g["summary"])}</p>'
+                f'<p class="stamp" data-pagefind-ignore><b>✓ Checked {QG["checked"]}</b><span>{ingame}How sure we are: {conf(g["conf"])}</span></p>'
+                f'<p class="qverdict"><span class="verdict {vc}">{vl}</span></p>{fut}{facts}'
+                f'<h2 id="quick">The 30-second version</h2><ol class="musts">{"".join(f"<li>{m}</li>" for m in musts)}</ol>'
+                f'{miss}{start}{pre}{chain}{needs}{stepsec}{rew}{tips}{unk}{qnav}{srcs(g["sources"])}')
+        side = (f'<div class="card qside"><h3>At a glance</h3><p><span class="verdict {vc}">{vl}</span> {conf(g["conf"])}</p>'
+                f'<p><b>Level:</b> {lv}+</p><p><b>Start:</b> {e(st["npc"])}, {e(st["town"] or st["map"])}</p><p><b>Steps:</b> {len(g["steps"])}</p>'
+                '<p class="toc-s"><a href="#quick">30-second version</a><a href="#start">Where to start</a>'
+                + ('<a href="#need">What you need</a>' if needs else "") + '<a href="#steps">Step by step</a><a href="#rewards">Rewards</a>'
+                + ('<a href="#tips">Tips</a>' if tips else "") + '</p><p><a href="/quests/">← All quests</a></p></div>')
+        write(path, page(path, title, desc, body, crumbs=[("/", "Guide"), ("/quests/", "Quests"), (None, card["name"])],
+                         schema={"@context": "https://schema.org", "@type": "Article", "headline": title}, side_extra=side))
 
 def build_money():
     Mo = G["money"]
@@ -880,7 +1040,7 @@ def build_money():
     mobid = {"Orange Mushroom": 1210102, "Stump": 130100, "Red Snail": 130101, "Slime": 210100}
     vendor = "".join(f'<tr><td data-th="Drop"><span class="rw">{gicon(n)}<b>{e(n)}</b></span></td><td data-th="Dropped by">{_img(mob_src(mobid[m]), m, "sprite sm")}{e(m)}</td><td data-th="NPC pays"><b>{p:,}</b></td></tr>' for n, m, p in Mo["vendor"])
     have = {qslug(q["name"]) for q in G["quests"]}
-    qa = lambda n: f'<a href="/quests/#q-{qslug(n.split(" (")[0])}"><b>{e(n)}</b></a>' if qslug(n.split(" (")[0]) in have else f'<a href="/quests/#citizenship"><b>{e(n)}</b></a>'
+    qa = lambda n: f'<a href="{qhref(n.split(" (")[0])}"><b>{e(n)}</b></a>' if qslug(n.split(" (")[0]) in have else f'<a href="/quests/#citizenship"><b>{e(n)}</b></a>'
     quests = "".join(f'<tr><td data-th="Quest">{qa(n)}</td><td data-th="Level">{lv}</td><td data-th="Mesos"><b>{m:,}</b></td></tr>' for n, lv, m in Mo["quests"])
     bosses = "".join(f'<a class="card bosscard" href="/bosses/#{i}">{boss_sprite(bid[i], "sprite")}<h3>{e(n)}</h3><p><b>{e(v)}</b> mesos per kill</p></a>' for n, i, v in Mo["bosses"])
     crafts = "".join(f'<tr><td data-th="Craft"><span class="rw">{gicon(n.split(" /")[0].replace(" x500", ""))}<b>{e(n)}</b></span></td><td data-th="Profession">{e(p)}</td><td data-th="Profit per craft"><b>{e(v)}</b></td></tr>' for n, p, v in Mo["crafts"])
@@ -1220,7 +1380,7 @@ def main():
         import base64
         with open(b64) as f, open(os.path.join(OUT, "og.png"), "wb") as g:
             g.write(base64.b64decode(f.read()))
-    build_home(); build_leveling(); build_jobs(); build_tiers(); build_tools(); build_crafting(); build_bosses(); build_kpq(); build_quests(); build_money(); build_prices(); build_news(); build_citizenship(); build_events(); build_market(); build_updates(); build_adv(); build_secrets(); build_rules(); build_static()
+    build_home(); build_leveling(); build_jobs(); build_tiers(); build_tools(); build_crafting(); build_bosses(); build_kpq(); build_quests(); build_quest_pages(); build_money(); build_prices(); build_news(); build_citizenship(); build_events(); build_market(); build_updates(); build_adv(); build_secrets(); build_rules(); build_static()
     idx = [{"t": "Home: pick your class and level", "u": "/", "k": "page"}, {"t": "Grind spots: leveling route 1–100", "u": "/leveling/", "k": "page"},
            {"t": "Builds: all 10 jobs", "u": "/jobs/", "k": "page"}, {"t": "Tier list: best class for you", "u": "/tier-list/", "k": "page", "x": "best class ranking grinding bossing party beginner"}, {"t": "EXP calculator: time to next level", "u": "/tools/#exp", "k": "Tool", "x": "exp table hours level 100 calculator"}, {"t": "Scroll simulator", "u": "/tools/#scrolls", "k": "Tool", "x": "scroll chaos intermediate lesser greater success rate"}, {"t": "What's new", "u": "/updates/", "k": "page", "x": "changelog updates patch"}, {"t": "Crafting: what to keep for each profession", "u": "/crafting/", "k": "page", "x": "crafting smithing weaponcrafting tailoring woodcrafting leatherworking arcforge ore screw leather keep sell"}, {"t": "Job up: 1st and 2nd job advancement", "u": "/job-advancement/", "k": "page"},
            {"t": "Secrets: hidden maps and jump quests", "u": "/secrets/", "k": "page"}, {"t": "Rules: scrolls, EXP, crafting, mesos", "u": "/classic-rules/", "k": "page"}]
@@ -1268,8 +1428,15 @@ def main():
         idx.append({"t": f"{b['name']} (boss, lv {b['lv']})", "u": f"/bosses/#{b['id']}", "k": "Boss", "d": short(f"{b['where']} · comes back every {b['respawn']}"), "x": b["where"] + " respawn drops"})
     VERDICT = {"must": "Must do", "skip": "Skip it", "future": "Not out yet", "good": "Worth it", "fun": "Just for fun"}
     for q in G["quests"]:
-        idx.append({"t": q["name"], "u": f"/quests/#q-{qslug(q['name'])}", "k": "Quest", "d": short(f"{VERDICT.get(q['verdict'], '')} · Lv {q['lv']}+ · {q['npc']} in {q['town']} · {q['task']}".lstrip(" ·")),
-                    "x": f"level {q['lv']} {q['npc']} {q['town']}"})
+        gq = QGB.get(q["name"])
+        if gq:
+            v = "future" if gq["status"] == "future" else q["verdict"]
+            items = " ".join(dict.fromkeys([c["name"] for c in gq["collect"]] + [k["monster"] for k in gq["kills"]] + [c["name"] for c in gq["chain"]]))
+            idx.append({"t": q["name"], "u": qhref(q), "k": "Quest", "d": short(f"{VERDICT.get(v, '')} · Lv {q['lv']}+ · {gq['start']['npc']} in {gq['start']['town'] or gq['start']['map']} · {gq['card']}".lstrip(" ·")),
+                        "x": f"level {q['lv']} {gq['start']['npc']} {gq['start']['town']} walkthrough step by step how to {items}"})
+        else:
+            idx.append({"t": q["name"], "u": qhref(q), "k": "Quest", "d": short(f"{VERDICT.get(q['verdict'], '')} · Lv {q['lv']}+ · {q['npc']} in {q['town']} · {q['task']}".lstrip(" ·")),
+                        "x": f"level {q['lv']} {q['npc']} {q['town']}"})
     for i, m in enumerate(SEC["mechanics"]):
         idx.append({"t": m["topic"], "u": f"/classic-rules/#m{i}", "k": "Rules", "d": short(tidy(m["facts"][0]) if m.get("facts") else "")})
     for it in PC_ITEMS:
@@ -1301,7 +1468,7 @@ def main():
             if it["u"] in EXTRA: it["x"] = (it.get("x", "") + " " + EXTRA[it["u"]]).strip()
     with open(os.path.join(OUT, "search.json"), "w") as f:
         json.dump(idx, f, separators=(",", ":"))
-    paths = ["/", "/leveling/", "/jobs/", "/tier-list/", "/tools/", "/crafting/", "/news/", "/events/", "/citizenship/", "/free-market/", "/bosses/", "/party-quest/", "/quests/", "/money-making/", "/prices/", "/updates/", "/job-advancement/", "/secrets/", "/classic-rules/", "/about/", "/privacy/"] + [f"/jobs/{j['id']}/" for _, j in ALLJOBS]
+    paths = ["/", "/leveling/", "/jobs/", "/tier-list/", "/tools/", "/crafting/", "/news/", "/events/", "/citizenship/", "/free-market/", "/bosses/", "/party-quest/", "/quests/", "/money-making/", "/prices/", "/updates/", "/job-advancement/", "/secrets/", "/classic-rules/", "/about/", "/privacy/"] + [f"/jobs/{j['id']}/" for _, j in ALLJOBS] + [f"/quests/{g['slug']}/" for g in QG["quests"]]
     with open(os.path.join(OUT, "sitemap.xml"), "w") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"  <url><loc>{SITE}{p}</loc><lastmod>{LASTMOD_SEEN.get(p, {}).get('d', TODAY)}</lastmod></url>\n" for p in paths) + "</urlset>\n")
     with open(os.path.join(OUT, "robots.txt"), "w") as f:
