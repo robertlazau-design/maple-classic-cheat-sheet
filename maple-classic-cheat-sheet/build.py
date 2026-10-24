@@ -1205,6 +1205,11 @@ def main():
         if os.path.exists(p): shutil.copy(p, OUT)
     if os.path.isdir(os.path.join(ROOT, "src", "fonts")):
         shutil.copytree(os.path.join(ROOT, "src", "fonts"), os.path.join(OUT, "fonts"))
+    key_file = os.path.join(ROOT, "src", "indexnow-key.txt")  # IndexNow: search engines fetch /<key>.txt to check pings are ours
+    if os.path.exists(key_file):
+        key = open(key_file).read().strip()
+        with open(os.path.join(OUT, f"{key}.txt"), "w") as f:
+            f.write(key)
     with open(os.path.join(OUT, "site.webmanifest"), "w") as f:
         json.dump({"name": NAME, "short_name": "Maple Guide", "description": "MapleStory Classic builds, leveling and secrets",
                    "start_url": "/", "scope": "/", "display": "standalone", "background_color": "#120a05", "theme_color": "#120a05",
