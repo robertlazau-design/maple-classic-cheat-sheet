@@ -1,0 +1,31 @@
+# Tells Bing and the other IndexNow search engines (Yandex, Seznam, Naver...) which pages changed,
+# right after Vercel deploys a merge to main. Google doesn't use IndexNow; it reads the sitemap.
+name: IndexNow
+
+on:
+  push:
+    branches: [main]
+    paths: ["maple-classic-cheat-sheet/**"]
+  workflow_dispatch:
+    inputs:
+      all:
+        description: "Submit every page in the sitemap"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Wait for the deploy, then submit changed pages
+        env:
+          BEFORE: ${{ github.event.before }}
+          SUBMIT_ALL: ${{ github.event.inputs.all }}
+        run: python3 .github/scripts/indexnow.py
