@@ -84,6 +84,15 @@ Bump `CHECKED` and `CHECKED_ISO` at the top of build.py when data is re-verified
 - **Slang and filler** live in `src/site.js`: `STOP` (words ignored), `LVW` (level talk, so "where to train 35" becomes a level search) and `SYN` (archer → bowman, fp → f/p, 2nd → second...). Add a word there when players search for something and get the snail.
 - **Tap-to-explain:** `GLOSSARY` terms are wrapped in `<abbr>` once per section by `gloss()`; `conf()` tags carry what each level means. `site.js` turns any `abbr[title]`, `.chip[title]` or `[data-tip]` into a tap bubble (`.tipbub`), because hover titles never show on phones.
 
+## SEO rules
+
+- **Titles** at most 60 characters, **descriptions** 120 to 158. Google cuts anything longer. Every page has exactly one `<h1>` and no skipped heading levels.
+- **Build pages** take their title from `job_title()`: "Stats & Skills", because players search "cleric stats" and "warrior skill guide", not "AP & SP".
+- **Dates.** `data/lastmod.json` keeps a hash of each page's `<main>` and the date it last changed. Running `build.py` locally updates it, so **commit `data/lastmod.json` with every content change**; on Vercel it's read-only and any page that changed without it gets the deploy date. The sitemap `<lastmod>` and Article `dateModified` both come from it.
+- **Structured data.** `page()` gives Article pages (leveling, builds) the full Article schema (author, publisher, image, dates). The home page has WebSite plus Organization with `icon-512.png` as the logo. Breadcrumbs come from `crumbs`.
+- **Icons and app manifest.** `src/favicon.svg`, `favicon-48.png`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`; `site.webmanifest` is generated in `main()`.
+- **Font.** Nunito is self-hosted at `src/fonts/nunito-latin.woff2` (variable 200 to 1000, latin, OFL license) and preloaded. Don't add Google Fonts links back; they cost an extra connection before the first paint.
+
 ## Editing data: the #1 gotcha
 
 - The JSON files mix hand formatting (indent 2 with compact one-line records). **Edit at text level** with exact string replace or insert.
