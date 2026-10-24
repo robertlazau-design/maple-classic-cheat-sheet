@@ -2,7 +2,7 @@
 """Builds the Maple Classic Guide into ./public as plain static HTML.
 Edit the JSON in ./data, run `python3 build.py`, commit, and Vercel serves ./public.
 No dependencies."""
-import json, os, re, shutil, html
+import json, os, re, shutil, html, urllib.parse
 from datetime import date
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -30,7 +30,10 @@ SHORTHAND = {"MG": "Magic Guard", "IMR": "Improved MP Recovery", "MMI": "Max MP 
 GLOSSARY = {"STR": "Strength", "DEX": "Dexterity", "INT": "Intelligence", "LUK": "Luck", "AP": "Ability Points: 5 per level, put into stats",
             "SP": "Skill Points, put into skills", "HP": "Health", "MP": "Mana", "ACC": "Accuracy", "ATK": "Attack",
             "WDEF": "Weapon Defense", "EHP": "Effective HP (how much damage you can take)", "NX": "Nexon cash currency", "EXP": "Experience",
-            "AoE": "Hits several monsters at once", "Lv": "Level", "PQ": "Party quest", "KPQ": "Kerning City Party Quest", "FM": "Free Market"}
+            "AoE": "Hits several monsters at once", "Lv": "Level", "PQ": "Party quest", "KPQ": "Kerning City Party Quest", "FM": "Free Market",
+            "F/P": "Fire/Poison Wizard", "I/L": "Ice/Lightning Wizard", "NPC": "A character you talk to: shops, quests and job advancement",
+            "UTC": "World time. US Pacific is 7 hours behind (8 hours from Nov 1)", "PDT": "US Pacific time", "mesos": "MapleStory's money",
+            "respawn": "How long until it shows up again"}
 _GLOSS_RE = re.compile(r"\b(" + "|".join(sorted(GLOSSARY, key=len, reverse=True)) + r")(?=\b|\d)")
 
 def gloss(html_text):
@@ -38,6 +41,8 @@ def gloss(html_text):
     parts = re.split(r"(<script.*?</script>|<[^>]+>)", html_text, flags=re.S)
     seen = set()
     for i, part in enumerate(parts):
+        if part.startswith("<h2"):
+            seen.clear()  # explain each term once per section, so a tap is never far away
         if not part or part.startswith("<"):
             continue
         def sub(m):
@@ -61,7 +66,9 @@ def tidy(s):
 def conf(c):
     c = (c or "medium").lower()
     label = {"high": "Confirmed", "medium": "Likely", "low": "Unconfirmed"}.get(c, c)
-    return f'<span class="chip c-{e(c)}" title="How sure we are">{label}</span>'
+    why = {"high": "Several Classic sources agree.", "medium": "One Classic source, or partly our estimate. Could still change.",
+           "low": "Not verified yet, or not in the game yet."}.get(c, "How sure we are")
+    return f'<span class="chip c-{e(c)}" title="{why}">{label}</span>'
 
 SOURCE_NAMES = {"meowdb.com": "NiaMeowDB", "metaroad.gg": "Metaroad", "mapleclassic.wiki": "Classic Wiki", "maplestorywiki.net": "MapleStory Wiki",
                 "maplestory.quest": "maplestory.quest", "maplestoryguide.wiki": "maplestoryguide.wiki"}
@@ -130,7 +137,7 @@ MORE_EMOJI = {"/news/": "📰", "/events/": "🎃", "/citizenship/": "🏠", "/f
 # Top bar: five menus instead of 17 links. Every page in NAV should appear in exactly one group.
 NAV_GROUPS = [
     ("News", [("/news/", "News", "Launch day, patch notes, deadlines"), ("/events/", "Events", "Mark of the Beta, Halloween, daily gifts"), ("/updates/", "What's new", "Changes to this guide")]),
-    ("Leveling", [("/leveling/", "Grind spots", "Where to train at every level"), ("/quests/", "Quests", "Best quests by level"), ("/party-quest/", "KPQ", "Every answer and combo"), ("/bosses/", "Bosses", "Respawn timers and drops")]),
+    ("Leveling", [("/leveling/", "Grind spots", "Where to train at every level"), ("/quests/", "Quests", "Best quests by level"), ("/party-quest/", "KPQ", "Party quest: every answer and combo"), ("/bosses/", "Bosses", "Respawn timers and drops")]),
     ("Classes", [("/jobs/", "Builds", "AP and SP for all 10 jobs"), ("/tier-list/", "Tier list", "Best class for how you play"), ("/job-advancement/", "Job up", "1st and 2nd job tests")]),
     ("Mesos", [("/prices/", "Price check", "What it's worth + this week's farms"), ("/money-making/", "Mesos", "What sells and what to keep"), ("/free-market/", "Market", "Shops, prices and scams"), ("/crafting/", "Crafting", "What each profession needs"), ("/citizenship/", "Citizenship", "Grades, perks and housing")]),
     ("More", [("/tools/", "Tools", "EXP calculator, scroll simulator"), ("/secrets/", "Secrets", "Hidden maps and jump quests"), ("/classic-rules/", "Rules", "How Classic works")]),
@@ -158,7 +165,7 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
             ("/leveling/", "M9 4.5 3.5 6.5v13l5.5-2 6 2 5.5-2v-13l-5.5 2zM9 4.5v13M15 6.5v13", "Grind"),
             ("/jobs/", "M14.5 3.5h6v6L10 20l-6-6zM7 11l6 6M3.5 20.5l3-3", "Builds"),
             ("/tier-list/", "M8 3.5h8V9a4 4 0 0 1-8 0zM8 5.5H5a3 3 0 0 0 3 4.5M16 5.5h3a3 3 0 0 1-3 4.5M12 13v4M8.5 20.5h7M10 17h4", "Tiers"),
-            ("/secrets/", "M12 3l2 5.5 5.5 2-5.5 2L12 18l-2-5.5-5.5-2 5.5-2zM19 15.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z", "Secrets")]
+            ("/events/", "M4.5 6.5h15v13h-15zM4.5 10.5h15M8.5 4v4M15.5 4v4M8 14h2M14 14h2M8 17h2", "Events")]
     cur = "/jobs/" if path.startswith("/jobs/") else path
     tabbar = "".join(f'<a href="{h}"{" aria-current=page" if h == cur else ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{d}"/></svg>{t}</a>' for h, d, t in tabs)
     in_more = cur not in [h for h, _, _ in tabs]
@@ -196,7 +203,7 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 {hero}
 <div class="wrap">
 <div class="layout{" has-side" if side_extra else ""}">
-<main id="main">{bc}{gloss(body)}{tipjar(path)}{feedback(path)}</main>
+<main id="main"{"" if path in NO_INDEX else " data-pagefind-body"}>{_pf_skip(bc)}{gloss(body)}{_pf_skip(tipjar(path))}{_pf_skip(feedback(path))}</main>
 <aside class="side" aria-label="Sidebar"><div class="sticky">{side_extra}</div></aside>
 </div></div>
 <footer class="site-f"><div class="wrap">
@@ -219,8 +226,14 @@ def coffee_btn(big=False):
     if not COFFEE: return ""
     return f'<a class="coffee{" big" if big else ""}" href="{COFFEE}" target="_blank" rel="noopener">☕ Buy me a coffee</a>'
 
+def _pf_skip(s):
+    """Keep a block out of the full-text search index."""
+    return re.sub(r"^<(\w+)", r"<\1 data-pagefind-ignore", s, count=1) if s else s
+
+NO_INDEX = {"/404", "/privacy/"}
+
 def stamp():
-    return f'<p class="stamp"><b>✓ Checked {CHECKED}</b><span>{DATA_NOTE}. Tags show how sure we are: {conf("high")} {conf("medium")} {conf("low")}</span></p>'
+    return f'<p class="stamp" data-pagefind-ignore><b>✓ Checked {CHECKED}</b><span>{DATA_NOTE}. Tags show how sure we are: {conf("high")} {conf("medium")} {conf("low")}</span></p>'
 
 def write(path, text):
     d = os.path.join(OUT, path.strip("/"))
@@ -293,7 +306,10 @@ def route_li(r):
 def build_home():
     route = sorted([r for r in LEV["route"]], key=lambda r: ("Nov 18" in r["map"], r["from"], r["to"]))
     fdata = {"route": [{"from": r["from"], "to": r["to"], "map": tidy(r["map"]), "monsters": r.get("monsters", ""), "monsterLevel": r.get("monsterLevel", ""), "confidence": r.get("confidence", "medium"),
+                        "region": r.get("region", "").replace("Victoria Island - ", ""), "mm": next((v for k, v in IMG["routeMaps"].items() if k in r["map"]), None),
+                        "opens": "2026-11-18T16:00:00Z" if "Nov 18" in r["map"] else None,
                         "sprites": [IMG["mobs"][m] for m in mobs_in(r.get("monsters", ""), 2)]} for r in route],
+             "gloss": {k: GLOSSARY[k] for k in ("AP", "SP", "STR", "DEX", "INT", "LUK", "HP", "MP")},
              "classes": [{"id": c["id"], "name": c["name"], "npc": c["firstJob"]["npc"], "town": c["firstJob"]["town"], "sprite": IMG["classNpc"][c["id"]][0],
                           "jobs": [j["id"] for j in c["jobs"]], "start": JOBS["creation"]["classes"][c["id"]]["stats"]} for c in JOBS["classes"]],
              "jobs": {j["id"]: {"name": j["name"], "cls": c["id"], "weapon": j["weapon"], "play": tidy(j["playstyle"]), "adv": {"test": tidy(j["advancement"]["test"])},
@@ -690,7 +706,7 @@ def faq_schema(rows):
         {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in rows]}
 
 def guide_stamp(extra=""):
-    return f'<p class="stamp"><b>✓ Checked {G["checked"]}</b><span>{extra}Tags show how sure we are: {conf("high")} {conf("medium")} {conf("low")}</span></p>'
+    return f'<p class="stamp" data-pagefind-ignore><b>✓ Checked {G["checked"]}</b><span>{extra}Tags show how sure we are: {conf("high")} {conf("medium")} {conf("low")}</span></p>'
 
 def build_bosses():
     B = G["bosses"]
@@ -858,6 +874,13 @@ def build_money():
                                  "How to make mesos in MapleStory Classic: Free Market prices, what to sell and keep, the best meso quests, boss meso drops, crafting profit and merching tips.", body,
                                  crumbs=[("/", "Guide"), (None, "Money making")], schema=faq_schema(Mo["faq"]), side_extra=side))
 
+PC_ITEMS = []  # filled by build_prices, read by the search index
+
+def short(s, n=110):
+    """Trim a context line for search results at a word boundary."""
+    s = re.sub(r"\s+", " ", str(s or "")).strip()
+    return s if len(s) <= n else s[:n].rsplit(" ", 1)[0].rstrip(",;:·(") + "…"
+
 def build_prices():
     P = PRICES
     for k, v in CRAFT["items"].items():
@@ -870,6 +893,7 @@ def build_prices():
     quoted = {n: v for n, v in P["prices"].items()}
     names = sorted(set(icons) | set(CRAFT["items"]) | set(quoted), key=str.lower)
     items = [{"n": n, "ic": icons.get(n), "from": CRAFT["items"].get(n, {}).get("from", []), "use": uses.get(n, []), "p": quoted.get(n)} for n in names]
+    PC_ITEMS[:] = items
     pdata = {"items": items, "sites": P["sites"], "week": P["week"], "api": API}
     chips = "".join(f'<button type="button" class="pc-chip" data-item="{e(n)}">{gicon(n)}{e(n)}</button>' for n in P["popular"])
     mobs = CRAFT["mobs"]
@@ -1152,15 +1176,22 @@ def main():
     idx = [{"t": "Home: pick your class and level", "u": "/", "k": "page"}, {"t": "Grind spots: leveling route 1–100", "u": "/leveling/", "k": "page"},
            {"t": "Builds: all 10 jobs", "u": "/jobs/", "k": "page"}, {"t": "Tier list: best class for you", "u": "/tier-list/", "k": "page", "x": "best class ranking grinding bossing party beginner"}, {"t": "EXP calculator: time to next level", "u": "/tools/#exp", "k": "Tool", "x": "exp table hours level 100 calculator"}, {"t": "Scroll simulator", "u": "/tools/#scrolls", "k": "Tool", "x": "scroll chaos intermediate lesser greater success rate"}, {"t": "What's new", "u": "/updates/", "k": "page", "x": "changelog updates patch"}, {"t": "Crafting: what to keep for each profession", "u": "/crafting/", "k": "page", "x": "crafting smithing weaponcrafting tailoring woodcrafting leatherworking arcforge ore screw leather keep sell"}, {"t": "Job up: 1st and 2nd job advancement", "u": "/job-advancement/", "k": "page"},
            {"t": "Secrets: hidden maps and jump quests", "u": "/secrets/", "k": "page"}, {"t": "Rules: scrolls, EXP, crafting, mesos", "u": "/classic-rules/", "k": "page"}]
+    MAIN_STAT = {"warrior": "str strength", "magician": "int intelligence mage wizard", "bowman": "dex dexterity archer", "thief": "luk luck"}
     for c, j in ALLJOBS:
-        idx.append({"t": f"{j['name']} build", "u": f"/jobs/{j['id']}/", "k": c["name"], "x": j["weapon"] + " " + c["name"]})
+        idx.append({"t": f"{j['name']} build", "u": f"/jobs/{j['id']}/", "k": c["name"], "d": short(f"{c['name']} job · {j['weapon']}", 90),
+                    "x": j["weapon"] + " " + c["name"] + " build stats ap sp skills " + MAIN_STAT.get(c["id"], "")})
     for r in sorted(LEV["route"], key=lambda r: (r["from"], r["to"])):
-        idx.append({"t": f"Lv {r['from']}–{r['to']}: {tidy(r['map'])[:70]}", "u": f"/leveling/#lv-{r['from']}-{r['to']}", "k": "Grind spot", "x": r.get("monsters", ""), "lo": r["from"], "hi": r["to"]})
+        best = [b for b in (r.get("bestFor") or []) if b != "all"]
+        ctx = f"{r.get('region', '').replace('Victoria Island - ', '')} · {r.get('monsters', '')} · monsters lv {r.get('monsterLevel', '')}" + (f" · best for {', '.join(best)}" if best else "")
+        idx.append({"t": f"Lv {r['from']}–{r['to']}: {tidy(r['map'])[:70]}", "u": f"/leveling/#lv-{r['from']}-{r['to']}", "k": "Grind spot",
+                    "d": ("Opens Nov 18 · " if "Nov 18" in r["map"] else "") + short(ctx), "x": r.get("monsters", "") + " where to train level grind", "lo": r["from"], "hi": r["to"]})
     for s_ in SEC["secrets"]:
-        idx.append({"t": s_["name"], "u": "/secrets/#" + re.sub(r"[^a-z]+", "-", s_["name"].split(" (")[0].lower()).strip("-"), "k": "Secret", "x": s_["region"] + " " + s_["type"]})
+        idx.append({"t": s_["name"], "u": "/secrets/#" + re.sub(r"[^a-z]+", "-", s_["name"].split(" (")[0].lower()).strip("-"), "k": "Secret",
+                    "d": short(f"{s_['type'].capitalize()} · {s_['region'].replace('Victoria Island - ', '')} · {s_['howToGet']}"), "x": s_["region"] + " " + s_["type"] + " jq hidden"})
     idx += [{"t": "News: launch day, events and patch notes", "u": "/news/", "k": "page", "x": "patch notes events launch halloween guild housing deadline maintenance"}]
     for ev in G["news"]["events"]:
-        idx.append({"t": ev["name"] + " (" + ev["when"] + ")", "u": f"/news/#e-{qslug(ev['name'])}", "k": "Event", "x": ev["text"][:80]})
+        idx.append({"t": ev["name"] + " (" + ev["when"] + ")", "u": f"/news/#e-{qslug(ev['name'])}", "k": "Event", "d": short(ev["text"]),
+                    "x": ev["text"] + (" third job" if "3rd job" in ev["name"] else "") + (" hpq henesys party quest" if "Moon Bunny" in ev["name"] else "")})
     idx += [{"t": "Which Magician? F/P vs I/L vs Cleric", "u": "/jobs/#which-magician", "k": "Builds", "x": "magician mage wizard cleric fire poison ice lightning which job best pick"},
             {"t": "How to level a Cleric", "u": "/jobs/cleric/#how-to-level", "k": "Builds", "x": "cleric leveling undead heal holy arrow training spot"},
             {"t": "Where should I train? Type your level", "u": "/leveling/#quick", "k": "Leveling", "x": "where to level train grind 1 10 20 30 fast route beginner directions how to get there"},
@@ -1186,11 +1217,40 @@ def main():
             {"t": "Level 60+: where to train", "u": "/leveling/#endgame", "k": "Grind spot", "x": "60 70 80 endgame sleepy dungeon forest of evil sanctuary", "lo": 55, "hi": 100},
             {"t": "Hit chance checker (accuracy)", "u": "/leveling/#hit", "k": "Tool", "x": "accuracy acc miss hit chance avoid"}]
     for b in G["bosses"]:
-        idx.append({"t": f"{b['name']} (boss, lv {b['lv']})", "u": f"/bosses/#{b['id']}", "k": "Boss", "x": b["where"] + " respawn drops"})
+        idx.append({"t": f"{b['name']} (boss, lv {b['lv']})", "u": f"/bosses/#{b['id']}", "k": "Boss", "d": short(f"{b['where']} · comes back every {b['respawn']}"), "x": b["where"] + " respawn drops"})
+    VERDICT = {"must": "Must do", "skip": "Skip it", "future": "Not out yet", "good": "Worth it", "fun": "Just for fun"}
     for q in G["quests"]:
-        idx.append({"t": q["name"], "u": f"/quests/#q-{qslug(q['name'])}", "k": "Quest", "x": f"level {q['lv']} {q['npc']} {q['town']}"})
+        idx.append({"t": q["name"], "u": f"/quests/#q-{qslug(q['name'])}", "k": "Quest", "d": short(f"{VERDICT.get(q['verdict'], '')} · Lv {q['lv']}+ · {q['npc']} in {q['town']} · {q['task']}".lstrip(" ·")),
+                    "x": f"level {q['lv']} {q['npc']} {q['town']}"})
     for i, m in enumerate(SEC["mechanics"]):
-        idx.append({"t": m["topic"], "u": f"/classic-rules/#m{i}", "k": "Rules"})
+        idx.append({"t": m["topic"], "u": f"/classic-rules/#m{i}", "k": "Rules", "d": short(tidy(m["facts"][0]) if m.get("facts") else "")})
+    for it in PC_ITEMS:
+        wk = PRICES["week"].rsplit(",", 1)[0]
+        bits = ([f"~{it['p'][0]:,} mesos ({wk})"] if it["p"] else []) + ([f"Dropped by {', '.join(it['from'][:3])}"] if it["from"] else []) + ([f"Crafters use it for {', '.join(dict.fromkeys(it['use']))}"] if it["use"] else [])
+        idx.append({"t": it["n"], "u": "/prices/?item=" + urllib.parse.quote(it["n"]), "k": "Item", "d": short(" · ".join(bits) or "Check its live price"), "x": "price worth sell drop item"})
+    later = "/news/#e-" + qslug("3rd job test server")
+    idx += [{"t": "Zakum, El Nath, Orbis and Ludibrium", "u": later, "k": "Not in Classic yet", "d": "Classic is Victoria Island and Maple Island for now. Ossyria has no date yet.",
+             "x": "zakum el nath orbis ludibrium ossyria aqua road leafre horntail papulatus pianus lpq opq"},
+            {"t": "4th job", "u": later, "k": "Not in Classic yet", "d": "The level cap is 100, and 3rd job is planned for 2027.", "x": "fourth job 4th job advancement"}]
+    PAGE_DESC = {h: d for _, items in NAV_GROUPS for h, _, d in items}
+    PAGE_DESC["/"] = "Pick your class, job and level. Get your grind spot, AP and SP."
+    EXTRA = {"/": "new player start beginner noob first time plan", "/tier-list/": "solo which class should i play pick main", "/job-advancement/": "advance advancement 1st 2nd first second job test marble",
+             "/secrets/": "jq hidden secret", "/money-making/": "money"}
+    blurb = {ev["id"]: ev["blurb"] for ev in L["events"]["now"]}
+    HAND = {"/tools/#exp": "How long until your next level, from your EXP per hour", "/tools/#scrolls": "Practice scrolling with Classic's success rates, for free",
+            "/jobs/#which-magician": "Fire/Poison, Ice/Lightning or Cleric, side by side", "/jobs/cleric/#how-to-level": "Undead maps, the Heal change and mana tips",
+            "/leveling/#quick": "Type your level and get the spot, plus the walk there", "/jobs/#start": "Your starting stats and your first skill points",
+            "/prices/#farms": f"The four mobs worth hunting the week of {PRICES['week'].rsplit(',', 1)[0]}", "/citizenship/#grades": "What each citizenship grade unlocks",
+            "/citizenship/#housing": "How to get a home and what it's good for", "/citizenship/#points": "What to donate for citizenship points",
+            "/events/#mark": blurb.get("mark", ""), "/events/#halloween": blurb.get("halloween", ""), "/events/#journey": blurb.get("journey", ""),
+            "/free-market/#shop": "How to open your own shop in the Free Market", "/free-market/#scams": "Common trade tricks and how to dodge them",
+            "/free-market/#bots": "Reporting bots, and why buying mesos gets you banned", "/leveling/#endgame": "Where to train once the usual spots run out",
+            "/leveling/#hit": "Will you miss? Check your accuracy against a monster"}
+    for it in idx:
+        if it["u"] in HAND: it.setdefault("d", HAND[it["u"]])
+        if it["k"] == "page":
+            it.setdefault("d", PAGE_DESC.get(it["u"], ""))
+            if it["u"] in EXTRA: it["x"] = (it.get("x", "") + " " + EXTRA[it["u"]]).strip()
     with open(os.path.join(OUT, "search.json"), "w") as f:
         json.dump(idx, f, separators=(",", ":"))
     paths = ["/", "/leveling/", "/jobs/", "/tier-list/", "/tools/", "/crafting/", "/news/", "/events/", "/citizenship/", "/free-market/", "/bosses/", "/party-quest/", "/quests/", "/money-making/", "/prices/", "/updates/", "/job-advancement/", "/secrets/", "/classic-rules/", "/about/", "/privacy/"] + [f"/jobs/{j['id']}/" for _, j in ALLJOBS]

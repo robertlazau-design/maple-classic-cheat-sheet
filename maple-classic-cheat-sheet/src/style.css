@@ -744,3 +744,26 @@ img.rotten{filter:hue-rotate(70deg) saturate(.75) brightness(.85)}
 .pc-sites{padding-left:20px}
 .pc-list summary{cursor:pointer;font-weight:800;color:var(--ink);padding:12px 16px;background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow)}
 .pc-list[open] summary{margin-bottom:10px}
+
+/* search: a context line under every hit, full-text matches from Pagefind, "try one of these" chips */
+#hits li a{align-items:flex-start}
+#hits li a .h-t{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:inherit;font-weight:inherit;text-transform:none;letter-spacing:0;color:var(--ink);white-space:normal}
+#hits li a .h-t small{font-size:13.5px;font-weight:600;color:var(--muted);line-height:1.4}
+#hits li a .h-t i{font-style:normal;font-weight:600;color:var(--muted)}
+#hits li a .h-k{padding-top:3px}
+#hits li.pf small mark{background:var(--gold-soft);color:var(--ink);border-radius:3px;padding:0 2px}
+#hits li.h-sec{padding:12px 12px 4px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+#hits li.empty div{line-height:1.45}
+.h-try{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}
+.h-try button{border:0;border-radius:999px;background:var(--pill);color:var(--ink);font:700 13.5px var(--font);padding:7px 12px;cursor:pointer}
+
+/* tap to explain: dotted words and Confirmed/Likely tags */
+.chip[title]{cursor:help}
+abbr[title]:focus-visible,.chip[title]:focus-visible{outline:2px solid var(--maple);outline-offset:2px;border-radius:4px}
+.tipbub{position:fixed;left:0;top:0;z-index:70;max-width:min(300px,calc(100vw - 20px));background:var(--ink);color:var(--bg);font-size:14.5px;font-weight:600;line-height:1.4;padding:10px 13px;border-radius:12px;box-shadow:0 14px 30px -10px rgba(0,0,0,.55);opacity:0;visibility:hidden;transition:opacity .15s;pointer-events:none}
+.tipbub.on{opacity:1;visibility:visible;pointer-events:auto}
+.tipbub b{font-weight:900;margin-right:3px}
+
+/* your run: minimap of the spot, and spots that aren't open yet */
+.spot-mm{display:block;max-width:100%;max-height:120px;margin:8px 0 4px;border-radius:8px;background:var(--bg)}
+.box .soon{margin:10px 0 0;font-size:14px;color:var(--muted)}

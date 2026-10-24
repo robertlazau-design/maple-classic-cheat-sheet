@@ -2,6 +2,17 @@
  "entries": [
   {
    "date": "2026-10-23",
+   "title": "Search that understands you, and tap-to-explain",
+   "items": [
+    "Search now gets plain questions like \"where to train 35\" or \"what class should I play\", knows player slang (archer, sin, F/P, 2nd job), finds 124 items (with this week's price and drops where we have them), and searches every word on every page.",
+    "Every search result has a one-line \"what is this\" under it, like the town, the monsters and who it's best for.",
+    "Tap any dotted word (AP, KPQ, mesos, UTC...) or a Confirmed / Likely tag to see what it means. Works on phones now, not just with a mouse.",
+    "Your run: shows the minimap of your grind spot, says the monster level clearly, and spots that aren't open yet (Forgotten Hollow) wait until Nov 18.",
+    "The phone tab bar has Events in it now. Secrets moved to More."
+   ]
+  },
+  {
+   "date": "2026-10-23",
    "title": "Price check, money farms and walking directions",
    "items": [
     "New Price check page: search any item, see this week's price for 41 of them, then jump to NiaMeowDB, MesoWatch or HubCW for the live number. One tap copies the item name so you can paste it in.",
