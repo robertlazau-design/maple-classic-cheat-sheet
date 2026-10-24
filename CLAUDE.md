@@ -49,6 +49,7 @@ Robert's standing ask is "fun, clear, and easy to understand and read."
 - `launch.json`: citizenship and housing, events (Mark of the Beta, The Journey Begins, Halloween), market, endgame (Lv60+ maps and the hit checker), home deadlines, and extra item icons that merge into `G["icons"]`.
 - `jobs.json`, `leveling.json`, `secrets.json` (the Rules page is `SEC["mechanics"]`), `crafting.json`, `tiers.json`, `exp.json`, `images.json` (mob, NPC and map IDs), `updates.json` (the What's new changelog).
 - `directions.json`: map-by-map walks from the nearest town, checked with NiaMeowDB's Pathfinder (`?from=<id>&to=<id>`, 9-digit Classic map IDs). `maps` is keyed by the exact map name used in route text; `alias` maps other spellings; `bosses` maps a boss id to its map. `go_html()` renders one walk and `route_go()` finds map names inside leveling, secrets and farm text. No working route yet for Florina Beach.
+- `questguides.json`: one step-by-step walkthrough per quest card (matched by `name`; `quests` keeps guides.json order). `build_quest_pages()` writes `/quests/<slug>/`, and `build_quests()` takes the card's task, rewards, EXP, mesos and note from here, so fix quest facts in this file, not in `guides.json` → `quests`. Its `icons` merge into the icon lookup. Classic NPC and mob IDs differ from GMS: only use maplestory.io IDs checked by exact name (`start.npcId` overrides the card's NPC sprite).
 - `prices.json`: the /prices/ page. `prices` holds NiaMeowDB "usual price, last 24 hours" quotes (individual prices with credit are OK under their reuse terms; never copy their data files). `picks` are this week's money farms, `popular` the chips, `sites` the live-price links.
 
 **Pages**
@@ -59,6 +60,7 @@ Robert's standing ask is "fun, clear, and easy to understand and read."
 | `/news/`, `/events/`, `/leveling/` (with `#endgame` and `#hit`) | their own builders |
 | `/jobs/` + 10 job pages, `/tier-list/`, `/bosses/`, `/party-quest/` | their own builders |
 | `/quests/`, `/citizenship/`, `/money-making/`, `/free-market/` | their own builders |
+| `/quests/<slug>/` (37 walkthroughs, ticks saved in `mccs-steps`; finishing every step marks the quest done in `mccs-quests`) | `build_quest_pages` |
 | `/crafting/`, `/tools/`, `/job-advancement/`, `/secrets/`, `/classic-rules/` | their own builders |
 | `/updates/`, `/about/`, `/privacy/` | their own builders |
 
