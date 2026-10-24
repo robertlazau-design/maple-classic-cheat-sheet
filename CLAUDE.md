@@ -71,9 +71,11 @@ Robert's standing ask is "fun, clear, and easy to understand and read."
 - the home `cards`
 - the search index (`idx`), with a `d` context line
 - the sitemap `paths`
-- an `updates.json` entry
+- an `updates.json` entry (see "What's new pop-up" below)
 
 Bump `CHECKED` and `CHECKED_ISO` at the top of build.py when data is re-verified.
+
+**What's new pop-up.** Every change that ships to players gets an `updates.json` entry, newest first. The home page embeds the 3 newest (`whatsnew_data()`), and `src/site.js` pops up the ones a visitor hasn't closed yet (first visit: the newest only; returning: everything since the entry they last closed, max 2; key `mccs-seen-update`). Write items for that little window: 3-5 short lines, player words, no jargon. Changing an entry's date or title shows it again to everyone. A local build prints a WARNING when pages changed after the newest entry's date.
 
 **Components to reuse**
 

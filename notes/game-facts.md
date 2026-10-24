@@ -56,7 +56,7 @@
 - One world, **Windia**, with 20 channels. 3 character slots per account. Deleting one starts a waiting period (about 5 min per meowdb).
 - Level cap **100**. 1st job at Lv10 for every class, Magician included. 2nd job at Lv30 from the same instructor.
 - Instructors: Dances with Balrog, Grendel, Athena Pierce, Dark Lord.
-- Equipment you can get stops at **Lv50** for now.
+- Most equipment you can get stops at **Lv50** for now. Exception: John's Present (Lv65) gives Lv60 Pink-Flowered Earrings [meowdb item page] plus job gloves (research says Lv60; not double-checked).
 
 **What's in the game**
 - Launch content is Maple Island and Victoria Island only. No Ossyria, Aqua Road, Ludibrium or Leafre.
@@ -173,7 +173,7 @@
   - U4N puts Forgotten Hollow mobs in Sanctuary. That's wrong.
 - **Forgotten Hollow (Nov 18):**
   - Mobs: Myewood 54, Rotten Mushroom 56, Sporewood 59, plus Rotten Mushmom (Lv60, 86,400 HP) in Someone Else's Grave.
-  - Entrances: the Tree Tunnel north of Ellinia (quest "Welcome to the Hollow", Grendel, Lv39) or deep in Sleepywood.
+  - Entrances: the Tree Tunnel north of Ellinia or deep in Sleepywood. Older notes tie the Tree Tunnel to the quest "Welcome to the Hollow" (Grendel, Lv39), but maplestory.quest marks that quest closed-test only, so it may not be the launch way in.
 - **Quests at 55+:**
   - John's Present ×3 (Lv65; these are the Deep Forest of Patience jump quests, were Lv45): 25,900 EXP each.
   - Lv57 citizenship arcs.
@@ -302,7 +302,7 @@
 ## 10. Economy, Free Market and Cash Shop
 
 **Free Market**
-- 11 rooms. Per the wiki, the portals are in Perion and Henesys Market; verify in game.
+- 20 rooms. Rooms 12-20 were added in the Oct 21 Grand Launch patch [multi: meowdb map 080002000 change log, ms-classic.com]. Portals are in Perion and Henesys Market [multi: wiki, ms-classic.com].
 - No search or auction house; shops spill across channels. Return Scrolls, teleport rocks and Mystic Door are blocked inside.
 
 **Store permits**
@@ -351,7 +351,7 @@
 ## 11. Disputed: don't "fix" these without new evidence
 
 - **Taxi 90% off for Beginners:** meowdb and Metaroad say yes. IGGM says a ride is 2,000 mesos with "minimal" discounts.
-- **Rowen's Cursed Doll chain:** IGGM claims a Lv40 helmet. The tracker shows no item reward; it's 570 dolls in total.
+- **Rowen's Cursed Doll chain:** settled. It does give items, including a Lv40 hat for your job (meowdb and maplestory.quest agree; see `data/questguides.json`). It's 570 dolls in total.
 - **Citizenship switch fee:** 50k vs 100k.
 - **1,379-ban date:** Oct 10 vs Oct 17.
 - **Party EXP numbers:** model only.

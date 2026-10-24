@@ -820,3 +820,24 @@ abbr[title]:focus-visible,.chip[title]:focus-visible{outline:2px solid var(--map
   .qneed td.qn b::before{content:"x";color:var(--muted);font-weight:700;margin-right:1px}
   .qneed td:nth-child(3){grid-column:1/-1;padding-top:2px}
 }
+
+/* What's new pop-up (home page): newest updates.json entries, once per visitor per update */
+.wn{position:fixed;left:16px;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:46;width:min(360px,calc(100vw - 32px));max-height:min(70vh,520px);display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border-radius:18px;border-top:4px solid var(--maple);box-shadow:0 22px 50px -16px rgba(30,15,5,.6);opacity:0;translate:0 16px;pointer-events:none;transition:opacity .25s,translate .25s}
+.wn.on{opacity:1;translate:0 0;pointer-events:auto}
+.wn-top{display:flex;align-items:center;gap:10px;padding:10px 8px 4px 14px}
+.wn-badge{font-size:22px;line-height:1}
+.wn-top p{margin:0;flex:1;display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 8px}
+.wn-top p b{font-size:17px}
+.wn-top p span{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.wn-x{flex:none;width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:var(--muted);font:700 16px var(--font);cursor:pointer}
+.wn-x:hover,.wn-x:focus-visible{background:var(--pill);color:var(--ink)}
+.wn-body{overflow:auto;padding:0 16px;overscroll-behavior:contain}
+.wn-t{margin:4px 0 6px;font-weight:800;font-size:15px}
+.wn-t span{color:var(--muted);font-weight:700;font-size:12.5px}
+.wn ul{margin:0 0 8px;padding-left:18px;font-size:13.5px;line-height:1.4;color:var(--body)}
+.wn li{margin:3px 0}
+.wn-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px 14px;border-top:1px solid var(--line)}
+.wn-foot .btn{min-height:42px;padding:0 20px;font-size:15px}
+.wn-foot a:not(.btn){font-weight:800;font-size:14px;color:var(--maple-deep)}
+@media (max-width:760px){.wn{left:12px;right:12px;width:auto;bottom:calc(72px + env(safe-area-inset-bottom,0px));max-height:55vh;transition:opacity .25s,translate .25s,bottom .25s}.tb-hidden .wn{bottom:calc(16px + env(safe-area-inset-bottom,0px))}}
+@media (prefers-reduced-motion:reduce){.wn{transition:none}}
