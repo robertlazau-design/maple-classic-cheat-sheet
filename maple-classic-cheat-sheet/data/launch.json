@@ -445,14 +445,14 @@
    "Only trade inside the trade window, and never buy mesos for real money."
   ],
   "facts": [
-   ["11 rooms", "Free Market 1-11"],
+   ["20 rooms", "Free Market 1-20"],
    ["No search", "Buyers walk the rooms"],
    ["12-18 items", "Per shop, by permit"],
    ["≈ 15", "Mesos per NX (Oct 20)"]
   ],
   "how": [
-   "You can walk in from Perion or from Henesys Market. That comes from the Classic Wiki, so double-check in game.",
-   "Room 1 fills first and has the pricey stuff. Rooms 1-6 are a grassy hall; 7-11 are a cave.",
+   "You can walk in from Perion or from Henesys Market.",
+   "Room 1 fills first and has the pricey stuff. Rooms 1-6 are a grassy hall and 7-11 are a cave. Rooms 12-20 opened with the Grand Launch on Oct 21.",
    "There's no search or auction house. Shops spill into every channel, so tell people your channel and room when you megaphone.",
    "Return Scrolls, teleport rocks and Mystic Door don't work inside, and there are no monsters."
   ],
@@ -517,7 +517,7 @@
    ],
    [
     "Where is the Free Market?",
-    "The Free Market Entrance has portals from Perion and Henesys Market and leads to 11 rooms. Leaving takes you back to the town you came from."
+    "The Free Market Entrance has portals from Perion and Henesys Market and leads to 20 rooms (12-20 opened on Oct 21). Leaving takes you back to the town you came from."
    ],
    [
     "How do I price items?",
@@ -528,6 +528,7 @@
   ],
   "src": [
    "https://meowdb.com/msclassic/free-market",
+   "https://meowdb.com/msclassic/maps/080002000",
    "https://mapleclassic.wiki/wiki/Free_Market",
    "https://mapleclassic.wiki/wiki/Player_shop",
    "https://meowdb.com/msclassic/item-db/1540",

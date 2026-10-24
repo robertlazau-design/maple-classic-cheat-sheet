@@ -4,9 +4,11 @@
    "date": "2026-10-24",
    "title": "Step-by-step guides for all 37 quests",
    "items": [
-    "Every quest on the Quests page has a \"Step-by-step guide\" button now. Each guide shows where to start and how to walk there, every item and monster you need with where it drops, every step in order, and every reward.",
-    "Tick steps off as you go. Your ticks stay on your device, and finishing the last step marks the quest done on the Quests page too.",
-    "We checked every quest against the Classic game data. Some quest cards got fixes: missing rewards added (Oranges for Dr. Betty, the headband for Mrs. Ming Ming, fame for Proof of Companionship), class boots and ingots for Nella's later requests, and corrected numbers for the Forgotten Hollow quests."
+    "Every quest has its own step-by-step guide. Tap \"Step-by-step guide\" on any quest on the Quests page.",
+    "Tick off steps as you go. The last tick marks the quest done.",
+    "Fixed missing rewards on 4 quest cards and the numbers for the Forgotten Hollow quests.",
+    "Also fixed: the Free Market has 20 rooms, Iron Hogs are in Pig Park, and Sabitrama's Lv50 quest is in the regular Forest of Patience.",
+    "New: this What's new pop-up on the home page, every time we update the site."
    ]
   },
   {

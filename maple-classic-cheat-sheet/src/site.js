@@ -58,6 +58,40 @@
     set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
 
+  // ---- What's new pop-up (home page only): the newest updates.json entries, shown once per visitor per update.
+  // First visit: the latest entry. Returning visitor: every entry since the one they last closed (max 2).
+  var wnData = document.getElementById("wn-data");
+  if (wnData) {
+    var wnList = [];
+    try { wnList = JSON.parse(wnData.textContent) || []; } catch (e) {}
+    var wnSeen = store.get("mccs-seen-update"), wnAt = -1;
+    wnList.forEach(function (u, i) { if (wnAt < 0 && u.k === wnSeen) wnAt = i; });
+    var wnNew = wnSeen == null ? wnList.slice(0, 1) : wnList.slice(0, wnAt < 0 ? 2 : Math.min(wnAt, 2));
+    if (wnNew.length) {
+      var wn = document.createElement("aside");
+      wn.className = "wn"; wn.setAttribute("role", "dialog"); wn.setAttribute("aria-labelledby", "wn-h");
+      wn.innerHTML = '<div class="wn-top"><span class="wn-badge" aria-hidden="true">🍁</span><p id="wn-h"><b>What\'s new</b><span>' + esc(wnNew[0].d) + '</span></p>' +
+        '<button type="button" class="wn-x" aria-label="Close what\'s new">✕</button></div><div class="wn-body">' +
+        wnNew.map(function (u) {
+          return '<p class="wn-t">' + esc(u.t) + (wnNew.length > 1 ? ' <span>' + esc(u.d) + '</span>' : '') + '</p><ul>' +
+            u.items.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join("") + '</ul>';
+        }).join("") +
+        '</div><div class="wn-foot"><button type="button" class="btn btn-primary wn-ok">Got it</button><a href="' + esc(wnNew[0].u) + '">Every update →</a></div>';
+      var wnDone = function () { store.set("mccs-seen-update", wnList[0].k); };
+      var wnKey = function (ev) { if (ev.key === "Escape" && !document.querySelector(".search:not([hidden]), .more-sheet:not([hidden])")) wnClose(); };
+      var wnClose = function () {
+        wnDone(); wn.classList.remove("on"); document.removeEventListener("keydown", wnKey);
+        setTimeout(function () { wn.remove(); }, 300);
+      };
+      wn.querySelector(".wn-x").addEventListener("click", wnClose);
+      wn.querySelector(".wn-ok").addEventListener("click", function () { wnClose(); toast("All caught up! +1 EXP"); });
+      wn.querySelector(".wn-foot a").addEventListener("click", wnDone);
+      document.addEventListener("keydown", wnKey);
+      document.body.appendChild(wn);
+      setTimeout(function () { wn.classList.add("on"); }, 900);
+    }
+  }
+
   // ---- Tap to explain: dotted words (AP, KPQ, mesos...) and the Confirmed/Likely tags open a little bubble.
   // Hover titles never show on phones, so every explanation also works with a tap or the keyboard.
   var tipEl = null, tipFor = null, tipY = 0;

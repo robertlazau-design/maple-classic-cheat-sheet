@@ -394,6 +394,7 @@ def build_home():
 <input id="lv" type="range" min="1" max="100" value="1" aria-label="Level"></div>
 <div class="result" id="finder-out" aria-live="polite"></div>
 <script type="application/json" id="finder-data">{json.dumps(fdata).replace("</", "<\\/")}</script></section>
+<script type="application/json" id="wn-data">{json.dumps(whatsnew_data(), ensure_ascii=False).replace("</", "<\\/")}</script>
 <h2>Don't be that guy</h2><ol class="musts">{"".join(f"<li>{e(m)}</li>" for m in musts)}</ol>
 {f'<div class="tipjar"><div><b>No ads. Powered by players.</b><span>This guide runs on donations. If it saved you a reset scroll, a coffee keeps it updated every patch.</span></div>{coffee_btn(True)}</div>' if COFFEE else ""}
 <h2>Everything else</h2><div class="grid tiles">{"".join(f'<a class="card" href="{h}"><div class="icon">{_img(f"{API}/{ic}/render/stand", "", "")}</div><h3>{t}</h3><p>{d}</p></a>' for h, t, d, ic in cards)}</div>
@@ -1329,8 +1330,21 @@ def endgame_html():
 <h3 style="margin-top:20px">Quests worth it past 55</h3><table class="tbl compact"><thead><tr><th>Quest</th><th>Level</th><th>Why</th></tr></thead><tbody>{quests}</tbody></table>
 <p class="callout warn" style="margin-top:12px">{e(Eg["not"])}</p>{srcs(Eg["src"])}"""
 
+def upd_ids():
+    """Anchor id for each What's new entry: u<date>, then u<date>-2, -3 when one day has several."""
+    seen, out = {}, []
+    for u in UPDATES["entries"]:
+        n = seen[u["date"]] = seen.get(u["date"], 0) + 1
+        out.append(f'u{u["date"]}' + (f"-{n}" if n > 1 else ""))
+    return out
+
+def whatsnew_data():
+    """Newest What's new entries for the home page pop-up (src/site.js shows the ones a visitor hasn't closed yet)."""
+    return [{"k": f'{u["date"]}|{u["title"]}', "d": date.fromisoformat(u["date"]).strftime("%b %-d"), "t": u["title"], "items": u["items"], "u": f"/updates/#{uid}"}
+            for u, uid in list(zip(UPDATES["entries"], upd_ids()))[:3]]
+
 def build_updates():
-    items = "".join(f'<article class="upd" id="u{e(u["date"])}"><p class="upd-d"><time datetime="{e(u["date"])}">{date.fromisoformat(u["date"]).strftime("%b %-d, %Y")}</time></p><h2>{e(u["title"])}</h2><ul>' + "".join(f"<li>{e(x)}</li>" for x in u["items"]) + "</ul></article>" for u in UPDATES["entries"])
+    items = "".join(f'<article class="upd" id="{uid}"><p class="upd-d"><time datetime="{e(u["date"])}">{date.fromisoformat(u["date"]).strftime("%b %-d, %Y")}</time></p><h2>{e(u["title"])}</h2><ul>' + "".join(f"<li>{e(x)}</li>" for x in u["items"]) + "</ul></article>" for u, uid in zip(UPDATES["entries"], upd_ids()))
     body = f"""<h1>What's new on Maple Classic Guide</h1>
 <p class="lede">Every fix and addition, newest first. Spotted something wrong? Use "Was this page right?" at the bottom of any page.</p>{items}"""
     write("/updates/", page("/updates/", "What's New | Maple Classic Guide", "What's new on the Maple Classic Guide: every new page, tool and data fix, logged after each MapleStory Classic World patch and event.", body,
@@ -1476,6 +1490,9 @@ def main():
     if not os.environ.get("VERCEL"):  # local builds keep the dates file current; commit it with your change
         with open(LASTMOD_FILE, "w") as f:
             f.write("{\n" + ",\n".join(f'  {json.dumps(k)}: {json.dumps(v)}' for k, v in sorted(LASTMOD_SEEN.items())) + "\n}\n")
+    changed = max((v["d"] for k, v in LASTMOD_SEEN.items() if k not in ("/", "/updates/")), default="")
+    if changed > UPDATES["entries"][0]["date"]:
+        print(f"WARNING: pages changed on {changed}, but the newest updates.json entry is {UPDATES['entries'][0]['date']}. Add a What's new entry: it pops up on the home page.")
     print("built", len(paths), "pages")
 
 if __name__ == "__main__":
