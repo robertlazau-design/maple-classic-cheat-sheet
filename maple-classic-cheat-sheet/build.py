@@ -423,10 +423,10 @@ def build_leveling():
 {endgame_html()}
 <h2 id="tips">Tips that save you time</h2><ul>{tips}</ul>
 <details id="map" style="margin-top:20px"><summary>What's in the game right now</summary><table class="tbl" style="margin-top:10px"><thead><tr><th>Region</th><th>Status</th><th>Notes</th></tr></thead><tbody>{regions}</tbody></table></details>'''
-    write("/leveling/", page("/leveling/", "MapleStory Classic Leveling Guide 1–100: Where to Train",
-                             "Where to train in MapleStory Classic at every level, with map-by-map directions from the nearest town: Maple Island to Victoria Island, by class.", body,
+    write("/leveling/", page("/leveling/", "MapleStory Classic Training Spots: Where to Level 1–100",
+                             "Type your level and get the best MapleStory Classic training spot, the monsters there and the walk from town, map by map. Levels 1 to 100, every class.", body,
                              crumbs=[("/", "Guide"), (None, "Leveling")],
-                             schema={"@context": "https://schema.org", "@type": "Article", "headline": "MapleStory Classic Leveling Guide 1–100"}))
+                             schema={"@context": "https://schema.org", "@type": "Article", "headline": "MapleStory Classic Training Spots: Where to Level 1–100"}))
 
 def mage_pick_html():
     MP = JOBS["magicianPick"]
