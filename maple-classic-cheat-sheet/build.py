@@ -787,8 +787,11 @@ def build_bosses():
 <div class="bosses">{cards}</div>
 <h2 id="faq">FAQ</h2>{faq_html(G["bossFaq"])}"""
     side = '<div class="card"><h3>Bosses</h3>' + "".join(f'<p><a href="#{b["id"]}">{e(b["name"])}</a> <span class="muted">Lv {b["lv"]}</span></p>' for b in B) + '<p><a href="/party-quest/">KPQ guide →</a></p></div>'
+    # Searchers want the timer itself, so the description leads with real respawn times.
+    rs = {b["id"]: b.get("short", b["respawn"]) for b in B}
+    desc = f"MapleStory Classic boss respawn timers: Mano {rs['mano']}, Mushmom {rs['mushmom']}, Jr. Balrog {rs['jr-balrog']}. Where each boss spawns and what it drops."
     write("/bosses/", page("/bosses/", "MapleStory Classic Bosses: Locations, Respawn Timers & Drops",
-                           "Every MapleStory Classic boss from Mano to Jr. Balrog: where it spawns, how long it takes to respawn, what it drops and the level to fight it.", body,
+                           desc, body,
                            crumbs=[("/", "Guide"), (None, "Bosses")], schema=faq_schema(G["bossFaq"]), side_extra=side))
 
 def build_kpq():
@@ -1225,8 +1228,8 @@ def build_citizenship():
 {srcs(C["src"])}
 <h2 id="faq">FAQ</h2>{faq_html(C["faq"])}"""
     side = '<div class="card"><h3>Citizenship</h3><p><a href="#town">Henesys or Kerning?</a></p><p><a href="#grades">Grade planner</a></p><p><a href="#points">Donation items</a></p><p><a href="#housing">Housing</a></p></div>'
-    write("/citizenship/", page("/citizenship/", "MapleStory Classic Citizenship & Housing: Grades and Houses",
-                                "MapleStory Classic citizenship: Henesys or Kerning, all 10 grades and what they unlock, donation items, the Resident's Chair and buying a house.", body,
+    write("/citizenship/", page("/citizenship/", "MapleStory Classic Citizenship Guide: Henesys or Kerning?",
+                                "MapleStory Classic citizenship guide: Henesys or Kerning, all 10 grades and what they unlock, donation items, the Resident's Chair and buying a house.", body,
                                 crumbs=[("/", "Guide"), (None, "Citizenship")], schema=faq_schema(C["faq"]), side_extra=side))
 
 def build_events():
@@ -1240,8 +1243,9 @@ def build_events():
     msteps = ""
     for i, s in enumerate(M["steps"], 1):
         art = npc_img(s["npc"], "", "sprite") if s["npc"] else (_img(mob_src(s["mob"]), "", "sprite") if s["mob"] else "")
-        clue = f'<p class="clue">🔎 The clue: “…{e(s["clue"])}…”</p>' if s["clue"] else ""
-        msteps += f'<li class="stage"><span class="sn">{i}</span><div><h3>{e(s["title"])}</h3>{f"<div class=sprites>{art}</div>" if art else ""}{clue}<p>{e(s["do"])}</p></div></li>'
+        # The clue goes in the heading: players search the riddle line itself.
+        h = f'{e(s["title"])}: “…{e(s["clue"])}…”' if s["clue"] else e(s["title"])
+        msteps += f'<li class="stage"><span class="sn">{i}</span><div><h3>{h}</h3>{f"<div class=sprites>{art}</div>" if art else ""}<p>{e(s["do"])}</p></div></li>'
     J = V["journey"]
     jfacts = "".join(f"<div><b>{e(a)}</b><span>{e(b)}</span></div>" for a, b in J["facts"])
     jb = "".join(f'<button type="button" aria-pressed="false" aria-label="Gift {i}">{i}</button>' for i in range(1, 15))
@@ -1277,7 +1281,7 @@ def build_events():
 <h2 id="faq">FAQ</h2>{faq_html(V["faq"])}"""
     side = '<div class="card"><h3>Events</h3>' + "".join(f'<p><a href="#{ev["id"]}">{ev["emoji"]} {e(ev["name"])}</a> <span class="muted">{e(ev["when"])}</span></p>' for ev in V["now"]) + '<p><a href="/news/">All news →</a></p></div>'
     write("/events/", page("/events/", "MapleStory Classic Events: Halloween, Mark of the Beta & Gifts",
-                           "MapleStory Classic events: Malady's Halloween candy hunt (Oct 27 to Nov 18), a Mark of the Beta walkthrough and The Journey Begins daily gifts.", body,
+                           "MapleStory Classic events: Malady's Halloween candy hunt (Oct 27 to Nov 18), every Mark of the Beta clue solved and The Journey Begins daily gifts.", body,
                            crumbs=[("/", "Guide"), (None, "Events")], schema=faq_schema(V["faq"]), side_extra=side))
 
 def build_market():
