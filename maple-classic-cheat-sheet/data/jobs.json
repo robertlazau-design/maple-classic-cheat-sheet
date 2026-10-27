@@ -386,8 +386,11 @@
           "ap": {
             "summary": "INT primary; keep base LUK at level minus 10 (4 INT / 1 LUK per level from Lv30).",
             "steps": [
-              "Lv1-30: as Magician.",
+              "Start: 4 STR / 4 DEX / 12 INT / 5 LUK (8 of your 9 free points in INT, 1 in LUK).",
+              "Lv2-10: all INT (57 INT / 5 LUK at Lv10).",
+              "Lv11-30: all INT, except 5 into LUK at Lv20, 25 and 30 (142 INT / 20 LUK when you pick Cleric).",
               "Lv31-70: 4 INT / 1 LUK per level (182/30 at Lv40, 222/40 at Lv50, 262/50 at Lv60, 302/60 at Lv70).",
+              "At a glance (base INT / LUK): Lv10 57/5 · Lv20 102/10 · Lv30 142/20 · Lv40 182/30 · Lv50 222/40 · Lv60 262/50 · Lv70 302/60.",
               "Lv70-100 (inference, verify): continue LUK = level - 10, or less with LUK gear.",
               "Gear: Green Goldwind Shoes (+5 LUK) at Lv50 cover LUK through Angel Wings.",
               "Pitfall: LUK above level-10 starves INT; skip Arc Staff (40 LUK too early on this plan)."
