@@ -377,20 +377,20 @@
   },
   "halloween": {
    "steps": [
-    {"title": "Find Malady", "do": "She's in Henesys and on the left side of Kerning City from Oct 27 at 5 PM PDT (Oct 28, 00:00 UTC). Talk to her in either town and accept [Event] Halloween Candies.", "npc": 9201028},
+    {"title": "Find Malady", "do": "She's on the left side of Henesys (up on a raised platform near the Regular Cab) and on the left side of Kerning City from Oct 27 at 5 PM PDT (Oct 28, 00:00 UTC). Talk to her in either town and accept [Event] Halloween Candies.", "npc": 9201028},
     {
      "title": "Collect 100 Halloween Candies",
-     "do": "Any level 10+ monster can drop them, and so can the Orange Slimes in Henesys, Ellinia, Kerning City and Perion. The quest names Ribbon Pigs, Dark Stumps, Octopuses and Green Mushrooms. Accept the quest first; the candy may only drop while it's active.",
+     "do": "Any level 10+ monster can drop them, and so can the Orange Slimes in Henesys, Ellinia, Kerning City and Perion. The quest names Ribbon Pigs, Dark Stumps, Octopuses and Green Mushrooms. Accept the quest first: the candy only drops while it's active.",
      "mobs": [1210101, 1110101, 1120100, 1110100]
     },
     {
      "title": "Trick or treat!",
-     "do": "Malady splits the candy into 3 pouches. Deliver one each to the child in the dark tunnel, the child on the open field and the child up on the high ground.",
+     "do": "Malady splits the candy into 3 pouches, one per child: Ronnie in the dark tunnel (The Tree Tunnel At the Forest Up North, past The Forest North of Ellinia), Estelle on the open field (The Field South of Ellinia) and Anne up on the high ground (The Hill East of Henesys).",
      "npc": null
     },
     {
      "title": "Back to Malady",
-     "do": "Turn in [Event] Trick or Treat! Finishing the kids' delivery gets you the Pumpkin Basket, a fast one-handed sword with +27 attack. Got extra candy? Trade it in at the Maple Administrator in Henesys.",
+     "do": "Turn in [Event] Trick or Treat! Finishing the kids' delivery gets you the Pumpkin Basket, a fast one-handed sword with +27 attack. Don't farm extra candy: the quest no longer mentions a trade-in at the Maple Administrator, so 100 is all you need.",
      "npc": null
     }
    ],
@@ -400,11 +400,11 @@
    "tips": [
     "During the Slime Attack, Orange Slimes show up in Henesys, Ellinia, Kerning City and Perion. They drop Halloween Candies plus Red, Blue and Green Malady's Candy.",
     "Halloween Candies stack to 100, can't be traded and vanish on Nov 18 at 11:59 PM UTC. Don't plan to sell them. Malady's Candy is the opposite: tradable and permanent, so keep or sell the extras.",
-    "Farm the busiest level 10+ map you can clear fast. Kill speed beats monster level here.",
-    "The \"dark tunnel\" child might be in the Kerning subway. That's our guess until someone confirms it.",
+    "Farm the busiest level 10+ map you can clear fast. Kill speed beats monster level here. Metaroad likes the Green Mushrooms in The Forest of Wisdom or Henesys Hunting Ground III, and says the whole event takes well under an hour.",
+    "Do the delivery as one loop: Anne is one map east of Henesys, Estelle is one map south of Ellinia, and Ronnie's tree tunnel is north of Ellinia.",
     "It doesn't look repeatable, so it's probably one run per character."
    ],
-   "note": "Nexon's notes confirm the dates, Malady in Henesys and Kerning City, the Pumpkin Basket and the four Slime Attack towns. The candy drop rate, the kids' maps and the exchange list come once it's live. We'll update this on Oct 28."
+   "note": "Nexon's notes confirm the dates, Malady in Henesys and Kerning City, the Pumpkin Basket and the four Slime Attack towns. Metaroad and a NiaMeowDB player put the kids on the same three maps, and Metaroad found Malady's Henesys spot. Nexon cut the Maple Administrator trade-in line from the quest in the Oct 21 patch. Some guides still mention it next to the old pre-patch Pumpkin Basket stats, so we go by the current quest. Still unknown: the candy drop rate. We'll add it once several players agree."
   },
   "faq": [
    [
@@ -434,7 +434,12 @@
    "https://henesys.gg/quests/event-maladys-halloween",
    "https://metaroad.gg/maplestory-classic/news/maplestory-classic-world-grand-launch-release-notes",
    "https://meowdb.com/msclassic/news/grand-launch-release-notes",
-   "https://meowdb.com/msclassic/item-db/3127"
+   "https://meowdb.com/msclassic/item-db/3127",
+   "https://meowdb.com/msclassic/maps/010002071",
+   "https://meowdb.com/msclassic/maps/010001060",
+   "https://meowdb.com/msclassic/maps/010002010",
+   "https://metaroad.gg/maplestory-classic/walkthroughs/halloween-event-walkthrough",
+   "https://meowdb.com/msclassic/item-db/2820"
   ]
  },
  "market": {
