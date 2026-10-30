@@ -54,12 +54,19 @@ def gloss(html_text):
         parts[i] = _GLOSS_RE.sub(sub, part)
     return "".join(parts)
 
+def glossary_fixes(html_text):
+    """<summary> and the chip links are flex rows, so an <abbr> inside one splits the text into spaced-out pieces.
+    Keep summary text in one span, and leave links plain: a tap there should follow the link, not explain a word."""
+    html_text = re.sub(r"<summary>(?!<span)(.*?)</summary>",
+                       lambda m: f"<summary><span>{m.group(1)}</span></summary>" if "<abbr" in m.group(1) else m.group(0), html_text, flags=re.S)
+    return re.sub(r"(<a\b[^>]*>)(.*?)(</a>)", lambda m: m.group(1) + re.sub(r"</?abbr[^>]*>", "", m.group(2)) + m.group(3), html_text, flags=re.S)
+
 def tidy(s):
     """Small copy fixes on research text before it reaches readers."""
     s = str(s)
     s = s.replace(" Don't promise readers a route to 100.", "")
     s = re.sub(r"\(inference(, verify)?\)", "(our estimate)", s)
-    s = s.replace("(MeowDB)", "").replace("  ", " ")
+    s = s.replace("(MeowDB)", "").replace("  ", " ").replace(" -> ", " → ")
     for short, full in SHORTHAND.items():
         s = re.sub(r"\b" + short + r"\b", full, s)
     return s.strip()
@@ -216,7 +223,7 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 {hero}
 <div class="wrap">
 <div class="layout{" has-side" if side_extra else ""}">
-<main id="main"{"" if path in NO_INDEX else " data-pagefind-body"}>{_pf_skip(bc)}{gloss(body)}{_pf_skip(tipjar(path))}{_pf_skip(feedback(path))}</main>
+<main id="main"{"" if path in NO_INDEX else " data-pagefind-body"}>{_pf_skip(bc)}{glossary_fixes(gloss(body))}{_pf_skip(tipjar(path))}{_pf_skip(feedback(path))}</main>
 <aside class="side" aria-label="Sidebar"><div class="sticky">{side_extra}</div></aside>
 </div></div>
 <footer class="site-f"><div class="wrap">
@@ -328,17 +335,43 @@ def route_go(text, n=2):
         seen.add(t)
     return "".join(html)
 
+BEST_NAMES = {"warrior": "Warriors", "magician": "Magicians", "cleric": "Clerics", "bowman": "Bowmen", "thief": "Thieves",
+              "magician (ice)": "Ice/Lightning Wizards", "party": "parties"}
+def and_list(xs):
+    return xs[0] if len(xs) == 1 else ", ".join(xs[:-1]) + " and " + xs[-1]
+def best_for(tags):
+    """bestFor ["all", "cleric"] reads as "good for everyone, best for Clerics"."""
+    names = [BEST_NAMES.get(t, t) for t in (tags or []) if t != "all"]
+    if not names: return ""
+    return ("good for everyone, best for " if "all" in tags else "best for ") + and_list(names)
+def fmt_exp(n):
+    if n >= 1e9: return f"{n / 1e9:.1f}B"
+    if n >= 1e6: return f"{n / 1e6:.1f}M"
+    if n >= 1e4: return f"{round(n / 1e3)}k"
+    return f"{n:,}"
+def band_exp(lo, hi):
+    """EXP to go from level lo to level hi."""
+    return sum(EXP["toNext"][lo - 1:hi - 1])
+def stats_at(at, lv):
+    """Base stats at a level from a build's checkpoints [[level, stat1, stat2], ...]; same math as statsAt() in site.js."""
+    for p, q in zip(at, at[1:]):
+        if p[0] <= lv <= q[0]:
+            f = (lv - p[0]) / (q[0] - p[0])
+            return round(p[1] + f * (q[1] - p[1])), round(p[2] + f * (q[2] - p[2]))
+    return None
+
 def route_li(r):
     cls = "future" if "Nov 18" in r["map"] or "from Nov" in r["map"] else ("wall" if r["from"] >= 80 else "")
     lv = f'{r["from"]}–{r["to"]}'
-    best = ", ".join(r.get("bestFor") or [])
+    best = best_for(r.get("bestFor"))
+    xp = f'<small data-tip="EXP to go from level {r["from"]} to {r["to"]}">{fmt_exp(band_exp(r["from"], r["to"]))} EXP</small>'
     sprites = "".join(mob_img(m) for m in mobs_in(r.get("monsters", "")))
     mm = next((v for k, v in IMG["routeMaps"].items() if k in r["map"]), None)
     pics = f'<div class="pics">{map_img(mm, tidy(r["map"]).split(" / ")[0].split(" (")[0]) if mm else ""}<div class="sprites">{sprites}</div></div>' if (sprites or mm) else ""
     go = route_go(r["map"])
-    return f'''<li class="{cls}" id="lv-{r["from"]}-{r["to"]}" data-from="{r["from"]}" data-to="{r["to"]}"{" data-all" if "all" in (r.get("bestFor") or []) else ""}><span class="lv">Lv {lv}</span>{pics}
+    return f'''<li class="{cls}" id="lv-{r["from"]}-{r["to"]}" data-from="{r["from"]}" data-to="{r["to"]}"{" data-all" if "all" in (r.get("bestFor") or []) else ""} data-best="{e("|".join(r.get("bestFor") or []))}"><span class="lv">Lv {lv}{xp}</span>{pics}
 <span class="map">{e(tidy(r["map"]))} {conf(r.get("confidence"))}</span>
-<span class="sub">{e(r.get("region",""))} · {e(r.get("monsters",""))} (lv {e(r.get("monsterLevel",""))}){" · best for " + e(best) if best and best != "all" else ""}</span>
+<span class="sub">{e(r.get("region",""))} · {e(r.get("monsters",""))} (lv {e(r.get("monsterLevel",""))}){" · " + e(best) if best else ""}</span>
 <span class="tip">{e(tidy(r.get("tip","")))}</span>{go}</li>'''
 
 def build_home():
@@ -346,12 +379,15 @@ def build_home():
     fdata = {"route": [{"from": r["from"], "to": r["to"], "map": tidy(r["map"]), "monsters": r.get("monsters", ""), "monsterLevel": r.get("monsterLevel", ""), "confidence": r.get("confidence", "medium"),
                         "region": r.get("region", "").replace("Victoria Island - ", ""), "mm": next((v for k, v in IMG["routeMaps"].items() if k in r["map"]), None),
                         "opens": "2026-11-18T16:00:00Z" if "Nov 18" in r["map"] else None,
+                        "best": r.get("bestFor") or [], "who": and_list([BEST_NAMES.get(t, t) for t in r.get("bestFor") or [] if t != "all"] or ["everyone"]),
                         "sprites": [IMG["mobs"][m] for m in mobs_in(r.get("monsters", ""), 2)]} for r in route],
              "gloss": {k: GLOSSARY[k] for k in ("AP", "SP", "STR", "DEX", "INT", "LUK", "HP", "MP")},
              "classes": [{"id": c["id"], "name": c["name"], "npc": c["firstJob"]["npc"], "town": c["firstJob"]["town"], "sprite": IMG["classNpc"][c["id"]][0],
                           "jobs": [j["id"] for j in c["jobs"]], "start": JOBS["creation"]["classes"][c["id"]]["stats"]} for c in JOBS["classes"]],
              "jobs": {j["id"]: {"name": j["name"], "cls": c["id"], "weapon": j["weapon"], "play": tidy(j["playstyle"]), "adv": {"test": tidy(j["advancement"]["test"])},
-                                 "apSummary": tidy(j["ap"]["summary"]), "ap": [tidy(x) for x in j["ap"]["steps"]], "sp1": [tidy(x) for x in j["sp"]["firstJob"]], "sp2": [tidy(x) for x in j["sp"]["secondJob"]]} for c, j in ALLJOBS},
+                                 "apSummary": tidy(j["ap"]["summary"]), "ap": [tidy(x) for x in j["ap"]["steps"]], "at": j["ap"].get("at"), "atStats": j["ap"].get("atStats"), "sp1": [tidy(x) for x in j["sp"]["firstJob"]], "sp2": [tidy(x) for x in j["sp"]["secondJob"]]} for c, j in ALLJOBS},
+             "fits": {j["id"]: [c["id"], j["id"]] + (["magician (ice)"] if j["id"] == "il-wizard" else []) for c, j in ALLJOBS},
+             "tagNames": BEST_NAMES,
              "api": API}
     cards = [("/leveling/", "🗺️ Grind spots", "Where to train at every level, 1 to 100.", "mob/1210103"),
              ("/jobs/", "⚔️ Builds", "AP + SP for all 10 jobs. Resets cost 7,000 NX, so don't wing it.", "npc/1012100"),
@@ -440,6 +476,12 @@ def mage_pick_html():
     return f'''<h3 id="which-magician" style="margin-top:18px">Which Magician? F/P vs I/L vs Cleric 🔮</h3><p class="muted">{e(MP["intro"])} <a href="/tier-list/">Full tier list →</a></p>
 <table class="tbl compact grades"><thead><tr><th>Job</th><th>Solo</th><th>Bossing</th><th>Party</th><th>1st character</th><th class="hide-sm">Pick it if</th></tr></thead><tbody>{rows}</tbody></table>'''
 
+def glance(j):
+    at, names = j["ap"].get("at"), j["ap"].get("atStats")
+    if not at: return ""
+    pts = " · ".join(f"Lv{lv} {'{}/{}'.format(*stats_at(at, lv))}" for lv in (10, 20, 30, 40, 50, 60, 70))
+    return f'<p class="callout" style="margin-top:12px"><b>Base {names[0]} / {names[1]} at a glance:</b> {pts}. Before gear.</p>'
+
 def build_jobs():
     CR = JOBS["creation"]
     start = ""
@@ -492,6 +534,7 @@ def build_jobs():
 {f'<h2 id="how-to-level">How to level a {e(j["name"])} 📈</h2><ol class="musts">{"".join(f"<li>{e(x)}</li>" for x in j["leveling"])}</ol>' if j.get("leveling") else ""}
 <h2 id="ap">AP build</h2><p class="callout">{e(tidy(j["ap"]["summary"]))}</p>
 <ol class="steps" style="margin-top:12px">{steps(j["ap"]["steps"])}</ol>
+{glance(j)}
 <h2 id="sp">SP build</h2><h3>1st job (levels 10–29)</h3><ol class="steps" style="margin-top:8px">{steps(j["sp"]["firstJob"])}</ol>
 <h3 style="margin-top:20px">2nd job (level 30+)</h3><ol class="steps" style="margin-top:8px">{steps(j["sp"]["secondJob"])}</ol>
 <h2 id="adv">Job advancement</h2><div class="pics">{map_img(IMG["testMap"][c["id"]], "2nd job test map")}<div class="sprites">{npc_img(IMG["classNpc"][c["id"]][0], IMG["classNpc"][c["id"]][1])}</div></div><p><b>1st job:</b> level {e(c["firstJob"]["level"])}, {e(c["firstJob"]["npc"])} in {e(c["firstJob"]["town"])}.</p>
@@ -528,17 +571,23 @@ def spoil(inner, s):
         return f'<details class="spoiler"><summary>Spoiler: new content (opens Nov 18). Tap to show</summary>{inner}</details>'
     return inner
 
+SECRET_GROUPS = {"jump quest": "Jump quests", "boss map": "Boss maps", "hidden hunting ground": "Hunting spots", "deep dungeon": "Hunting spots",
+                 "hidden NPC area": "Hidden places", "secret entrance": "Hidden places", "hidden map / curiosity": "Hidden places", "hub": "Hidden places",
+                 "secret / missable": "Hidden places", "party quest": "Quests & PQs", "instanced job maps": "Quests & PQs", "repeatable quest": "Quests & PQs"}
 def build_secrets():
-    types = []
+    cap = lambda t: t[:1].upper() + t[1:]
+    group = lambda t: SECRET_GROUPS.get(t, cap(t))
+    groups = []
     for s in SEC["secrets"]:
-        if s["type"] not in types: types.append(s["type"])
+        if group(s["type"]) not in groups: groups.append(group(s["type"]))
     slug = lambda t: re.sub(r"[^a-z]+", "-", t.lower()).strip("-")
-    btns = '<button type="button" data-f="all" aria-pressed="true">All</button>' + "".join(f'<button type="button" data-f="{slug(t)}" aria-pressed="false">{e(t.capitalize())}</button>' for t in types)
+    count = lambda g: sum(group(s["type"]) == g for s in SEC["secrets"])
+    btns = '<button type="button" data-f="all" aria-pressed="true">All</button>' + "".join(f'<button type="button" data-f="{slug(g)}" aria-pressed="false">{e(g)} ({count(g)})</button>' for g in groups)
     cards = ""
     for s in SEC["secrets"]:
         future = "" if s.get("classicConfirmed", True) else ' <span class="tag">Not confirmed in Classic</span>'
-        cards += f'''<article class="card" id="{slug(s["name"].split(" (")[0])}" data-type="{slug(s["type"])}">{secret_img(s["name"])}<h3>{e(s["name"])}</h3>
-<p class="meta">{e(s["type"].capitalize())} · {e(s["region"])} · Level {e(s["level"])} {conf(s.get("confidence"))}{future}</p>
+        cards += f'''<article class="card" id="{slug(s["name"].split(" (")[0])}" data-type="{slug(group(s["type"]))}">{secret_img(s["name"])}<h3>{e(s["name"])}</h3>
+<p class="meta">{e(cap(s["type"]))} · {e(s["region"])} · Level {e(s["level"])} {conf(s.get("confidence"))}{future}</p>
 {spoil(f'<p><b>How to get there:</b> {e(tidy(s["howToGet"]))}</p>{route_go(s["name"], 1) or route_go(s["howToGet"], 1)}<p><b>Why go:</b> {e(tidy(s["reward"]))}</p>', s)}</article>'''
     body = f'''<h1>MapleStory Classic Hidden Maps &amp; Secrets</h1>
 <p class="lede">Hidden streets, jump quests, boss rooms and one-time rewards on Maple Island and Victoria Island, with directions.</p>
@@ -592,7 +641,7 @@ def build_tiers():
 {lists}
 <h2 id="grades">All grades at a glance</h2>
 <table class="tbl grades"><thead><tr><th>Job</th>{"".join(f"<th>{e(c)}</th>" for c in cols)}</tr></thead><tbody>{grows}</tbody></table>
-<p class="muted" style="margin-top:8px">S = top third, A = middle, B = bottom third of the 10 jobs for that column. Mobility counts Teleport and Haste.</p>
+<p class="muted" style="margin-top:8px">S = among the best, A = middle of the pack, B = among the weakest of the 10 jobs for that column. Mobility counts Teleport and Haste.</p>
 <h2>How we ranked them</h2><p>{e(TIERS["meta"]["basis"])} Gear, scrolls, party makeup and the maps you pick change real results, and 3rd job (planned for 2027) will shake this up. Picked a job? Grab its <a href="/jobs/">AP and SP build</a> next.</p>
 {srcs(TIERS["meta"]["sources"])}
 <h2 id="faq">FAQ</h2>{faq}"""
@@ -857,7 +906,7 @@ def build_quests():
         if not qs: continue
         bid = f"lv{lo}-{hi}"
         label = f"Level {lo} to {hi}" if hi < 99 else f"Level {lo}+"
-        chips += f'<a href="#{bid}">{lo}–{hi if hi < 99 else "+"}</a>'
+        chips += f'<a href="#{bid}">{f"{lo}–{hi}" if hi < 99 else f"{lo}+"}</a>'
         cards = ""
         for q in qs:
             gq = QGB.get(q["name"])
@@ -892,6 +941,7 @@ def build_quests():
 <div class="toc">{chips}<a href="#citizenship">Citizenship</a><a href="#faq">FAQ</a></div>
 <p class="legend">{legend}</p>
 <p class="callout" style="margin-top:12px">✅ Tap <b>Step-by-step guide</b> on any quest for every NPC, item, monster and reward, in order. Tap <b>Mark done</b> as you finish quests; your progress stays on this device. The bar under each quest shows its EXP as a share of the level you'd be doing it at.</p>
+<label class="q-hide"><input type="checkbox" id="q-hide"> Hide quests I've marked done</label>
 {sections}
 <h2 id="citizenship">Citizenship quests</h2><p>{e(C["intro"])}</p>
 <p class="callout" style="margin:10px 0 12px">🏠 Grades, donation items, every story arc and housing: <a href="/citizenship/">Citizenship guide</a>.</p>
@@ -1412,8 +1462,8 @@ def main():
         idx.append({"t": f"{j['name']} build", "u": f"/jobs/{j['id']}/", "k": c["name"], "d": short(f"{c['name']} job · {j['weapon']}", 90),
                     "x": j["weapon"] + " " + c["name"] + " build stats ap sp skills " + MAIN_STAT.get(c["id"], "")})
     for r in sorted(LEV["route"], key=lambda r: (r["from"], r["to"])):
-        best = [b for b in (r.get("bestFor") or []) if b != "all"]
-        ctx = f"{r.get('region', '').replace('Victoria Island - ', '')} · {r.get('monsters', '')} · monsters lv {r.get('monsterLevel', '')}" + (f" · best for {', '.join(best)}" if best else "")
+        best = best_for(r.get("bestFor"))
+        ctx = f"{r.get('region', '').replace('Victoria Island - ', '')} · {r.get('monsters', '')} · monsters lv {r.get('monsterLevel', '')}" + (f" · {best}" if best else "")
         idx.append({"t": f"Lv {r['from']}–{r['to']}: {tidy(r['map'])[:70]}", "u": f"/leveling/#lv-{r['from']}-{r['to']}", "k": "Grind spot",
                     "d": ("Opens Nov 18 · " if "Nov 18" in r["map"] else "") + short(ctx), "x": r.get("monsters", "") + " where to train level grind", "lo": r["from"], "hi": r["to"]})
     for s_ in SEC["secrets"]:
