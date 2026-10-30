@@ -156,6 +156,8 @@ LAUNCHED = "2026-10-19"  # first commit and first updates.json entry
 PUBLISHER = {"@type": "Organization", "name": NAME, "url": SITE + "/"}
 
 def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=""):
+    if len(title) > 60:
+        print(f"WARNING: {path} title is {len(title)} characters (max 60, Google cuts the rest): {title}")
     canon = SITE + path
     sect = "/jobs/" if path.startswith("/jobs/") else "/quests/" if path.startswith("/quests/") else path
     nav = nav_html(sect)
@@ -248,8 +250,9 @@ def stamp():
 
 def job_title(name):
     """People search "cleric stats" and "warrior skill guide", not "AP & SP"."""
-    t = f"{name} Build Guide: MapleStory Classic Stats & Skills"
-    return t if len(t) <= 60 else f"{name} Build: MapleStory Classic Stats & Skills"
+    for t in (f"{name} Build Guide: MapleStory Classic Stats & Skills", f"{name} Build: MapleStory Classic Stats & Skills"):
+        if len(t) <= 60: return t
+    return f"{name}: MapleStory Classic Stats & Skills"
 
 LASTMOD_FILE = os.path.join(ROOT, "data", "lastmod.json")
 LASTMOD = json.load(open(LASTMOD_FILE)) if os.path.exists(LASTMOD_FILE) else {}
@@ -903,8 +906,10 @@ def build_quests():
 
 def quest_title(name):
     for t in (f"{name} Quest Guide: MapleStory Classic Walkthrough", f"{name}: MapleStory Classic Quest Guide", f"{name} Quest Guide (MapleStory Classic)"):
-        if len(t) <= 62: return t
-    return f"{name} | MapleStory Classic"
+        if len(t) <= 60: return t
+    for t in (f"{name} | MapleStory Classic", f"{name} | Maple Classic"):
+        if len(t) <= 60: return t
+    return name
 
 def build_quest_pages():
     """One step-by-step page per quest: where to start, what to bring, every step, rewards and tips."""
@@ -1069,7 +1074,7 @@ def build_money():
 {srcs(Mo["src"])}
 <h2 id="faq">FAQ</h2>{faq_html(Mo["faq"])}"""
     side = '<div class="card"><h3>Quick money</h3><p><a href="/prices/">Price check (this week)</a></p><p><a href="/prices/#farms">Money farms this week</a></p><p><a href="#market">Launch-week prices</a></p><p><a href="#quests">Meso quests</a></p><p><a href="/bosses/">Boss timers</a></p><p><a href="/crafting/">What to keep</a></p></div>'
-    write("/money-making/", page("/money-making/", "MapleStory Classic Money Making Guide: Best Ways to Make Mesos",
+    write("/money-making/", page("/money-making/", "MapleStory Classic Money Making: Best Ways to Make Mesos",
                                  "How to make mesos in MapleStory Classic: Free Market prices, what to sell and keep, the best meso quests, boss meso drops, crafting profit and merching tips.", body,
                                  crumbs=[("/", "Guide"), (None, "Money making")], schema=faq_schema(Mo["faq"]), side_extra=side))
 
@@ -1280,7 +1285,7 @@ def build_events():
 {srcs(V["src"])}
 <h2 id="faq">FAQ</h2>{faq_html(V["faq"])}"""
     side = '<div class="card"><h3>Events</h3>' + "".join(f'<p><a href="#{ev["id"]}">{ev["emoji"]} {e(ev["name"])}</a> <span class="muted">{e(ev["when"])}</span></p>' for ev in V["now"]) + '<p><a href="/news/">All news →</a></p></div>'
-    write("/events/", page("/events/", "MapleStory Classic Events: Halloween, Mark of the Beta & Gifts",
+    write("/events/", page("/events/", "MapleStory Classic Events: Halloween & Mark of the Beta",
                            "MapleStory Classic events: Malady's Halloween candy hunt (Oct 27 to Nov 18), every Mark of the Beta clue solved and The Journey Begins daily gifts.", body,
                            crumbs=[("/", "Guide"), (None, "Events")], schema=faq_schema(V["faq"]), side_extra=side))
 
