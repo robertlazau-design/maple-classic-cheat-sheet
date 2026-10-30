@@ -57,6 +57,11 @@
     get: function (k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } },
     set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
+  // "Maple Island quests (all 10)" is now "(all 20)": carry old ticks over to the new key
+  [["mccs-quests", 1], ["mccs-steps", 0]].forEach(function (p) {
+    var d = store.get(p[0]), was = "maple-island-quests-all-10", now = "maple-island-quests-all-20";
+    if (d && d[was] !== undefined) { if (d[now] === undefined) d[now] = d[was]; delete d[was]; store.set(p[0], d); }
+  });
 
   // ---- What's new pop-up (home page only): the newest updates.json entries, shown once per visitor per update.
   // First visit: the latest entry. Returning visitor: every entry since the one they last closed (max 2).
@@ -568,6 +573,12 @@
       });
     });
     drawBands();
+    var hideDone = document.getElementById("q-hide");
+    if (hideDone) {
+      var applyHide = function () { document.body.classList.toggle("hide-done", hideDone.checked); store.set("mccs-hide-done", hideDone.checked); };
+      hideDone.checked = !!store.get("mccs-hide-done");
+      hideDone.addEventListener("change", applyHide); applyHide();
+    }
   }
 
   // ---- Quest walkthrough (/quests/<slug>/): tick steps as you go; ticking the last one marks the quest done on /quests/ too
@@ -606,25 +617,53 @@
     var pickOut = document.getElementById("pick-out");
     var routeLis = [].slice.call(document.querySelectorAll(".route li[data-from]"));
     var calm = matchMedia("(prefers-reduced-motion:reduce)").matches;
+    // Minimaps and sprites above the spot load as we scroll past them and push it down the page.
+    // Re-align each time one lands, for a few seconds or until the player scrolls on their own.
+    var holdSpot = function (li) {
+      var until = Date.now() + 4000;
+      var fix = function () {
+        if (Date.now() > until) return;
+        var off = li.getBoundingClientRect().top - (parseFloat(getComputedStyle(li).scrollMarginTop) || 0);
+        if (Math.abs(off) > 24) li.scrollIntoView({ block: "start" });
+      };
+      setTimeout(function () {
+        ["wheel", "touchmove", "keydown", "mousedown"].forEach(function (ev) { addEventListener(ev, function () { until = 0; }, { once: true, passive: true }); });
+      }, 0);
+      routeLis.forEach(function (x) { x.querySelectorAll("img").forEach(function (im) { if (!im.complete) { im.addEventListener("load", fix); im.addEventListener("error", fix); } }); });
+      setTimeout(fix, calm ? 50 : 1200);
+    };
     var pickSpot = function () {
       var lv = Math.round(Number(pickIn.value));
       if (!lv || lv < 1 || lv > 100) { pickOut.textContent = "Type a level from 1 to 100."; return; }
       var inBand = function (li) { return +li.dataset.from <= lv && lv <= +li.dataset.to; };
       var fits = routeLis.filter(function (li) { return inBand(li) && !li.classList.contains("future"); });
       if (!fits.length) fits = routeLis.filter(inBand);
-      fits.sort(function (a, b) { return (("all" in b.dataset) - ("all" in a.dataset)) || (b.dataset.from - a.dataset.from) || (a.dataset.to - b.dataset.to); });
+      // Picked a class in "Your run" on the home page? Spots tagged for it come first, then spots for everyone
+      var run = store.get("mccs-run") || {}, mine = run.job ? [run.cls, run.job].concat(run.job === "il-wizard" ? ["magician (ice)"] : []) : [];
+      var score = function (li) { var b = (li.dataset.best || "").split("|"); return b.some(function (t) { return mine.indexOf(t) > -1; }) ? 2 : b.indexOf("all") > -1 ? 1 : 0; };
+      fits.sort(function (a, b) { return (score(b) - score(a)) || (b.dataset.from - a.dataset.from) || (a.dataset.to - b.dataset.to); });
       routeLis.forEach(function (x) { x.classList.remove("hit"); });
       var li = fits[0];
       if (!li) { pickOut.textContent = "No set spot at that level. Grind wherever you kill fastest."; return; }
       li.classList.add("hit");
-      var name = (li.querySelector(".map").firstChild.textContent || "").trim();
-      pickOut.innerHTML = "Level " + lv + "? Head to <b>" + esc(name) + "</b>." + (fits.length > 1 ? " " + (fits.length - 1) + " more option" + (fits.length > 2 ? "s" : "") + " right below it." : "");
+      var spotName = function (x) { return (x.querySelector(".map").firstChild.textContent || "").trim(); };
+      var also = fits.slice(1).map(function (x) { return '<a href="#' + x.id + '">' + esc(spotName(x).split(" / ")[0]) + "</a>"; });
+      pickOut.innerHTML = "Level " + lv + "? Head to <b>" + esc(spotName(li)) + "</b>." + (also.length ? " Also good: " + also.join(", ") + "." : "");
       li.scrollIntoView({ behavior: calm ? "auto" : "smooth", block: "start" });
+      holdSpot(li);
       store.set("mccs-pick-lv", lv);
       if (history.replaceState) history.replaceState(null, "", "#" + li.id);
     };
-    var savedLv = store.get("mccs-pick-lv");
+    var homeRun = store.get("mccs-run") || {};
+    var savedLv = store.get("mccs-pick-lv") || (homeRun.job && homeRun.lv);
     if (savedLv) pickIn.value = savedLv;
+    // Arriving from "How to get there" (/leveling/#lv-41-46): mark that spot and hold it in view too
+    var arrived = location.hash && document.getElementById(location.hash.slice(1));
+    if (arrived && routeLis.indexOf(arrived) > -1) { arrived.classList.add("hit"); holdSpot(arrived); }
+    addEventListener("hashchange", function () {
+      var t = document.getElementById(location.hash.slice(1));
+      if (t && routeLis.indexOf(t) > -1) { routeLis.forEach(function (x) { x.classList.remove("hit"); }); t.classList.add("hit"); holdSpot(t); }
+    });
     document.getElementById("pick-go").addEventListener("click", pickSpot);
     pickIn.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); pickSpot(); } });
   }
@@ -685,6 +724,17 @@
     box.appendChild(el); setTimeout(function () { el.remove(); }, 2600);
   }
 
+  // Base stats at a level, read off the build's checkpoints (job.at = [[level, stat1, stat2], ...]; points go in evenly between them)
+  function statsAt(job, lv) {
+    var a = job.at || [];
+    for (var i = 1; i < a.length; i++) {
+      if (lv >= a[i - 1][0] && lv <= a[i][0]) {
+        var p = a[i - 1], q = a[i], f = (lv - p[0]) / (q[0] - p[0]);
+        return [Math.round(p[1] + f * (q[1] - p[1])), Math.round(p[2] + f * (q[2] - p[2]))];
+      }
+    }
+    return null;
+  }
   function ranges(text) { var m = String(text).match(/lv\s?(\d+)\s*(?:[-–]\s*(\d+))?/i); return m ? [Number(m[1]), Number(m[2] || m[1])] : null; }
   function pick(list, lv) { return (list || []).filter(function (t) { var r = ranges(t); return r && lv >= r[0] && lv <= r[1]; }); }
   // AP, STR, DEX... become tap-to-explain words in the result boxes
@@ -714,6 +764,16 @@
     var now = Date.now(), here = D.route.filter(function (r) { return lv >= r.from && lv <= r.to; });
     var spots = here.filter(function (r) { return !r.opens || now >= Date.parse(r.opens); });
     var soon = here.filter(function (r) { return r.opens && now < Date.parse(r.opens); });
+    // A spot tagged for your class or job beats one that's good for everyone; spots for other classes go last
+    var fits = D.fits[state.job] || [];
+    var mine = function (r) { return r.best.filter(function (b) { return fits.indexOf(b) > -1; })[0]; };
+    var score = function (r) { return mine(r) ? 2 : r.best.indexOf("all") > -1 ? 1 : 0; };
+    spots = spots.map(function (r, i) { return [r, i]; }).sort(function (a, b) { return (score(b[0]) - score(a[0])) || (a[1] - b[1]); }).map(function (x) { return x[0]; });
+    var fitTag = function (r) {
+      var m = mine(r);
+      if (m) return '<span class="fit">✓ Great pick for ' + esc(D.tagNames[m] || m) + "</span>";
+      return score(r) ? "" : '<span class="fit meh">Better for ' + esc(r.who) + "</span>";
+    };
     var next = lv < 10 ? "Hit level 10, then talk to " + c.npc + " in " + c.town + " for 1st job. No stat requirement."
       : lv < 30 ? "2nd job at level 30. " + job.adv.test
       : "You're set until 3rd job drops (planned for 2027). Cap is level 100.";
@@ -723,12 +783,14 @@
     var h = "";
     h += '<div class="box grind"><h3>🗺️ Grind here rn</h3>' + (spots.length ? spots.map(function (r) {
       var mm = r.mm ? '<img class="spot-mm" src="' + D.api + "/map/" + r.mm + '/minimap" alt="Minimap: ' + esc(r.map) + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">' : "";
-      return '<div class="spot"><div class="spr">' + r.sprites.map(sprite).join("") + '</div><div><b>' + esc(r.map) + '</b><span>' + (r.region ? esc(r.region) + " · " : "") + esc(r.monsters) +
+      return '<div class="spot"><div class="spr">' + r.sprites.map(sprite).join("") + '</div><div>' + fitTag(r) + '<b>' + esc(r.map) + '</b><span>' + (r.region ? esc(r.region) + " · " : "") + esc(r.monsters) +
         '</span><span>Monsters are lv ' + esc(String(r.monsterLevel).replace("-", "–")) + "</span>" + mm + '<a href="/leveling/#lv-' + r.from + "-" + r.to + '">How to get there →</a></div></div>';
     }).join("") : "<p>No set spot at this level yet. Grind wherever you kill fastest.</p>") + soon.map(function (r) {
       return '<p class="soon">🔒 Opens ' + new Date(r.opens).toLocaleDateString("en-US", { month: "short", day: "numeric" }) + ': <a href="/leveling/#lv-' + r.from + "-" + r.to + '">' + esc(r.map.split(" (")[0]) + "</a> (lv " + r.from + "–" + r.to + ")</p>";
     }).join("") + "</div>";
-    h += '<div class="box"><h3>💪 Your ' + gl("AP") + ' rn</h3><p>' + (ap.length ? ap.map(gl).join("<br>") : gl(job.apSummary)) + "</p></div>";
+    var st = lv > 1 ? statsAt(job, lv) : null;
+    var statLine = st ? "<b>At Lv " + lv + ": about " + st[0] + " " + gl(job.atStats[0]) + " / " + st[1] + " " + gl(job.atStats[1]) + "</b> (base stats, before gear)<br>" : "";
+    h += '<div class="box"><h3>💪 Your ' + gl("AP") + ' rn</h3><p>' + statLine + (ap.length ? ap.map(gl).join("<br>") : gl(job.apSummary)) + "</p></div>";
     h += '<div class="box"><h3>✨ Your ' + gl("SP") + ' rn</h3><p>' + (sp.length ? sp.map(gl).join("<br>") : "Follow the skill order on your build page.") + "</p></div>";
     h += '<div class="box"><h3>⏭️ Next up</h3><p>' + esc(next) + "</p></div>";
     h += '<a class="btn btn-primary full" href="/jobs/' + state.job + '/">Full ' + esc(job.name) + " build →</a>";

@@ -1,6 +1,17 @@
 {
  "entries": [
   {
+   "date": "2026-10-30",
+   "title": "Easier grind picks and clearer builds 🗺️",
+   "items": [
+    "Grind spots: \"Show me where\" now lands right on your spot, and each level range shows the EXP it takes.",
+    "Your run on the home page puts spots for your class first and shows your base stats for your level.",
+    "Lorangs now show up for levels 42 to 46, where most players hunt them.",
+    "Every build page is in plainer words, with your base stats at a glance from Lv10 to 70.",
+    "Quests: hide the ones you've finished. Secrets: the filters work now, in 5 simple groups."
+   ]
+  },
+  {
    "date": "2026-10-28",
    "title": "Halloween is live: where the kids are 🎃",
    "items": [

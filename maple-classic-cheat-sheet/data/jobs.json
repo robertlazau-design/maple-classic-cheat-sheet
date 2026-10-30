@@ -47,7 +47,7 @@
           "id": "fighter",
           "name": "Fighter",
           "weapon": "Swords or axes (1H with shield, or 2H)",
-          "playstyle": "Front-line melee bruiser: Rush mobs together, Power Strike singles, Slash Blast groups, keep Rage + Booster up.",
+          "playstyle": "Tough up-close fighter. Rush to bunch monsters together, Slash Blast the group, Power Strike single targets, and keep Rage and Booster running.",
           "pros": [
             "Best damage-per-MP of the warrior branches at Lv70 in MeowDB benchmarks",
             "Rage is a party Attack Power buff (+40 ATK at max)",
@@ -66,6 +66,8 @@
             "test": "Take his letter to the Warrior Job Instructor at West Rocky Mountain IV, enter the hidden test map, kill mobs for 30 Dark Marbles, trade for The Proof of a Hero, return to Dances with Balrog and pick Fighter."
           },
           "ap": {
+            "at": [[1, 12, 5], [10, 57, 5], [30, 135, 27], [36, 153, 39], [57, 237, 60], [70, 302, 60]],
+            "atStats": ["STR", "DEX"],
             "summary": "STR primary; keep total DEX (base + gear) only at your next weapon's requirement. Lv1-10 all STR; Lv10-30 mostly 4 STR / 1 DEX; Lv31-36 3 STR / 2 DEX; Lv37-57 4 STR / 1 DEX; Lv58+ all STR once DEX reaches 60 base.",
             "steps": [
               "Lv1-10: all AP into STR (about 57 STR / 5 DEX at Lv10). No DEX needed to advance.",
@@ -113,7 +115,7 @@
           "id": "page",
           "name": "Page",
           "weapon": "Swords or blunt weapons (1H with shield, or 2H)",
-          "playstyle": "Tanky crowd-control melee: Threaten to slow and lower WDEF, Rush to pull, then Power Strike / Slash Blast.",
+          "playstyle": "The tankiest melee job. Threaten slows monsters and lowers their WDEF, Rush pulls them together, then Power Strike or Slash Blast finishes them.",
           "pros": [
             "#2 damage-per-MP at Lv70 in MeowDB benchmarks",
             "Threaten slows up to 4 mobs and lowers their WDEF",
@@ -132,6 +134,8 @@
             "test": "Same Warrior test: letter to the Warrior Job Instructor at West Rocky Mountain IV, collect 30 Dark Marbles in the test map, bring The Proof of a Hero back and pick Page."
           },
           "ap": {
+            "at": [[1, 12, 5], [10, 57, 5], [30, 135, 27], [36, 153, 39], [57, 237, 60], [70, 302, 60]],
+            "atStats": ["STR", "DEX"],
             "summary": "Same as Fighter: STR primary, DEX only to weapon requirement (3/2 to Lv36, 4/1 to Lv57, pure STR after ~60 base DEX).",
             "steps": [
               "Lv1-30: as Warrior (~135 STR / 27 DEX at Lv30).",
@@ -169,7 +173,7 @@
           "id": "spearman",
           "name": "Spearman",
           "weapon": "Spears or polearms (2H only, no shield)",
-          "playstyle": "Long-reach melee: Rush to group, Power Strike / Slash Blast, Final Attack for sustain via HP absorb.",
+          "playstyle": "Melee with the longest reach. Rush to group monsters up, Power Strike or Slash Blast them, and Final Attack heals you a little as you hit.",
           "pros": [
             "Longest basic melee reach of warrior weapons",
             "#3 damage-per-MP at Lv70 in MeowDB benchmarks",
@@ -189,6 +193,8 @@
             "test": "Same Warrior test (West Rocky Mountain IV instructor, 30 Dark Marbles, The Proof of a Hero), then pick Spearman."
           },
           "ap": {
+            "at": [[1, 12, 5], [10, 57, 5], [30, 135, 27], [36, 153, 39], [57, 237, 60], [70, 302, 60]],
+            "atStats": ["STR", "DEX"],
             "summary": "Same as Fighter/Page. Each Lv30-70 spear/polearm needs DEX equal to its level; gear DEX lowers the base DEX you need.",
             "steps": [
               "Lv1-30: as Warrior (~135 STR / 27 DEX).",
@@ -238,7 +244,7 @@
           "id": "fp-wizard",
           "name": "Fire/Poison Wizard",
           "weapon": "Wand or staff (+ shield)",
-          "playstyle": "Damage-over-time caster: Fire Arrow for single targets with burn, Poison Breath to spread poison across groups.",
+          "playstyle": "Burn and poison caster. Fire Arrow hits one target and keeps it burning, and Poison Breath spreads poison across a group.",
           "pros": [
             "#4 AoE at Lv70 in MeowDB benchmarks",
             "Fire Arrow bonus vs fire-weak mobs",
@@ -257,6 +263,8 @@
             "test": "Take Grendel's letter to the Magician Job Instructor in The Forest North of Ellinia, enter the hidden test map, collect 30 Dark Marbles, trade for The Proof of a Hero, return to Grendel and pick F/P."
           },
           "ap": {
+            "at": [[1, 12, 5], [10, 57, 5], [19, 102, 5], [20, 102, 10], [24, 122, 10], [25, 122, 15], [29, 142, 15], [30, 142, 20], [40, 172, 40], [63, 264, 63], [70, 299, 63]],
+            "atStats": ["INT", "LUK"],
             "summary": "INT primary; LUK only to wand/staff requirements (LUK ~ level minus 7 to 10). Lv1-30 near-pure INT with 5 LUK at Lv20/25/30; then 3 INT/2 LUK to Lv40, 4/1 to Lv63, pure INT after.",
             "steps": [
               "Lv1-10: all INT (57 INT / 5 LUK).",
@@ -302,7 +310,7 @@
           "id": "il-wizard",
           "name": "Ice/Lightning Wizard",
           "weapon": "Wand or staff (+ shield)",
-          "playstyle": "Fast mobber: Thunder Bolt hits up to 6 mobs, Cold Beam for single targets and slows.",
+          "playstyle": "The fastest group killer. Thunder Bolt hits up to 6 monsters at once, and Cold Beam hits one target and slows it.",
           "pros": [
             "Thunder Bolt is the only 2nd-job attack hitting 6 mobs (fastest mobbing per MeowDB)",
             "Cold Beam slows and does +25% vs ice-weak mobs",
@@ -320,6 +328,8 @@
             "test": "Same Magician test: instructor in The Forest North of Ellinia, 30 Dark Marbles, The Proof of a Hero, then pick I/L."
           },
           "ap": {
+            "at": [[1, 12, 5], [10, 57, 5], [19, 102, 5], [20, 102, 10], [24, 122, 10], [25, 122, 15], [29, 142, 15], [30, 142, 20], [40, 172, 40], [63, 264, 63], [70, 299, 63]],
+            "atStats": ["INT", "LUK"],
             "summary": "Same as F/P: INT primary, LUK to weapon requirements only.",
             "steps": [
               "Lv1-30: as Magician (142 INT / 20 LUK at Lv30).",
@@ -366,7 +376,7 @@
             "Buy Orange Potions and Lemons for mana (about 1 MP per meso). Blue Potions cost more per point."
           ],
           "weapon": "Wand or staff (+ shield)",
-          "playstyle": "Support healer: Heal and Bless for parties, Holy Arrow for single-target damage, Invincible for solo survival.",
+          "playstyle": "Party healer. Heal and Bless keep your group going, Holy Arrow hits one target, and Invincible helps you survive on your own.",
           "pros": [
             "Highest physical and magical EHP in MeowDB Lv70 comparison",
             "Heal and Bless are strong party support",
@@ -384,13 +394,14 @@
             "test": "Same Magician test (instructor at The Forest North of Ellinia, 30 Dark Marbles), then pick Cleric."
           },
           "ap": {
+            "at": [[1, 12, 5], [10, 57, 5], [19, 102, 5], [20, 102, 10], [24, 122, 10], [25, 122, 15], [29, 142, 15], [30, 142, 20], [70, 302, 60]],
+            "atStats": ["INT", "LUK"],
             "summary": "INT primary; keep base LUK at level minus 10 (4 INT / 1 LUK per level from Lv30).",
             "steps": [
               "Start: 4 STR / 4 DEX / 12 INT / 5 LUK (8 of your 9 free points in INT, 1 in LUK).",
               "Lv2-10: all INT (57 INT / 5 LUK at Lv10).",
               "Lv11-30: all INT, except 5 into LUK at Lv20, 25 and 30 (142 INT / 20 LUK when you pick Cleric).",
               "Lv31-70: 4 INT / 1 LUK per level (182/30 at Lv40, 222/40 at Lv50, 262/50 at Lv60, 302/60 at Lv70).",
-              "At a glance (base INT / LUK): Lv10 57/5 · Lv20 102/10 · Lv30 142/20 · Lv40 182/30 · Lv50 222/40 · Lv60 262/50 · Lv70 302/60.",
               "Lv70-100 (inference, verify): continue LUK = level - 10, or less with LUK gear.",
               "Gear: Green Goldwind Shoes (+5 LUK) at Lv50 cover LUK through Angel Wings.",
               "Pitfall: LUK above level-10 starves INT; skip Arc Staff (40 LUK too early on this plan)."
@@ -430,7 +441,7 @@
           "id": "hunter",
           "name": "Hunter",
           "weapon": "Bow",
-          "playstyle": "Long-range AoE: Arrow Bomb grouped mobs (stuns), Booster + Soul Arrow upkeep, keep distance.",
+          "playstyle": "Long-range group killer. Arrow Bomb hits up to 6 monsters and stuns them, so keep your distance and keep Booster and Soul Arrow running.",
           "pros": [
             "#2 AoE at Lv70 and best long-range AoE (MeowDB)",
             "Arrow Bomb hits 6 and can stun",
@@ -438,8 +449,8 @@
             "Soul Arrow removes arrow cost"
           ],
           "cons": [
-            "Squishiest class in benchmarks",
-            "Weak melee whack inside ~65 px",
+            "Takes hits worst of all 10 jobs in NiaMeowDB's benchmarks",
+            "Weak when monsters get right up close",
             "Arrow Bomb is MP-hungry (28 MP)",
             "No movement skill; bows must be crafted"
           ],
@@ -450,10 +461,12 @@
             "test": "Take Athena's letter to the Bowman Job Instructor on The Road to the Dungeon (near Henesys), collect 30 Dark Marbles in the hidden test map, trade for The Proof of a Hero, return to Athena and pick Hunter."
           },
           "ap": {
-            "summary": "DEX primary; STR to bow requirement (roughly 1 STR per level). Lv1-10 all DEX; Lv11-15 10 STR/15 DEX; Lv16-30 1 STR/4 DEX; Lv31-70 1 STR/4 DEX (70 STR for Golden Hinkel).",
+            "at": [[1, 5, 12], [10, 5, 57], [15, 15, 72], [30, 30, 132], [70, 70, 292]],
+            "atStats": ["STR", "DEX"],
+            "summary": "DEX is your damage stat; add STR only to meet your bow's requirement (about 1 STR per level). Lv1-10 all DEX; Lv11-15 +10 STR and +15 DEX in total; Lv16-70 +1 STR / +4 DEX every level (70 STR for Golden Hinkel).",
             "steps": [
               "Lv1-10: all DEX (57 DEX).",
-              "Lv11-15: +10 STR / +15 DEX (15 / 72).",
+              "Lv11-15: +10 STR and +15 DEX in total, about 2 STR / 3 DEX a level (15 STR / 72 DEX at Lv15).",
               "Lv16-30: +1 STR / +4 DEX per level (30 STR / 132 DEX at Lv30).",
               "Lv31-70: +1 STR / +4 DEX per level (70 STR / 292 DEX at Lv70).",
               "Lv70-100 (inference, verify): STR only if a higher bow needs it, else DEX.",
@@ -462,7 +475,7 @@
           },
           "sp": {
             "firstJob": [
-              "Beginner: 3/3/3",
+              "Beginner: Three Snails 3, Recovery 3, Nimble Feet 3 by Lv10",
               "Lv10-18: Arrow Blow to 20 (Eye of Amazon 1-3 along the way)",
               "Lv18-23: Critical Shot to 15",
               "Lv23-27: Eye of Amazon to 15",
@@ -492,7 +505,7 @@
           "id": "crossbowman",
           "name": "Crossbowman",
           "weapon": "Crossbow (2H)",
-          "playstyle": "Line-piercing ranged: Iron Arrow down long flat lanes, Final Attack/Double Shot on singles.",
+          "playstyle": "Ranged shots that go through a whole line. Iron Arrow pierces up to 6 monsters on long flat maps, with Final Attack and Double Shot for single targets.",
           "pros": [
             "Iron Arrow pierces up to 6 mobs (raised from 4 in test)",
             "Max Mastery adds +20% crit damage",
@@ -511,6 +524,8 @@
             "test": "Same Bowman test (Bowman Job Instructor, The Road to the Dungeon, 30 Dark Marbles), then pick Crossbowman."
           },
           "ap": {
+            "at": [[1, 5, 12], [15, 5, 82], [30, 20, 142], [70, 60, 302]],
+            "atStats": ["STR", "DEX"],
             "summary": "DEX primary; STR = crossbow level minus 10. Lv1-15 all DEX; then 1 STR/4 DEX.",
             "steps": [
               "Lv1-15: all DEX (5 STR / 82 DEX at Lv15).",
@@ -559,7 +574,7 @@
           "id": "assassin",
           "name": "Assassin",
           "weapon": "Claw + throwing stars",
-          "playstyle": "Ranged single-target: Lucky Seven spam with Haste, Booster and Critical Throw; Drain as an emergency heal.",
+          "playstyle": "Ranged damage, one target at a time. Throw Lucky Seven over and over with Haste, Booster and Critical Throw up, and use Drain as an emergency heal.",
           "pros": [
             "#2 single-target and highest ranged damage at Lv70 (MeowDB)",
             "Haste party Speed/Jump buff",
@@ -577,6 +592,8 @@
             "test": "Take the letter to the Thief Job Instructor at the Construction Site north of Kerning City, collect 30 Dark Marbles in the test map, return The Proof of a Hero, pick Assassin."
           },
           "ap": {
+            "at": [[1, 5, 12], [10, 5, 57], [15, 15, 72], [20, 20, 92], [25, 25, 112], [30, 30, 132], [70, 70, 292]],
+            "atStats": ["DEX", "LUK"],
             "summary": "LUK primary; DEX = claw requirement (about level). Lv1-10 all LUK; 1 DEX/4 LUK onward.",
             "steps": [
               "Lv1-10: all LUK (57 LUK).",
@@ -588,7 +605,7 @@
           },
           "sp": {
             "firstJob": [
-              "Beginner 3/3/3",
+              "Beginner: Three Snails 3, Recovery 3, Nimble Feet 3 by Lv10",
               "Lv10-18: Lucky Seven to 20 (Nimble Body 3, Keen Eyes 2 early)",
               "Lv18-23: Keen Eyes to 15",
               "Lv23-27: Nimble Body to 15",
@@ -617,7 +634,7 @@
           "id": "bandit",
           "name": "Bandit",
           "weapon": "Dagger (+ shield/wristguard)",
-          "playstyle": "Close-range burst: Steal fresh targets for an ATK buff, Savage Blow to finish, Double Stab when it's enough.",
+          "playstyle": "Big damage up close. Open on a fresh monster with Steal for an ATK buff, finish it with Savage Blow, and use Double Stab when that's enough.",
           "pros": [
             "Highest single-target damage at Lv70 (MeowDB)",
             "Haste party buff; Steal stuns and grants +35 ATK",
@@ -626,7 +643,7 @@
           "cons": [
             "Very short reach, constant face-tanking",
             "Savage Blow costs 28 MP",
-            "Best path usually needs a 7,000 NX SP Reset (Sindit)"
+            "The usual path (“Sindit”) needs a 7,000 NX SP Reset at about Lv40"
           ],
           "advancement": {
             "level": 30,
@@ -635,7 +652,9 @@
             "test": "Same Thief test (Construction Site north of Kerning, 30 Dark Marbles, The Proof of a Hero), then pick Bandit."
           },
           "ap": {
-            "summary": "LUK primary; DEX to dagger requirement. 1 DEX/4 LUK Lv31-61, then pure LUK.",
+            "at": [[1, 5, 12], [10, 5, 57], [15, 15, 72], [20, 20, 92], [25, 25, 112], [30, 30, 132], [61, 61, 256], [70, 61, 301]],
+            "atStats": ["DEX", "LUK"],
+            "summary": "LUK is your damage stat; add DEX only to meet your dagger's requirement. Same as Assassin to Lv30, then +1 DEX / +4 LUK every level to Lv61, then all LUK.",
             "steps": [
               "Lv1-30: as Thief (30 DEX / 132 LUK at Lv30). Reef Claw dagger at Lv30 needs 25 DEX / 60 LUK.",
               "Lv31-61: +1 DEX / +4 LUK.",
@@ -647,14 +666,14 @@
           },
           "sp": {
             "firstJob": [
-              "Default 'Sindit' plan: same as Assassin (Lucky Seven 20, Keen Eyes 15, Nimble Body 15, Disorder 3, Dark Sight 8), level as Lucky Seven until ~Lv40, then SP Reset.",
+              "Usual plan (players call it “Sindit”): take the same skills as an Assassin (Lucky Seven 20, Keen Eyes 15, Nimble Body 15, Disorder 3, Dark Sight 8), level with Lucky Seven until about Lv40, then use an SP Reset to move into dagger skills.",
               "No-reset alternative: Double Stab 20, Nimble Body 15, Disorder 6, Dark Sight 20 (slower, melee leveling)."
             ],
             "secondJob": [
-              "Path A (reset at Lv40): Lv30-37 Haste to 20; Lv37-39 Nimble Recovery 8; Lv40 reset -> Dagger Mastery 20, Booster 1, Savage Blow 10; Lv41-47 Savage Blow to 30; Lv48-54 Haste refill; Lv54-58 Nimble Recovery; Lv58-68 Steal to 30; Lv68-70 Booster 9.",
+              "Path A (reset at Lv40): Lv30-37 Haste to 20; Lv37-39 Nimble Recovery 8; Lv40 SP Reset into Dagger Mastery 20, Booster 1, Savage Blow 10; Lv41-47 Savage Blow to 30; Lv48-54 Haste refill; Lv54-58 Nimble Recovery; Lv58-68 Steal to 30; Lv68-70 Booster 9.",
               "Path B (no reset): Lv30 Haste 1; Lv31-37 Dagger Mastery 20 (Booster 1); Lv38-47 Savage Blow to 30; then as Path A.",
               "Lv71-100 (inference): finish Dagger Booster and Nimble Recovery to 20.",
-              "Skip: resetting at Lv30 (L7 still good until ~40). Keep Double Stab after Savage Blow for MP efficiency.",
+              "Skip: resetting at Lv30 (Lucky Seven still works well until about Lv40). Keep Double Stab after Savage Blow; it saves MP.",
               "Classic changes: Savage Blow 4/5/6 hits by level (450% total at 30); Steal duration doubled to 60s and grants ATK; Haste +30/+10. Since the Oct 15 patch, Steal only works when it hits."
             ]
           },

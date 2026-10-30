@@ -155,6 +155,7 @@ a.card .go{margin-top:auto;color:var(--maple-deep);font-weight:800;font-size:14p
 .route{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
 .route li{background:var(--surface);border-radius:var(--r);padding:16px 18px;display:grid;gap:5px;box-shadow:var(--shadow);border-left:6px solid var(--maple)}
 .route .lv{display:inline-block;justify-self:start;font-weight:800;font-size:15px;color:var(--maple-ink);background:var(--maple);padding:2px 12px;border-radius:999px}
+.route .lv small{font-size:12.5px;font-weight:700;margin-left:6px;opacity:.85}
 .route .map{font-weight:800;color:var(--ink);font-size:17px}
 .route .sub{font-size:14px;color:var(--muted)}
 .route .tip{font-size:15.5px}
@@ -233,6 +234,8 @@ button.btn.btn-primary{background:var(--maple)}
 .search-btn svg{width:17px;height:17px}
 .search-btn kbd{font:700 11px var(--font);background:var(--raised);border-radius:6px;padding:1px 6px;color:var(--muted)}
 .search{position:fixed;inset:0;z-index:50;background:rgba(20,10,4,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:flex-start;justify-content:center;padding:10vh 16px 16px}
+/* the hidden attribute always wins over a component's display rule (deadline rows, filters, sheets) */
+[hidden]{display:none!important}
 .search[hidden]{display:none}
 .search-box{width:min(620px,100%);background:var(--surface);border-radius:22px;box-shadow:0 30px 80px -20px rgba(0,0,0,.6);padding:10px;display:grid;grid-template-columns:1fr auto;gap:8px;max-height:80vh}
 .search-box input{font:700 18px var(--font);color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:12px 14px;min-width:0}
@@ -290,7 +293,12 @@ body.noscroll{overflow:hidden}
 .run .result{margin-top:20px}
 .run .result .box h3{font-size:14px}
 .box.grind{grid-column:1/-1}
-.spot{display:flex;gap:14px;align-items:center;padding:6px 0}
+.spot{display:flex;gap:14px;align-items:flex-start;padding:6px 0}
+.spot .fit{display:inline-block;font-size:12.5px;font-weight:800;padding:2px 10px;border-radius:999px;background:var(--green-soft);color:var(--green);margin:0 0 4px}
+.spot .fit.meh{background:var(--pill);color:var(--muted)}
+.q-hide{display:inline-flex;align-items:center;gap:8px;font-weight:700;margin:4px 0 8px;cursor:pointer}
+.q-hide input{width:18px;height:18px;accent-color:var(--maple)}
+.hide-done .quest.done{display:none}
 .spot+.spot{border-top:1px solid var(--line);margin-top:6px;padding-top:12px}
 .spot .spr{display:flex;align-items:flex-end;gap:4px;min-width:64px;justify-content:center}
 .spot .spr img{max-height:56px;max-width:64px}

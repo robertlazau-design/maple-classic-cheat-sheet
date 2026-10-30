@@ -155,7 +155,7 @@
  },
  "quests": [
   {
-   "name": "Maple Island quests (all 10)",
+   "name": "Maple Island quests (all 20)",
    "slug": "maple-island-quests",
    "inGame": "In game: 20 quests from 10 NPCs, from Borrowing Sera's Mirror to Rain's Maple Quiz 7",
    "summary": "Do all 20 short quests from 10 Maple Island NPCs before you take the one-way boat. You get 1,075 EXP, exactly the 300 mesos the boat costs, The Green Relaxer chair, a random dagger and a random skullcap or headband.",
@@ -4223,7 +4223,7 @@
    "summary": "Clear three subway jump quests under Kerning City and bring Shumi her coin, roll of cash and sack of cash. No grinding, and you get 20,160 EXP, 12,222 mesos, 6 fame, 23 return scrolls, 30 Blue Potions and 30 Mana Elixirs.",
    "card": "Clear three subway jump quests (B1, B2, B3) and bring Shumi her coin, roll of cash and sack of cash.",
    "cardRewards": [
-    "Return Scroll|x23 town scrolls",
+    "Return Scroll|23 return scrolls (Nearest Town plus each town)",
     "Mana Elixir|x30",
     "Blue Potion|x30",
     "Fame|+6 fame"
