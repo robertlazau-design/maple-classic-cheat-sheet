@@ -445,7 +445,10 @@ def build_home():
 def build_leveling():
     route = sorted(LEV["route"], key=lambda r: (r["from"], r["to"]))
     regions = "".join(f'<tr><td data-th="Region"><b>{e(r["region"])}</b></td><td data-th="Status">{e(r["status"])}</td><td data-th="Notes">{e(tidy(r["notes"]))}</td></tr>' for r in LEV["regionsAvailable"])
-    notes = "".join(f'<details><summary>{e(n["class"])}</summary><p>{e(tidy(n["note"]))}</p>{srcs(n.get("source"))}</details>' for n in LEV["classNotes"])
+    lv_lines = lambda n: "".join(f'<li><b>Lv {a if a == b else f"{a}–{b}"}:</b> {e(tidy(t))}</li>' for a, b, t in n["lines"])
+    notes = f'<p>{e(tidy(LEV["classIntro"]))}</p>' + "".join(
+        f'<details id="class-{e(n["job"])}"><summary>{e(n["class"])}</summary><p>{e(tidy(n["note"]))} {conf(n.get("confidence"))}</p><ul>{lv_lines(n)}</ul>{srcs(n.get("source"))}</details>'
+        for n in LEV["classNotes"])
     tips = "".join(f'<li>{e(tidy(t["tip"]))}</li>' for t in LEV["tips"])
     more = [("/party-quest/", "🎟️ KPQ from level 21", "Grab 3 friends. Half a level a run in your low 20s, and every answer's on the page.", "npc/9020000"),
             ("/quests/", "📜 Quests worth doing", "Free EXP and gear by level, plus the ones to skip.", "npc/1012101"),
