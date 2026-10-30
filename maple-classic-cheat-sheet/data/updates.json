@@ -2,6 +2,16 @@
  "entries": [
   {
    "date": "2026-10-30",
+   "title": "Grind spots for your exact job 🎯",
+   "items": [
+    "Leveling: \"Training by class\" now has a level-by-level list for all 10 jobs, from 30 to 70.",
+    "Each list says where to go at your level, plus a backup map if it's crowded.",
+    "Picked a job in \"Your run\"? Its list opens for you.",
+    "Tier list: Bandits take hits like Warriors. The new-player note was wrong, and it's fixed."
+   ]
+  },
+  {
+   "date": "2026-10-30",
    "title": "Easier grind picks and clearer builds 🗺️",
    "items": [
     "Grind spots: \"Show me where\" now lands right on your spot, and each level range shows the EXP it takes.",

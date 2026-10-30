@@ -657,6 +657,9 @@
     var homeRun = store.get("mccs-run") || {};
     var savedLv = store.get("mccs-pick-lv") || (homeRun.job && homeRun.lv);
     if (savedLv) pickIn.value = savedLv;
+    // Picked a job in "Your run"? Open its list under "Training by class"
+    var myJob = homeRun.job && document.getElementById("class-" + homeRun.job);
+    if (myJob) myJob.open = true;
     // Arriving from "How to get there" (/leveling/#lv-41-46): mark that spot and hold it in view too
     var arrived = location.hash && document.getElementById(location.hash.slice(1));
     if (arrived && routeLis.indexOf(arrived) > -1) { arrived.classList.add("hit"); holdSpot(arrived); }

@@ -61,7 +61,7 @@
              ["spearman", "Tanky and simple."],
              ["fp-wizard", "Fun and fast, but mana management matters."],
              ["crossbowman", "Easy from range, a bit slower than Hunter."]],
-       "B": [["bandit", "Melee with a thief's lower HP. More to manage."],
+       "B": [["bandit", "Takes hits like a Warrior, but you fight face to face, burn potions, and magic attacks hurt more."],
              ["assassin", "No group attack and restocking stars costs mesos."],
              ["il-wizard", "Weak until later levels."],
              ["cleric", "Very slow to level alone. Great if you have a group."]]}}
