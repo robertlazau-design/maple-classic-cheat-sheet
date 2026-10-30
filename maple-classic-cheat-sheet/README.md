@@ -2,14 +2,12 @@
 
 Static fan guide for MapleStory Classic World. No dependencies.
 
-- Content lives in `data/*.json` (jobs, leveling, secrets).
-- Design and scripts live in `src/` (`style.css`, `site.js`).
-- Run `python3 build.py` to rebuild every page into `public/`, then commit. Vercel serves `public/` as-is.
+- Content lives in `data/*.json`; design and scripts live in `src/` (`style.css`, `site.js`).
+- Run `python3 build.py` to rebuild every page into `public/` and check it locally. Vercel runs the same build (plus Pagefind search) on every deploy.
+- Full notes for whoever works on it next: `CLAUDE.md` and `notes/` at the repo root.
 
-## Turning on ads
-1. Get approved for Google AdSense (privacy policy is at /privacy/).
-2. Put your publisher ID in `src/site.js` (`ADSENSE_CLIENT = "ca-pub-..."`) and add `public/ads.txt` with the line AdSense gives you.
-3. Rebuild and commit. Ad slots (top banner, in-content, desktop sidebar) appear only when the ID is set.
+## No ads
+The site runs no ads and no ad trackers; it's kept alive by donations (Buy Me a Coffee). The privacy page says so too.
 
 ## Updating after a patch
 Edit the JSON, change `CHECKED` in `build.py`, rebuild, commit.
