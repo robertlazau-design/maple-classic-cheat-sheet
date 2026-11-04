@@ -450,12 +450,14 @@
   // ---- Citizenship grade planner (/citizenship/): saved on this device only
   var gsel = document.getElementById("gsel"), gdEl = document.getElementById("gdata");
   if (gsel && gdEl) {
-    var gd = JSON.parse(gdEl.textContent), gout = document.getElementById("gout");
+    var gd = JSON.parse(gdEl.textContent), gout = document.getElementById("gout"), gcut = Number(gdEl.dataset.cut || 99);
     var drawG = function () {
       var g = Number(gsel.value), n = gd[g];
       document.querySelectorAll("tr[data-g]").forEach(function (tr) { var x = Number(tr.dataset.g); tr.classList.toggle("have", x <= g); tr.classList.toggle("next", x === g + 1); });
       if (g === 0) gout.innerHTML = "<b>Next:</b> sign up at level 12 with Arthur (Henesys) or Roxy (Kerning).";
       else if (!n) gout.innerHTML = "<b>Citizen of Honor!</b> You maxed it. Enjoy those earrings.";
+      // Grades from gcut up got cheaper on Oct 29 and Nexon didn't publish the new numbers, so the old ones are a ceiling
+      else if (n[0] >= gcut) gout.innerHTML = "<b>Next: grade " + n[0] + ", " + esc(n[1]) + ".</b> Level " + n[2] + " and fewer than " + n[3].toLocaleString("en-US") + " points (lowered Oct 29; Nexon hasn't said to what). Unlocks: " + esc(n[6]) + ".";
       else gout.innerHTML = "<b>Next: grade " + n[0] + ", " + esc(n[1]) + ".</b> Level " + n[2] + " and " + n[3].toLocaleString("en-US") + " points, about " + n[7] + " days. Unlocks: " + esc(n[6]) + ".";
     };
     var sg = store.get("mccs-cit");

@@ -37,10 +37,15 @@
 | Oct 20, 23:59 UTC | Founder's First Step check-in ends | official |
 | Oct 20 | Grand Launch release notes posted (Nexon notice 46506; read via Metaroad and NiaMeowDB recaps) | official via recap |
 | **Oct 21** | Maintenance 6:00–~11:00 AM PDT (13–18 UTC), client v1.0.0. **Grand Launch 11:00 AM PDT / 18:00 UTC**, free. FA characters carry over. Housing, Mark of the Beta and The Journey Begins start. Stumpy + Excavation Site added. KPQ Ch 3–12 | official |
+| Oct 22, 1–2:14 PM PDT | Unscheduled maintenance: **Debt System** (RMT accounts owe mesos; no trade, gifting, shops or dropping items until repaid in town), server tweaks, KPQ coupon drop + green eye color fixes. Nexon 47098 / 47102 | official |
 | Oct 22, Nov 6, Dec 19 (00:00–02:00 UTC) | GM events: Physical Fitness Challenge, Coconut Harvest, Up and Up | official via recap |
 | Oct 23 – Nov 3, 23:59 UTC | Frieren Signature Style Collection claims (bought before Oct 7) | single, citing Nexon |
 | Oct 28, 00:00 UTC (Oct 27, 5 PM PDT) | Halloween (Halloween Candies + Slime Attack) to Nov 18 23:59 UTC | official via recap (multi) |
 | Oct 28, 07:59 UTC | Founder's Mystery Fashion Crate (3,500 NX; 11 for 35,000) and Mystery Hair (5,500) / Face (3,500) coupons leave the Cash Shop | official via recap |
+| Oct 29, 5:00–8:54 AM PDT | **v1.1.0** (Nexon 47298): debtors can't pick up others' drops; whispers Lv10; more Victoria drops (unnamed); Copper Drake/Tortie/Clang/Drake HP down; Focus ACC 1–20 → 5–25; Poison Breath 50–80 → 60–90 (+Lv10 fix); Thunder Bolt 40–70 → 50–80; Rush range 150 at Lv10 fixed; FA Spear/Polearm absorb capped at 15% max HP; Woodcrafting arrow conversion 100 → 50 (was 10 → 5); citizenship grades 4–10 need less (amounts unpublished); dailies no longer doable twice; pre-launch Mark of the Beta W.DEF fixed; Mushroom Garden no longer a town | official |
+| Oct 30, 3:00–4:25 PM PDT | Emergency maintenance: spawn system adjusted "to better reflect active combat in each map". No numbers (Nexon 47370) | official |
+| Nov 4, 3–~5 PM PST | Unscheduled maintenance: bot detection; megaphones blocked during the **96 h** Cash item trade lock after an account's first NX purchase (Nexon 47580) | official |
+| Nov 4 – Nov 18 maintenance | Mystery Fashion Crate (3,500 NX; 11 for 35,000) | official |
 | Nov 18, 23:59 UTC | The Journey Begins, The Marks We Leave Behind, To Classic Beginners and both Halloween events end | official via recap |
 | Nov 18 | Forgotten Hollow (mobs Lv39–59, Rotten Mushmom Lv60), Moon Bunny's Rice Cake PQ (Lv11+), more citizenship story (Maya, Chief Stan). Fall Store Permit and 10-day equip covers leave at 17:59 UTC | official |
 | Nov 30, 23:59 UTC | Founder's Package claim deadline | official |
@@ -66,6 +71,7 @@
 
 **Chat and megaphones**
 - Chat accepts English, Spanish and Korean characters. Megaphones are English-only.
+- Whispers need Lv10 (Oct 29).
 - Megaphone 350 NX (channel). Super Megaphone 1,500 NX (world). Item Megaphone 1,500 NX.
 
 **Getting around**
@@ -99,7 +105,11 @@
 - **Fire Arrow:** single target with a 3 s burn.
 - **Bless:** −15% damage taken for the party (no longer ACC/avoid).
 - **Heal:** recovery 300% → 100%. Range cut Oct 8.
-- **Rush:** doesn't push bosses (Oct 15).
+- **Rush:** doesn't push bosses (Oct 15). Range 150 at Lv10 since Oct 29 (was stuck at 130).
+- **Focus** (Oct 29): ACC 5–25 (was 1–20).
+- **Poison Breath** (Oct 29): attack 60–90 (was 50–80); the poison DoT is unchanged.
+- **Thunder Bolt** (Oct 29): attack 50–80 (was 40–70).
+- **Final Attack: Spear/Polearm** (Oct 29): HP absorbed per hit capped at 15% of max HP (description said 25%).
 - **Arrow Bomb:** 2 s stun.
 - **Steal:** must hit (Oct 15). Buff lasts 60 s.
 - **Burn/bleed:** gave double EXP and drops until Oct 15, so ignore F/P and Fighter pace reports from before then.
@@ -147,8 +157,8 @@
 | Monster | Lv | HP | EXP | Avoid | Where | GMS ID |
 |---|---|---|---|---|---|---|
 | Wraith | 48 | 2,350 | 122 | 32 | Kerning subway | 4230102 |
-| Clang | 49 | 2,899 | 127 | 30 | Florina | 4230104 |
-| Drake | 50 | 3,218 | 133 | 27 | Sleepywood | 5130100 |
+| Clang | 49 | 2,657 (was 2,899 before Oct 29) | 127 | 30 | Florina | 4230104 |
+| Drake | 50 | 2,950 (was 3,218 before Oct 29) | 133 | 27 | Sleepywood | 5130100 |
 | Croco | 52 | 3,136 | 146 | 31 | Dangerous Croko II | 5130103 |
 | Malady | 55 | 2,998 | 167 | 33 | Forest of Evil I/II; holy-weak, resists fire/ice, M.DEF 50, P.DEF 0 | 5300100 (fly) |
 | Stone Golem | 56 | 5,134 | 175 | 30 | Golem's Temple | 5130101 |
@@ -226,6 +236,7 @@
 | 9 | Guardian of the Village | 52 | 26,000 |
 | 10 | Citizen of Honor | 57 | 32,000 |
 
+- **Oct 29 (v1.1.0):** grades 4–10 now need less than the table above. Nexon didn't publish the new amounts and the client doesn't state thresholds (mapleclassic.wiki). The site shows the old ones as an upper limit (`pointsCut` in launch.json).
 - COT2 used 1,000 to 10,000. Some guides still quote those.
 - **Discounts:** shops and taxi 5→25% (+2% per grade, 25% at grade 10). Storage 5→50% (fee 95→50 mesos per item).
   - Nexon's wording: "cheaper cabs, Storage Keeper fees and **some** general store items".
@@ -233,7 +244,7 @@
   - VIP neighbors from grade 5 (Lv32) pay ~5,850 EXP: Chief Stan + Athena (Henesys), Chun Ji + Dark Lord (Kerning).
 - **Weekly points:** donate **30** of one ETC item for 700–2,100 points + EXP + mesos + 20 Blue Potions.
   - Better items need higher grades. Old guides say 100 items; that's COT2.
-- **Pace** [single, maplestory.quest]: about 8 days to grade 2, then 14/20/26/32/37/42/48/54 days per grade. About 281 days to grade 10.
+- **Pace** [single, maplestory.quest, pre-Oct 29]: about 8 days to grade 2, then 14/20/26/32/37/42/48/54 days per grade. About 281 days to grade 10.
 - **Story arcs:** 5 quests each, at Lv17 (grade 2), 27 (G4), 37 (G6), 47 (G8) and 57 (G10).
   - 123 citizenship quests in total. "72 quests" was a wiki import count.
   - An arc needs that neighbor's First Greeting first.
@@ -322,7 +333,7 @@
 - Trade tax is **unknown/unpublished**.
 - Lie Detector Test: sold at the Citizen General Store, account-bound, 7 days. [official via recap]
 - Many Cash items are "tradeable once". Equipping a Cash item makes it untradeable.
-- Coming: a 48 h trade/gift lock on Cash items after an account's first NX purchase. [official via Discord]
+- After an account's first NX purchase, Cash items are trade-locked for **96 h** (Nexon 47580, Nov 4; the Discord note said 48 h). Since Nov 4, megaphones of every kind are blocked during it too. [official]
 
 **Prices (NiaMeowDB, player-reported)**
 - **NX to mesos:** 1.88 (Oct 7) → 8 (Oct 14) → 11.8 (Oct 18) → ~14–15 (Oct 19–20).
@@ -347,6 +358,8 @@
 - Report with right-click → Report. The daily cap is unconfirmed (~15 claimed).
 - Bans: **1,379** permanent (first posted ~Oct 10–11; also dated Oct 17) and **3,121 by Oct 14**, real-money trading included.
 - Bans cover the main GMS account too, with no exemption for Founder buyers.
+- **Debt System** (Oct 22, Nexon 47102): RMT or unfair-trade accounts owe mesos. While in debt: no Store Permit, Hired Merchant, trading, Cash Shop gifting or dropping items; since Oct 29 also no picking up other players' drops. Repay in town via "Repay Illegal Mesos", from 1 meso up. [official]
+- Nov 4: bot detection and prevention improved (no details). [official]
 
 ## 11. Disputed: don't "fix" these without new evidence
 
@@ -363,6 +376,9 @@
 ## 12. Re-check after Grand Launch notes (Oct 21) and after events
 
 - [x] v1.0.0 patch notes → `guides.json` news.patches + updates.json (Oct 21)
+- [x] Oct 22, Oct 29 (v1.1.0), Oct 30 and Nov 4 maintenances → news.patches, rules, citizenship, updates.json (Nov 4)
+- [ ] New citizenship point thresholds for grades 4–10 (lowered Oct 29, unpublished)
+- [ ] What the Oct 30 spawn change did to the 75%-solo / full-at-6 capacity model
 - [ ] Stumpy level/HP/spawn/drops and Excavation Site monster levels
 - [ ] House price, furniture sources, chest size, Return Scroll to My Home vendor
 - [ ] Each day's gift for The Journey Begins, and its end date

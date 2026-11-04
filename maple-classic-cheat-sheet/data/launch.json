@@ -114,7 +114,8 @@
    [9, "Guardian of the Village", 52, 26000, "21%", 55, "Glove attack scrolls (100%)", 48],
    [10, "Citizen of Honor", 57, 32000, "25%", 50, "Elixirs · Lv 57 story → town earrings", 54]
   ],
-  "gradeNote": "Points are from the launch client and count per grade (128,000 in all). Some guides still show the closed-test numbers (1,000 to 10,000). You need the level and the points. Day counts are maplestory.quest's estimate if you do every daily and one donation a week; nobody has hit grade 10 yet.",
+  "pointsCut": 4,
+  "gradeNote": "On Oct 29 Nexon lowered the points for grades 4 to 10 but didn't publish the new numbers, so those rows show the old launch amounts as an upper limit. Grades 1 to 3 didn't change. Points count per grade, and you need the level too. Some guides still show the closed-test numbers (1,000 to 10,000). Day counts are maplestory.quest's estimate if you do every daily and one donation a week.",
   "daily": "Each day the board shows one neighbor. Your first visit is a \"First Greeting\" and later visits are \"Asking After\". Each one is worth 100 points at grade 1, plus 25 for every grade above that (325 at grade 10), with a little EXP, mesos and a fruit snack. From grade 5 (level 32) you also get VIP neighbors whose greetings pay about 5,850 EXP.",
   "donations": {
    "henesys": [
@@ -253,7 +254,7 @@
    ],
    [
     "How fast can I rank up?",
-    "One daily greeting (100+ points) and one weekly donation (700+ points) gets grade 2 in about 8 days. Grade 10 takes most of a year at that pace."
+    "One daily greeting (100+ points) and one weekly donation (700+ points) gets grade 2 in about 8 days. At launch, grade 10 took most of a year at that pace. The Oct 29 patch made grades 4 to 10 cheaper, so it's faster now, but Nexon hasn't said by how much."
    ]
   ],
   "src": [
@@ -512,7 +513,7 @@
   "cash": [
    "Cash Shop items are the main way NX turns into mesos. The rate went from under 2 mesos per NX on Oct 7 to about 15 on Oct 20.",
    "Equipping a Cash item makes it untradeable. Sell before you try it on.",
-   "Coming soon: after an account's first NX purchase, its Cash items can't be gifted or sold for 48 hours.",
+   "After an account's first NX purchase, its Cash items can't be gifted or sold for 96 hours, and its megaphones don't work during that time either.",
    "Nobody has published a trade tax for Classic. If you see a % quoted, it's a guess."
   ],
   "faq": [
@@ -529,7 +530,7 @@
     "Use the price someone actually paid, not other listings. Listings run about 40% above sale prices, so pricing at the sold median sells fast."
    ],
    ["Is there a trade tax?", "Nobody has published one for Classic."],
-   ["Can I get banned for buying mesos?", "Yes. Nexon bans real-money trading, and the ban covers your main MapleStory account too."]
+   ["Can I get banned for buying mesos?", "Yes. Nexon bans real-money trading, and the ban covers your main MapleStory account too. Since Oct 22 it can also put the account in debt: no trading, gifting, shops or dropping items until you pay the mesos back."]
   ],
   "src": [
    "https://meowdb.com/msclassic/free-market",
