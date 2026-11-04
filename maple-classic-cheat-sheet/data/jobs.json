@@ -178,7 +178,7 @@
             "Longest basic melee reach of warrior weapons",
             "#3 damage-per-MP at Lv70 in MeowDB benchmarks",
             "Polearm Mastery adds +20 Speed; Spear Mastery adds 20% chance to ignore WDEF",
-            "Final Attack: Spear heals 10% of damage dealt"
+            "Final Attack: Spear heals 10% of damage dealt, up to 15% of your max HP per hit"
           ],
           "cons": [
             "No shield or Guard",

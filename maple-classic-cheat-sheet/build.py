@@ -11,9 +11,9 @@ OUT = os.path.join(ROOT, "public")
 SITE = "https://www.mapleclassicguide.com"
 NAME = "Maple Classic Guide"
 COFFEE = "https://buymeacoffee.com/goldenboypro"  # your Buy Me a Coffee link, e.g. "https://buymeacoffee.com/yourname". Empty = hidden.
-CHECKED = "Oct 21, 2026"
-CHECKED_ISO = "2026-10-21"
-DATA_NOTE = "Grand Launch notes and Founder's Access data"
+CHECKED = "Nov 4, 2026"
+CHECKED_ISO = "2026-11-04"
+DATA_NOTE = "Patch notes through Nov 4 (v1.1.0) and launch data"
 WEB3FORMS_KEY = os.environ.get("WEB3FORMS_KEY", "").strip()  # set in Vercel > Settings > Environment Variables; empty = feedback opens an email instead
 
 def load(n):
@@ -79,7 +79,7 @@ def conf(c):
     return f'<span class="chip c-{e(c)}" title="{why}">{label}</span>'
 
 SOURCE_NAMES = {"meowdb.com": "NiaMeowDB", "metaroad.gg": "Metaroad", "mapleclassic.wiki": "Classic Wiki", "maplestorywiki.net": "MapleStory Wiki",
-                "maplestory.quest": "maplestory.quest", "maplestoryguide.wiki": "maplestoryguide.wiki"}
+                "maplestory.quest": "maplestory.quest", "maplestoryguide.wiki": "maplestoryguide.wiki", "nexon.com": "Nexon"}
 
 def srcs(s):
     if not s: return ""
@@ -809,8 +809,9 @@ def faq_schema(rows):
     return {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
         {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in rows]}
 
-def guide_stamp(extra=""):
-    return f'<p class="stamp" data-pagefind-ignore><b>✓ Checked {G["checked"]}</b><span>{extra}Tags show how sure we are: {conf("high")} {conf("medium")} {conf("low")}</span></p>'
+def guide_stamp(extra="", when=None):
+    """when: a page re-checked after the shared guides date (e.g. against a newer patch)."""
+    return f'<p class="stamp" data-pagefind-ignore><b>✓ Checked {when or G["checked"]}</b><span>{extra}Tags show how sure we are: {conf("high")} {conf("medium")} {conf("low")}</span></p>'
 
 def build_bosses():
     B = G["bosses"]
@@ -1209,14 +1210,14 @@ def build_news():
     patches = "".join(f'<article class="upd" id="p{e(pn["date"])}"><p class="upd-d"><time datetime="{e(pn["date"])}">{date.fromisoformat(pn["date"]).strftime("%b %-d, %Y")}</time></p><h3>{e(pn["title"])}</h3><ul>' + "".join(f"<li>{e(x)}</li>" for x in pn["items"]) + "</ul></article>" for pn in reversed(N["patches"]))
     body = f"""<h1>MapleStory Classic News: Launch Day, Events &amp; Patch Notes</h1>
 <p class="lede">Everything that's changed since Founder's Access opened on Oct 6, what's coming next, and what to know before you log in on launch day.</p>
-{guide_stamp("Official notes and Nexon Discord posts, via community recaps. ")}
+{guide_stamp("Nexon's notices and Discord posts, plus community recaps. ", CHECKED)}
 <div class="toc"><a href="#launch">Launch day</a><a href="#events">Events</a><a href="#deadlines">Deadlines</a><a href="#rules">Rule changes</a><a href="#patches">Patch notes</a><a href="#faq">FAQ</a></div>
 <h2 id="launch">Grand Launch: what to know</h2><div class="facts">{facts}</div>
 <ol class="musts" style="margin-top:16px">{tips}</ol>
 <h2 id="events">Events and what's coming</h2><p class="muted" style="margin-bottom:12px">Dates are from Nexon's MapleStory Fest roadmap (Oct 17) and can move. Event details marked "Likely" come from the test client.</p><div class="grid">{evts}</div>
 <h2 id="deadlines">Deadlines</h2><table class="tbl compact"><thead><tr><th>When</th><th>What</th></tr></thead><tbody>{dl}</tbody></table>
 <h2 id="rules">Rule changes worth knowing</h2><ul>{rules}</ul>
-<h2 id="patches">Patch notes since Founder's Access</h2><p class="muted" style="margin-bottom:6px">Newest first. Nexon's Grand Launch notes (client v1.0.0) come out Oct 21; we'll add them here.</p>{patches}
+<h2 id="patches">Patch notes since Founder's Access</h2><p class="muted" style="margin-bottom:6px">Newest first, in our words. Nexon's own notices are linked under the list.</p>{patches}
 {srcs(N["src"])}
 <h2 id="faq">FAQ</h2>{faq_html(N["faq"])}"""
     side = '<div class="card"><h3>Coming up</h3>' + "".join(f'<p><a href="#e-{qslug(ev["name"])}">{ev["emoji"]} {e(ev["name"])}</a> <span class="muted">{e(ev["when"])}</span></p>' for ev in N["events"]) + "</div>"
@@ -1246,7 +1247,7 @@ def build_citizenship():
         towns += f'''<article class="card town" id="{t["id"]}"><p class="town-h"><span aria-hidden="true">{t["emoji"]}</span><b>{e(t["name"])}</b><span class="tag">{e(t["best"])}</span></p>
 <p class="meta">Sign up: {e(t["clerk"])} · House: {e(t["home"])}</p><div class="perks">{perks}</div>
 <p class="faces-h">Neighbors you'll greet</p><div class="faces">{faces}</div><p class="muted" style="margin:0">VIP neighbors from grade 5: {e(t["vip"])}.</p></article>'''
-    grows = "".join(f'<tr data-g="{g}"><td data-th="Grade"><b>{g}</b><span class="gname">{e(n)}</span></td><td data-th="Level">{lv}</td><td data-th="Points">{pts:,}</td><td class="hide-sm" data-th="Discount">{d}</td><td class="hide-sm" data-th="Storage fee">{fee}</td><td data-th="Unlocks">{e(u)}</td></tr>' for g, n, lv, pts, d, fee, u, _ in C["grades"])
+    grows = "".join(f'<tr data-g="{g}"><td data-th="Grade"><b>{g}</b><span class="gname">{e(n)}</span></td><td data-th="Level">{lv}</td><td data-th="Points">{"&lt;&nbsp;" if g >= C.get("pointsCut", 99) else ""}{pts:,}</td><td class="hide-sm" data-th="Discount">{d}</td><td class="hide-sm" data-th="Storage fee">{fee}</td><td data-th="Unlocks">{e(u)}</td></tr>' for g, n, lv, pts, d, fee, u, _ in C["grades"])
     opts = "".join(f'<option value="{g}">Grade {g}: {e(n)}</option>' for g, n, *_ in C["grades"])
     don = lambda lst: "".join(f'<span class="rw">{gicon(n)}<span>{e(n)}<small>Grade {g} · +{p:,}</small></span></span>' for n, g, p in lst)
     arcs = "".join(f'<tr><td data-th="Level"><b>Lv {lv}</b><span class="gname">Grade {g}</span></td><td data-th="Henesys"><b>{e(ha)}</b><span class="gname">{e(hr)}</span></td><td data-th="Kerning"><b>{e(ka)}</b><span class="gname">{e(kr)}</span></td></tr>' for lv, g, ha, hr, ka, kr in C["arcs"])
@@ -1256,7 +1257,7 @@ def build_citizenship():
     hnpc = "".join(f'<tr><td data-th="Who"><b>{e(r)}</b></td><td data-th="Henesys">{e(a)}</td><td data-th="Kerning">{e(b)}</td></tr>' for r, a, b in H["npcs"])
     body = f"""<h1>MapleStory Classic Citizenship &amp; Housing Guide</h1>
 <p class="lede">Pick a town, say hi to the neighbors every day, and work your way up to a house of your own. Here's every grade, what it unlocks and the fastest way up.</p>
-{guide_stamp("Launch client data via NiaMeowDB and maplestory.quest. ")}
+{guide_stamp("Launch client data via NiaMeowDB and maplestory.quest, plus Nexon's Oct 29 notes. ", CHECKED)}
 <div class="toc"><a href="#start">Start</a><a href="#town">Which town?</a><a href="#grades">Grades</a><a href="#points">Earning points</a><a href="#stories">Story quests</a><a href="#housing">Housing</a><a href="#gotchas">Gotchas</a><a href="#faq">FAQ</a></div>
 <h2 id="start">The 30-second version</h2><ol class="musts">{quick}</ol>
 <h2 id="town">Henesys or Kerning?</h2><div class="grid two">{towns}</div>
@@ -1265,7 +1266,7 @@ def build_citizenship():
 <div class="gpick"><label for="gsel">I'm at</label><select id="gsel"><option value="0">Not a citizen yet</option>{opts}</select><p id="gout" aria-live="polite"></p></div>
 <table class="tbl compact grades"><thead><tr><th>Grade</th><th>Lv</th><th>Points</th><th class="hide-sm">Discount</th><th class="hide-sm">Storage fee</th><th>Unlocks</th></tr></thead><tbody>{grows}</tbody></table>
 <p class="muted" style="margin-top:8px">{e(C["gradeNote"])} Discounts cover cabs and some store items in your town. Storage fee is mesos per item (100 without citizenship).</p>
-<script type="application/json" id="gdata">{json.dumps(C["grades"])}</script>
+<script type="application/json" id="gdata" data-cut="{C.get("pointsCut", 99)}">{json.dumps(C["grades"])}</script>
 <h2 id="points">How to earn points</h2>
 <h3>Every day: greet a neighbor</h3><p>{e(C["daily"])}</p>
 <h3 style="margin-top:18px">Every week: donate 30 of one item</h3><p>{e(C["donateNote"])}</p>
