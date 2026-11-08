@@ -11,8 +11,8 @@ OUT = os.path.join(ROOT, "public")
 SITE = "https://www.mapleclassicguide.com"
 NAME = "Maple Classic Guide"
 COFFEE = "https://buymeacoffee.com/goldenboypro"  # your Buy Me a Coffee link, e.g. "https://buymeacoffee.com/yourname". Empty = hidden.
-CHECKED = "Nov 4, 2026"
-CHECKED_ISO = "2026-11-04"
+CHECKED = "Nov 7, 2026"
+CHECKED_ISO = "2026-11-07"
 DATA_NOTE = "Patch notes through Nov 4 (v1.1.0) and launch data"
 WEB3FORMS_KEY = os.environ.get("WEB3FORMS_KEY", "").strip()  # set in Vercel > Settings > Environment Variables; empty = feedback opens an email instead
 
