@@ -1,6 +1,6 @@
 {
- "week": "Oct 23, 2026",
- "weekISO": "2026-10-23",
+ "week": "Nov 12, 2026",
+ "weekISO": "2026-11-12",
  "source": "NiaMeowDB Price Check",
  "sourceUrl": "https://meowdb.com/msclassic/price-check",
  "note": "Drop rates aren't public, so these picks show where the money is this week, not a promise of mesos per hour.",
@@ -35,168 +35,168 @@
  ],
  "prices": {
   "Iron Ore": [
-   400,
-   "usual price on Oct 23 (NiaMeowDB)"
+   310,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Garnet Ore": [
-   220,
-   "usual price on Oct 23 (NiaMeowDB)"
+   121,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Diamond Ore": [
-   272,
-   "usual price on Oct 23 (NiaMeowDB)"
+   260,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Leather": [
-   149,
-   "usual price on Oct 23 (NiaMeowDB)"
+   120,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Mithril Ore": [
-   230,
-   "usual price on Oct 23 (NiaMeowDB)"
+   125,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Sapphire Ore": [
    130,
-   "usual price on Oct 23 (NiaMeowDB)"
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Black Crystal Ore": [
-   2999,
-   "usual price on Oct 23 (NiaMeowDB)"
+   2600,
+   "usual price on Nov 12 (NiaMeowDB); about 2,000 over the last 7 days"
   ],
   "Drake Skull": [
-   70,
-   "usual price on Oct 23 (NiaMeowDB)"
+   56,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Stiff Feather": [
-   80,
-   "usual price on Oct 23 (NiaMeowDB)"
+   29,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Screw": [
-   234,
-   "usual price on Oct 23 (NiaMeowDB)"
+   175,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Squishy Shoes": [
-   9999,
-   "usual price on Oct 23 (NiaMeowDB)"
+   20000,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Emerald Earrings": [
-   20000,
-   "usual price on Oct 23 (NiaMeowDB)"
+   17777,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Fairy Wing": [
-   96000,
-   "usual price on Oct 23 (NiaMeowDB)"
+   60000,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Piece of Ice": [
-   39500,
-   "usual price on Oct 23 (NiaMeowDB)"
+   70000,
+   "usual price on Nov 12 (NiaMeowDB); about 45,000 over the last 7 days"
   ],
   "Moon Rock": [
-   30000,
-   "usual price on Oct 23 (NiaMeowDB)"
+   22222,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Amethyst Ore": [
-   199,
-   "usual price on Oct 23 (NiaMeowDB)"
+   250,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Aquamarine Ore": [
-   199,
-   "usual price on Oct 23 (NiaMeowDB)"
+   120,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Opal Ore": [
-   133,
-   "usual price on Oct 23 (NiaMeowDB)"
+   169,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Gold Ore": [
-   120,
-   "usual price on Oct 23 (NiaMeowDB)"
+   80,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Emerald Ore": [
-   120,
-   "usual price on Oct 23 (NiaMeowDB)"
+   90,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Silver Ore": [
-   100,
-   "usual price on Oct 23 (NiaMeowDB)"
+   85,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Bronze Ore": [
-   100,
-   "usual price on Oct 23 (NiaMeowDB)"
+   70,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Orihalcon Ore": [
-   100,
-   "usual price on Oct 23 (NiaMeowDB)"
+   95,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Topaz Ore": [
-   100,
-   "usual price on Oct 23 (NiaMeowDB), only a few sales"
+   88,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Adamantium Ore": [
-   99,
-   "usual price on Oct 23 (NiaMeowDB)"
+   70,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Fragment of Magic": [
-   99,
-   "usual price on Oct 23 (NiaMeowDB)"
+   150,
+   "usual price on Nov 12 (NiaMeowDB); about 100 over the last 7 days"
   ],
   "Iron Hog's Metal Hoof": [
-   69,
-   "usual price on Oct 23 (NiaMeowDB), only a few sales"
+   51,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Lorang Claw": [
-   67,
-   "usual price on Oct 23 (NiaMeowDB)"
+   44,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Cursed Doll": [
-   62,
-   "usual price on Oct 23 (NiaMeowDB)"
+   51,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Animal Fur Bundle": [
-   46,
-   "usual price on Oct 23 (NiaMeowDB)"
+   41,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Curse Eye Tail": [
-   45,
-   "usual price on Oct 23 (NiaMeowDB)"
+   41,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Blue Mushroom Cap": [
-   45,
-   "usual price on Oct 23 (NiaMeowDB), only a few sales"
+   38,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Ligator Skin": [
-   35,
-   "usual price on Oct 23 (NiaMeowDB)"
+   39,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Stirge Wing": [
-   33,
-   "usual price on Oct 23 (NiaMeowDB)"
+   39,
+   "usual price on Nov 12 (NiaMeowDB); about 25 over the last 7 days"
   ],
   "Jr. Necki Skin": [
-   33,
-   "usual price on Oct 23 (NiaMeowDB)"
+   29,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Pig's Ribbon": [
-   32,
-   "usual price on Oct 23 (NiaMeowDB)"
+   45,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Firewood": [
-   29,
-   "usual price on Oct 23 (NiaMeowDB)"
+   22,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Tree Branch": [
-   25,
-   "usual price on Oct 23 (NiaMeowDB)"
+   21,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Green Mushroom Cap": [
-   25,
-   "usual price on Oct 23 (NiaMeowDB)"
+   23,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Orange Mushroom Cap": [
-   22,
-   "usual price on Oct 23 (NiaMeowDB)"
+   30,
+   "usual price on Nov 12 (NiaMeowDB)"
   ],
   "Squishy Liquid": [
-   19,
-   "usual price on Oct 23 (NiaMeowDB), only a few sales"
+   13,
+   "usual price on Nov 12 (NiaMeowDB); about 10 over the last 7 days"
   ]
  },
  "picks": [
@@ -210,7 +210,7 @@
     "Black Crystal Ore",
     "Drake Skull"
    ],
-   "why": "Black Crystal Ore is the priciest ore by far this week, around 3,000 mesos each. Copper Drakes are weak to ice, so I/L Wizards clear them fastest. Maladies in The Forest of Evil II drop it too if you're 55+."
+   "why": "Black Crystal Ore is still the priciest ore by far, around 2,600 mesos each today (about 2,000 over the week). Copper Drakes are weak to ice, so I/L Wizards clear them fastest. Maladies in The Forest of Evil II drop it too if you're 55+."
   },
   {
    "title": "Fire Boars for four kinds of loot",
@@ -224,7 +224,7 @@
     "Garnet Ore",
     "Leather"
    ],
-   "why": "Almost everything a Fire Boar drops sells, and Iron Ore (about 400) is the priciest common ore right now. Great for warriors and bowmen right after 2nd job."
+   "why": "Almost everything a Fire Boar drops sells, and Iron Ore (about 310) is still the priciest common ore. Great for warriors and bowmen right after 2nd job."
   },
   {
    "title": "Stirges for Iron Ore early",
@@ -249,15 +249,15 @@
     "Mithril Ore",
     "Sapphire Ore"
    ],
-   "why": "You're already here for EXP from 15 to 20, so keep the Mithril. It sells to crafters for more than most ores this low."
+   "why": "You're already here for EXP from 15 to 20, so keep the ores. Mithril and Sapphire both sell for about 125 to 130 each, more than most drops this low."
   }
  ],
  "tips": [
   "Check what things actually sold for, not what people ask in megaphones. Asking prices run high.",
   "Look at two sites before you sell anything rare. If they disagree, the lower number is closer to what you'll get.",
   "Keep ores, leather and screws. Players pay far more than NPCs do.",
-  "Got a Fairy Wing, Piece of Ice or Moon Rock? Those are the priciest crafting materials on this page right now (about 96,000, 39,500 and 30,000 mesos). Sell them to players, never to an NPC.",
-  "Ores dropped hard this week (Garnet Ore is around 220 now, after about 890 over the last two weeks), so don't sit on a big stack waiting for a bounce.",
+  "Got a Piece of Ice, Fairy Wing or Moon Rock? Those are the priciest crafting materials on this page (about 70,000, 60,000 and 22,000 mesos today; Piece of Ice was nearer 45,000 over the week). Sell them to players, never to an NPC.",
+  "Most ores kept sliding: Garnet Ore is about 120 now (220 on Oct 23) and Mithril about 125 (230). Sell as you go instead of sitting on a big stack waiting for a bounce.",
   "Undercut by a little, not a lot. A few mesos under the cheapest shop is enough to sell fast."
  ]
 }
