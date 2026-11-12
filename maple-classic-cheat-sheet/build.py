@@ -209,7 +209,9 @@ def page(path, title, desc, body, crumbs=None, schema=None, side_extra="", hero=
 <link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <link rel="preload" href="/fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
+<script>window.va=window.va||function(){{(window.vaq=window.vaq||[]).push(arguments)}};</script>
 <script defer src="/_vercel/insights/script.js"></script>
+<script defer src="/_vercel/speed-insights/script.js" data-sample-rate="0.5"></script>
 {ldtxt}
 </head>
 <body>
@@ -1426,7 +1428,7 @@ def build_static():
     write("/about/", page("/about/", "About & Sources | Maple Classic Guide", "Where the Maple Classic Guide gets its MapleStory Classic data, how we mark what's confirmed, and how to send us a fix. No ads, kept alive by players.", about, crumbs=[("/", "Guide"), (None, "About")]))
     priv = f'''<h1>Privacy policy</h1><p>Last updated {CHECKED}.</p>
 <p>This site doesn't ask for accounts or personal information. Your last job and level in the "Your run" picker are saved only in your own browser.</p>
-<h2>Analytics</h2><p>We use Vercel Web Analytics to count page views. It doesn't use cookies or track you across sites.</p>
+<h2>Analytics</h2><p>We use Vercel Web Analytics to count page views and a few anonymous taps, like the coffee button and "Was this page right?". Vercel Speed Insights measures how fast pages load on some visits. Neither uses cookies or tracks you across sites, and neither records what you type.</p>
 <h2>No ads</h2><p>This site runs no ads and no ad trackers. It's kept alive by player donations through <a href="https://buymeacoffee.com/goldenboypro" rel="noopener">Buy Me a Coffee</a>, which has its own privacy policy if you choose to donate.</p>
 <h2>Contact</h2><p><a href="mailto:robertlazau@gmail.com">robertlazau@gmail.com</a></p>'''
     write("/privacy/", page("/privacy/", "Privacy Policy | Maple Classic Guide", "Privacy policy for the Maple Classic Guide: no accounts, no ads, no ad trackers and cookie-free analytics. Your settings stay on your own device.", priv, crumbs=[("/", "Guide"), (None, "Privacy")]))

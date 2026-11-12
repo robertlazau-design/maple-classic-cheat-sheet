@@ -81,6 +81,12 @@ Bump `CHECKED` and `CHECKED_ISO` at the top of build.py when data is re-verified
 
 `.card`, `.grid`, `.grid.two`, `.facts` (four stat tiles), `ol.musts` (numbered tips), `.callout` / `.callout.warn`, `ol.stages > li.stage` (numbered steps with sprites), `.kp` (icon + text row), `.rws > .rw` (icon chips via `rw("Name|label")`), `.tbl.compact` (stays a table on mobile; use `.hide-sm` / `.show-sm`), `.evt` cards with `data-at` / `data-end` countdowns, `.toc`, `details.faq`, `srcs([...])`, `faq_html` / `faq_schema`.
 
+## Analytics, events and Speed Insights
+
+- `page()` in build.py loads Vercel Web Analytics (`/_vercel/insights/script.js`, with the `window.va` queue snippet) and Speed Insights (`/_vercel/speed-insights/script.js`, `data-sample-rate="0.5"`). The free Speed Insights allowance is 10,000 events per 30 days for the whole team and pauses collection on every site when it runs out, so keep Maple sampled.
+- Custom events (Vercel Pro) from `ev()` in src/site.js: `Coffee Click` (page + spot: tipjar, header, footer or page), `Page Vote` (page + up/down from "Was this page right?") and `Fix Sent` (page). Two properties at most, and never anything the visitor typed.
+- The Privacy page's Analytics paragraph describes these. Update it if you add more.
+
 ## Search and tap-to-explain
 
 - **Two layers of search.** `search.json` (built in `main()`) gives instant answers: pages, builds, grind spots by level, secrets, quests, bosses, events, rules, 124 items (from `build_prices` via `PC_ITEMS`) and "Not in Classic yet" entries. Every entry has `t` title, `u` URL, `k` kind, `d` one-line context shown under the result, `x` extra keywords, and `lo`/`hi` for level ranges. Under that, **Pagefind** searches every word on every page and shows excerpts.
