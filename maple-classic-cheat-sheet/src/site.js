@@ -4,6 +4,13 @@
   var k = document.querySelector("[data-launch]");
   if (k && Date.now() >= Date.parse("2026-10-21T00:00:00-07:00")) k.textContent = "Classic World · live now";
 
+  // ---- Custom events for Vercel Web Analytics (Pro): two properties at most, never anything the visitor typed.
+  function ev(name, data) { try { if (window.va) window.va("event", { name: name, data: data }); } catch (e) {} }
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest('a[href*="buymeacoffee.com"]');
+    if (a) ev("Coffee Click", { page: location.pathname, spot: a.closest(".tipjar") ? "tipjar" : a.closest("footer") ? "footer" : a.closest("header, nav") ? "header" : "page" });
+  }, true);
+
   // ---- Toasts: little game-style popups at the bottom of the screen
   var toastEl = null, toastT = 0;
   function toast(msg) {
@@ -283,6 +290,7 @@
     fb.addEventListener("click", function (e) {
       var b = e.target.closest("[data-fb]"); if (!b) return;
       fb.querySelectorAll("[data-fb]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      ev("Page Vote", { page: page, vote: b.dataset.fb });
       if (b.dataset.fb === "up") { fbForm.hidden = true; store.set("mccs-fb" + page, "up"); toast("Thanks! +1 EXP for the guide"); }
       else { fbForm.hidden = false; fbForm.querySelector("textarea").focus(); }
     });
@@ -297,6 +305,7 @@
         .then(function (r) { return r.json(); })
         .then(function (d) {
           if (!d.success) throw new Error(d.message || "failed");
+          ev("Fix Sent", { page: page });
           fb.innerHTML = '<p class="fb-q">Got it, thank you! 🍁</p><p class="muted">We check every report against the game and log fixes on <a href="/updates/">What\'s new</a>.</p>';
           toast("Fix sent! +5 EXP");
         })
